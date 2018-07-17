@@ -20,4 +20,4 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 #from Configuration.AlCa.GlobalTag import GlobalTag
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_v3'
-process.load('CustoTnP.CustoTnPAnalysis_cff')
+process.load('CustoTnP.Analyzer.CustoTnPAnalysis_cff')

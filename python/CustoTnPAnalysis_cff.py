@@ -10,7 +10,7 @@ goodDataFilter.HLTPaths = ["goodDataPrimaryVertexFilter"] # can set to just 'goo
 #goodDataFilter.HLTPaths = ['goodDataMETFilter']
 goodDataFilter.andOr = False # = AND
 
-from CustoTnP.goodData_cff import primaryVertexMiniAOD, hltPhysicsDeclared, metFilters
+from CustoTnP.Analyzer.goodData_cff import primaryVertexMiniAOD, hltPhysicsDeclared, metFilters
 goodDataFiltersMiniAOD = [primaryVertexMiniAOD]
 ## for full filtering, use:
 #goodDataFiltersMiniAOD = [primaryVertexMiniAOD,hltPhysicsDeclared]
