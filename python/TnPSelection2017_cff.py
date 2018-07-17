@@ -101,7 +101,7 @@ dimuons = cms.EDProducer('CustoTnPPairSelector',
                          ShutUp = cms.bool(True)  #True
 )
 
-dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_FromAOD',
+dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
                          src = cms.InputTag('allDimuons'),
                          reco_muon_src = cms.InputTag('muons'),
                          muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
@@ -186,7 +186,7 @@ HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
                                ShutUp = cms.bool(True)  #True
 )
 
-HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_FromAOD',
+HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_AOD',
                                dilepton_src = cms.InputTag('dimuonsAOD'),
                                beamspot_src = cms.InputTag('offlineBeamSpot'),
                                vertex_src = cms.InputTag('offlinePrimaryVertices'),
@@ -250,7 +250,7 @@ HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_FromAOD',
                                ShutUp = cms.bool(True)  #True
 )
 
-HistosForExtraSegsAOD = cms.EDAnalyzer('CustoTnPHistosForExtraSegs_FromAOD',
+HistosForExtraSegsAOD = cms.EDAnalyzer('CustoTnPHistosForExtraSegs_AOD',
                                dilepton_src = cms.InputTag('dimuonsAOD'),
                                beamspot_src = cms.InputTag('offlineBeamSpot'),
                                vertex_src = cms.InputTag('offlinePrimaryVertices'),
