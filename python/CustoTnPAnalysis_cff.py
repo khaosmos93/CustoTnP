@@ -18,29 +18,13 @@ goodDataFiltersMiniAOD = [primaryVertexMiniAOD]
 
 
 from MuonPhotonMatch_cff import muonPhotonMatch, muonPhotonMatchMiniAOD
-from OurSelection2016_cff import allDimuons, dimuons, loose_cut
-#from OurSelectionDec2012_cff import allDimuons, dimuons, loose_cut
 
-leptons = cms.EDProducer('CustoTnPLeptonProducer',
-                         muon_src = cms.InputTag('cleanPatMuonsTriggerMatch'), #JMTBAD changeme after new PAT tuples
-                         electron_src = cms.InputTag('cleanPatElectrons'),
-                         muon_srcSecond = cms.InputTag('cleanPatMuonsTriggerMatch'), #JMTBAD changeme after new PAT tuples
-                         electron_srcSecond = cms.InputTag('cleanPatElectrons'),
-                         muon_cuts = cms.string(loose_cut),
-                         electron_cuts = cms.string(''),
-                         muon_track_for_momentum = cms.string('TunePNew'),
-                         muon_track_for_momentum_CSC = cms.string('Inner'),
-                         muon_photon_match_src = cms.InputTag('muonPhotonMatch'),
-                         electron_muon_veto_dR = cms.double(-1),
-                         trigger_match_max_dR = cms.double(0.2),
-                         trigger_summary_src = cms.InputTag('hltTriggerSummaryAOD', '', 'HLT'),
-                         )
 leptonsMini = cms.EDProducer('CustoTnPLeptonProducer_miniAOD',
                               muon_src = cms.InputTag('slimmedMuons'), #JMTBAD changeme after new PAT tuples
                               electron_src = cms.InputTag('slimmedElectrons'),
                               electron_id = cms.InputTag('egmGsfElectronIDs:heepElectronID-HEEPV60'),
                               muon_srcSecond = cms.InputTag('slimmedMuons'), #JMTBAD changeme after new PAT tuples
-                              muon_cuts = cms.string(loose_cut),
+                              muon_cuts = cms.string(''),
                               muon_track_for_momentum = cms.string('TunePNew'),
                               muon_track_for_momentum_CSC = cms.string('Inner'),
                               muon_photon_match_src = cms.InputTag('muonPhotonMatchMiniAOD'),
@@ -52,10 +36,6 @@ leptonsMini = cms.EDProducer('CustoTnPLeptonProducer_miniAOD',
                               bits = cms.InputTag("TriggerResults","","HLT"),#data
                               prescales = cms.InputTag("patTrigger"),
                               )
-
-CustoTnPAnalysisSequence = cms.Sequence(muonPhotonMatch * leptons * allDimuons * dimuons)
-CustoTnPAnalysisSequence_MiniAOD = cms.Sequence(muonPhotonMatchMiniAOD * leptonsMini * allDimuons * dimuons)
-
 
 #####################################################################
 ############# E L E C T R O N  -  S E L E C T O R ###################
