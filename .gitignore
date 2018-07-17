@@ -5,7 +5,6 @@
 Local*/
 *.root
 *.log
-*test*
 *TEST*
 
 # output from batch jobs
