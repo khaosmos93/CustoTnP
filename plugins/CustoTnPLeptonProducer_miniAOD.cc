@@ -1,6 +1,6 @@
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "DataFormats/Candidate/interface/CandMatchMap.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
+//#include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -23,19 +23,19 @@ public:
 private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
 
-  pat::Electron* cloneAndSwitchElectronEnergy(const pat::Electron&) const;
+  //Ele pat::Electron* cloneAndSwitchElectronEnergy(const pat::Electron&) const;
   pat::Muon*     cloneAndSwitchMuonTrack     (const pat::Muon&, const edm::Event& event)     const;
 
   void embedTriggerMatch(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&);
   void embedTriggerMatch_or(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&, std::vector<int>&);
     
   // std::pair<pat::Electron*, int> doLepton(const edm::Event&, const pat::Electron&, const reco::CandidateBaseRef&);
-  std::pair<pat::Electron*, int> doLepton(const edm::Event&, const pat::Electron&);
+  //Ele std::pair<pat::Electron*, int> doLepton(const edm::Event&, const pat::Electron&);
   std::pair<pat::Muon*,     int> doLepton(const edm::Event&, const pat::Muon&,     const reco::CandidateBaseRef&);
 
   template <typename T> edm::OrphanHandle<std::vector<T> > doLeptons(edm::Event&, const edm::InputTag&, const edm::InputTag&, const std::string&);
 
-  template <typename T> edm::OrphanHandle<std::vector<T> > doLeptons(edm::Event&, edm::Handle<edm::ValueMap<bool> >&, edm::Handle<edm::View<pat::Electron> >&, const std::string&);
+  //Ele template <typename T> edm::OrphanHandle<std::vector<T> > doLeptons(edm::Event&, edm::Handle<edm::ValueMap<bool> >&, edm::Handle<edm::View<pat::Electron> >&, const std::string&);
 
   edm::InputTag muon_src;
   edm::InputTag muon_view_src;
@@ -61,8 +61,8 @@ private:
   std::vector<int> L3_muons_matched_2;
   std::vector<int> prescaled_L3_muons_matched;
 
-  edm::EDGetTokenT<edm::View<pat::Electron> > electronToken_;  
-  edm::EDGetTokenT<edm::ValueMap<bool> > vidToken_;
+  //Ele edm::EDGetTokenT<edm::View<pat::Electron> > electronToken_;  
+  //Ele edm::EDGetTokenT<edm::ValueMap<bool> > vidToken_;
   
   
 };
@@ -80,9 +80,9 @@ CustoTnPLeptonProducer_miniAOD::CustoTnPLeptonProducer_miniAOD(const edm::Parame
     
     triggerBits_(consumes<edm::TriggerResults>(cfg.getParameter<edm::InputTag>("bits"))),
     trigger_summary_src_(consumes<pat::TriggerObjectStandAloneCollection>(cfg.getParameter<edm::InputTag>("trigger_summary"))),
-    triggerPrescales_(consumes<pat::PackedTriggerPrescales>(cfg.getParameter<edm::InputTag>("prescales"))),
-    electronToken_(consumes<edm::View<pat::Electron> >(cfg.getParameter<edm::InputTag>("electron_src"))),
-    vidToken_(consumes<edm::ValueMap<bool> >(cfg.getParameter<edm::InputTag>("electron_id")))
+    triggerPrescales_(consumes<pat::PackedTriggerPrescales>(cfg.getParameter<edm::InputTag>("prescales")))
+    //Ele electronToken_(consumes<edm::View<pat::Electron> >(cfg.getParameter<edm::InputTag>("electron_src"))),
+    //Ele vidToken_(consumes<edm::ValueMap<bool> >(cfg.getParameter<edm::InputTag>("electron_id")))
 {
   consumes<edm::View<reco::Candidate>>(muon_view_src);
   consumes<pat::MuonCollection>(muon_src);
@@ -96,10 +96,11 @@ CustoTnPLeptonProducer_miniAOD::CustoTnPLeptonProducer_miniAOD(const edm::Parame
       produces<pat::MuonCollection>(muon_tracks_for_momentum[i]);
 
   produces<pat::MuonCollection>("muons");
-  produces<pat::ElectronCollection>("electrons");
+  //Ele produces<pat::ElectronCollection>("electrons");
 }
 
-
+//Ele
+/*
 pat::Electron* CustoTnPLeptonProducer_miniAOD::cloneAndSwitchElectronEnergy(const pat::Electron& electron) const {
   // HEEP recommendation is to use always the calorimeter energy
   // instead of the GsfElectron/pat::Electron default, which uses a
@@ -110,6 +111,7 @@ pat::Electron* CustoTnPLeptonProducer_miniAOD::cloneAndSwitchElectronEnergy(cons
   el->setP4(electron.p4() * (electron.caloEnergy() / electron.energy()));
   return el;
 }
+*/
 
 pat::Muon* CustoTnPLeptonProducer_miniAOD::cloneAndSwitchMuonTrack(const pat::Muon& muon, const edm::Event& event) const {
   
@@ -318,7 +320,8 @@ void CustoTnPLeptonProducer_miniAOD::embedTriggerMatch_or(pat::Muon* new_mu, con
     }
 }
 
-
+//Ele 
+/*
 std::pair<pat::Electron*,int> CustoTnPLeptonProducer_miniAOD::doLepton(const edm::Event& event, const pat::Electron& el) {
 
   // Electrons can be faked by muons leaving energy in the ECAL. Don't
@@ -355,6 +358,7 @@ std::pair<pat::Electron*,int> CustoTnPLeptonProducer_miniAOD::doLepton(const edm
 
   return std::make_pair(new_el, cutFor);
 }
+*/
 
 std::pair<pat::Muon*,int> CustoTnPLeptonProducer_miniAOD::doLepton(const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand) {
   // Failure is indicated by a null pointer as the first member of the
@@ -390,8 +394,8 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer_miniAOD::doLepton(const edm::Ev
   // {TriggerMatch, prescaledTriggerMatch} x {Pt, Eta, Phi,
   // Charge}. (Maybe embed whole candidates later.)
   
-   embedTriggerMatch(new_mu, "",          L3_muons,           L3_muons_matched);
-//   embedTriggerMatch_or(new_mu, "",         L3_muons, L3_muons_2,        L3_muons_matched, L3_muons_matched_2);
+  embedTriggerMatch(new_mu, "",          L3_muons,           L3_muons_matched);
+  // embedTriggerMatch_or(new_mu, "",         L3_muons, L3_muons_2,        L3_muons_matched, L3_muons_matched_2);
   embedTriggerMatch(new_mu, "prescaled", prescaled_L3_muons, prescaled_L3_muons_matched);
 
   // Evaluate cuts here with string object selector, and any code that
@@ -433,7 +437,8 @@ edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer_miniAOD::doLeptons(edm
   return event.put(std::move(new_leptons), instance_label);
 }
 
-
+//Ele 
+/*
 template <typename T>
 edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer_miniAOD::doLeptons(edm::Event& event, edm::Handle<edm::ValueMap<bool> > &vid, edm::Handle<edm::View<pat::Electron> > &patEles, const std::string& instance_label) {
  
@@ -475,7 +480,7 @@ edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer_miniAOD::doLeptons(edm
 
   return event.put(std::move(new_leptons), instance_label);
 }
-
+*/
 
 
 void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::EventSetup& setup) {
@@ -517,11 +522,11 @@ void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::Event
     int j = 0;
     
     L3_muons.clear();
-//     L3_muons_2.clear();
+    // L3_muons_2.clear();
     prescaled_L3_muons.clear();
     for (pat::TriggerObjectStandAlone obj : *trigger_summary_src) { // note: not "const &" since we want to call unpackPathNames
         obj.unpackPathNames(names);
-        obj.unpackFilterLabels(event, *triggerBits); 
+        obj.unpackFilterLabels(event, *triggerBits);
 	
 	//if (obj.collection() == "hltL3MuonCandidates::HLT"){
 	for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
@@ -533,10 +538,10 @@ void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::Event
 	    //FilterMatched[j] = 1;
 	    L3_muons.push_back(obj);
     }
-//     if (obj.filterLabels()[h] == pandf.filter_2){
-//          //FilterMatched[j] = 1;
-//          L3_muons_2.push_back(obj);
-//     }
+    //if (obj.filterLabels()[h] == pandf.filter_2){
+    //     //FilterMatched[j] = 1;
+    //     L3_muons_2.push_back(obj);
+    //}
     
 	  if (obj.filterLabels()[h] ==	pandf.prescaled_filter){
 	    //FilterMatched[j] = 1;
@@ -553,8 +558,8 @@ void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::Event
     
     L3_muons_matched.clear();
     L3_muons_matched.resize(L3_muons.size(), 0);
-//     L3_muons_matched_2.clear();
-//     L3_muons_matched_2.resize(L3_muons_2.size(), 0);
+    // L3_muons_matched_2.clear();
+    // L3_muons_matched_2.resize(L3_muons_2.size(), 0);
     prescaled_L3_muons_matched.clear();
     prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
 //    std::cout<<"filter "<<pandf.filter<<std::endl;
@@ -586,8 +591,8 @@ void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::Event
       // Reset the flags so the matching can be redone.
         L3_muons_matched.clear();
         L3_muons_matched.resize(L3_muons.size(), 0);
-//         L3_muons_matched_2.clear();
-//         L3_muons_matched_2.resize(L3_muons_2.size(), 0);
+        // L3_muons_matched_2.clear();
+        // L3_muons_matched_2.resize(L3_muons_2.size(), 0);
         prescaled_L3_muons_matched.clear();
         prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
       
@@ -599,7 +604,8 @@ void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::Event
     // e.g. leptons:electrons.
     // doLeptons<pat::Electron>(event, electron_src, electron_view_src, "electrons");
    
-       
+    //Ele 
+    /*
     edm::Handle<edm::ValueMap<bool> > vid;
     event.getByToken(vidToken_,vid);
         
@@ -607,7 +613,7 @@ void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::Event
     event.getByToken(electronToken_,patEles);
 
     doLeptons<pat::Electron>(event, vid, patEles,"electrons");
-   
+    */
 }
 
 DEFINE_FWK_MODULE(CustoTnPLeptonProducer_miniAOD);
