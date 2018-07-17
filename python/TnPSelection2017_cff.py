@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 PI = math.pi
 
-from SUSYBSMAnalysis.Zprime2muAnalysis.hltTriggerMatch_cfi import trigger_match, offline_pt_threshold
+from CustoTnP.Analyzer.hltTriggerMatch_cfi import trigger_match, offline_pt_threshold
 
 # -- For both Tag and Probe -- ##
 loose_cut = 'isGlobalMuon && ' \
@@ -71,14 +71,14 @@ Passing_probe_dpt_over_pt_max = 0.3
 Passing_probe_dz_max = 0.5
 
 
-allDimuons = cms.EDProducer('Zprime2muCombiner',
+allDimuons = cms.EDProducer('CustoTnPCombiner',
                             decay = cms.string('leptons:muons@+ leptons:muons@-'),
                             cut = cms.string(''),
                             loose_cut = cms.string(loose_cut),
                             tight_cut = cms.string(tight_cut)
 )
 
-dimuons = cms.EDProducer('ZprimeTnPPairSelector',
+dimuons = cms.EDProducer('CustoTnPPairSelector',
                          src = cms.InputTag('allDimuons'),
                          vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
                          cut = cms.string(Pair_Cut),                                  # simple cuts for dilepton pair, Pair_Cut
@@ -101,7 +101,7 @@ dimuons = cms.EDProducer('ZprimeTnPPairSelector',
                          ShutUp = cms.bool(True)  #True
 )
 
-dimuonsAOD = cms.EDProducer('ZprimeTnPPairSelector_FromAOD',
+dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_FromAOD',
                          src = cms.InputTag('allDimuons'),
                          reco_muon_src = cms.InputTag('muons'),
                          muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
@@ -133,7 +133,7 @@ dimuonsAOD = cms.EDProducer('ZprimeTnPPairSelector_FromAOD',
 
 width = PI / 20.0
 
-HistosForTnP = cms.EDAnalyzer('Zprime2muHistosForTnP',
+HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
                                dilepton_src = cms.InputTag('dimuons'),
                                beamspot_src = cms.InputTag('offlineBeamSpot'),
                                vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
@@ -186,7 +186,7 @@ HistosForTnP = cms.EDAnalyzer('Zprime2muHistosForTnP',
                                ShutUp = cms.bool(True)  #True
 )
 
-HistosForTnPAOD = cms.EDAnalyzer('Zprime2muHistosForTnP_FromAOD',
+HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_FromAOD',
                                dilepton_src = cms.InputTag('dimuonsAOD'),
                                beamspot_src = cms.InputTag('offlineBeamSpot'),
                                vertex_src = cms.InputTag('offlinePrimaryVertices'),
@@ -250,7 +250,7 @@ HistosForTnPAOD = cms.EDAnalyzer('Zprime2muHistosForTnP_FromAOD',
                                ShutUp = cms.bool(True)  #True
 )
 
-HistosForExtraSegsAOD = cms.EDAnalyzer('Zprime2muHistosForExtraSegs_FromAOD',
+HistosForExtraSegsAOD = cms.EDAnalyzer('CustoTnPHistosForExtraSegs_FromAOD',
                                dilepton_src = cms.InputTag('dimuonsAOD'),
                                beamspot_src = cms.InputTag('offlineBeamSpot'),
                                vertex_src = cms.InputTag('offlinePrimaryVertices'),
