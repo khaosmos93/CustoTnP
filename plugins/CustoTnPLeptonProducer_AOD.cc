@@ -13,7 +13,6 @@
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Common/interface/View.h"
-#include "CustoTnP/Analyzer/src/GeneralizedEndpoint.h"
 #include "TLorentzVector.h"
 
 
