@@ -499,8 +499,8 @@ void CustoTnPLeptonProducer_miniAOD::produce(edm::Event& event, const edm::Event
   // the main path and the prescaled path.
   
   CustoTnPTriggerPathsAndFilters pandf(event);
-  if (!pandf.valid)
-    throw cms::Exception("CustoTnPLeptonProducer_miniAOD") << "could not determine the HLT path and filter names for this event\n";
+    if (!pandf.valid)
+      throw cms::Exception("CustoTnPLeptonProducer_miniAOD") << "could not determine the HLT path and filter names for this event\n";
  
 
     edm::Handle<edm::TriggerResults> triggerBits;
