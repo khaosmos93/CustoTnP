@@ -2,7 +2,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "CustoTnP/Analyzer/src/TriggerUtilities.h"
 
-Zprime2muTriggerPathsAndFilters::Zprime2muTriggerPathsAndFilters(const edm::Event& event) {
+CustoTnPTriggerPathsAndFilters::CustoTnPTriggerPathsAndFilters(const edm::Event& event) {
   // Here we explicitly specify the HLT path/final filter name as a
   // function of run number, rather than relying on HLTConfigProvider
   // to give it to us, or using globbing on different path version

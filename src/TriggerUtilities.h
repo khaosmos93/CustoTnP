@@ -5,7 +5,7 @@
 
 namespace edm { class Event; class InputTag; }
 
-struct Zprime2muTriggerPathsAndFilters {
+struct CustoTnPTriggerPathsAndFilters {
   std::string path;
   std::string filter;
 //  std::string path_2;
@@ -16,8 +16,8 @@ struct Zprime2muTriggerPathsAndFilters {
 //  std::string prescaled_filter_2;
   bool valid;
   
-  Zprime2muTriggerPathsAndFilters() : valid(false) {}
-  Zprime2muTriggerPathsAndFilters(const edm::Event&);
+  CustoTnPTriggerPathsAndFilters() : valid(false) {}
+  CustoTnPTriggerPathsAndFilters(const edm::Event&);
 };
 
 trigger::TriggerObjectCollection get_L3_muons(const edm::Event& event,
