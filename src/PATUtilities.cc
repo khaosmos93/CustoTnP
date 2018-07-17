@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/PATUtilities.h"
+#include "CustoTnP/Analyzer/src/PATUtilities.h"
 
 namespace patmuon {
   TrackType trackNameToType(std::string name) {

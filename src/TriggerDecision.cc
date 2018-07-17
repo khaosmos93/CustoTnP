@@ -6,7 +6,7 @@
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/TriggerDecision.h"
+#include "CustoTnP/Analyzer/src/TriggerDecision.h"
 
 
 

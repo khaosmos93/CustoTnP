@@ -1,6 +1,6 @@
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/TriggerUtilities.h"
+#include "CustoTnP/Analyzer/src/TriggerUtilities.h"
 
 Zprime2muTriggerPathsAndFilters::Zprime2muTriggerPathsAndFilters(const edm::Event& event) {
   // Here we explicitly specify the HLT path/final filter name as a

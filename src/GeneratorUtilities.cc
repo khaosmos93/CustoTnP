@@ -1,6 +1,6 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/GeneratorUtilities.h"
+#include "CustoTnP/Analyzer/src/GeneratorUtilities.h"
 
 void SetP4M(reco::Particle::LorentzVector& v,
 	    double pt, double phi, double p, double theta, double m) {

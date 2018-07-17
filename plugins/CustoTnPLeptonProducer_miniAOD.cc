@@ -5,15 +5,15 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "CustoTnP/src/PATUtilities.h"
-#include "CustoTnP/src/TriggerUtilities.h"
+#include "CustoTnP/Analyzer/src/PATUtilities.h"
+#include "CustoTnP/Analyzer/src/TriggerUtilities.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Common/interface/View.h"
-#include "CustoTnP/src/GeneralizedEndpoint.h"
+#include "CustoTnP/Analyzer/src/GeneralizedEndpoint.h"
 #include "TLorentzVector.h"
 
 

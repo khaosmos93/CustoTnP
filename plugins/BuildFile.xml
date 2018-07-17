@@ -7,7 +7,7 @@
   <use name="DataFormats/PatCandidates"/>
   <use name="DataFormats/Common"/>
   <use name="DataFormats/EgammaCandidates"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
 </library>
 
 <library file="CustoTnPLeptonProducer_AOD.cc" name="CustoTnPLeptonProducer_AOD">
@@ -15,7 +15,7 @@
   <use name="DataFormats/PatCandidates"/>
   <use name="DataFormats/Common"/>
   <use name="DataFormats/EgammaCandidates"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
 </library>
 
 <library file="CustoTnPCombiner.cc" name="CustoTnPCombiner">
@@ -31,7 +31,7 @@
   <use name="DataFormats/PatCandidates"/>
   <use name="RecoVertex/KalmanVertexFit"/>
   <use name="RecoVertex/KinematicFit"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
   <use name="TrackingTools/Records"/>
   <use name="TrackingTools/TransientTrack"/>
 </library>
@@ -41,7 +41,7 @@
   <use name="DataFormats/PatCandidates"/>
   <use name="RecoVertex/KalmanVertexFit"/>
   <use name="RecoVertex/KinematicFit"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
   <use name="TrackingTools/Records"/>
   <use name="TrackingTools/TransientTrack"/>
 </library>
@@ -51,7 +51,7 @@
   <use name="DataFormats/PatCandidates"/>
   <use name="RecoVertex/KalmanVertexFit"/>
   <use name="RecoVertex/KinematicFit"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
   <use name="TrackingTools/Records"/>
   <use name="TrackingTools/TransientTrack"/>
   <use name="Geometry/DTGeometry"/>
@@ -68,7 +68,7 @@
   <use name="rootgraphics"/>
   <use name="CommonTools/UtilAlgos"/>
   <use name="DataFormats/PatCandidates"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
 </library>
 
 <library file="HistosForTnP_AOD.cc" name="CustoTnPHistosForTnP_AOD">
@@ -77,7 +77,7 @@
   <use name="rootgraphics"/>
   <use name="CommonTools/UtilAlgos"/>
   <use name="DataFormats/PatCandidates"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
 </library>
 
 <!-- <library file="AsymmetryFrameAnalysis.cc,AsymmetryParametrizer.cc,CocktailAnalyzer.cc,EfficiencyFromMC.cc,EfficiencyFromMCMini.cc,EfficiencyFromMCnoTrigger.cc,HardInteractionFilter.cc,DibosonGenMass.cc,TauTauSelection.cc,HardInteractionNtuple.cc,HistosFromPAT.cc, MuonsFromDimuons.cc,PrintEvent.cc,QCDBackground.cc,ResolutionUsingMC.cc,ResolutionAtZ.cc,SimpleNtupler.cc,SimpleNtupler_miniAOD.cc,CustoTnPAsymmetry.cc,CustoTnPMassReach.cc" name="CustoTnPAnalyzers"> -->
@@ -88,7 +88,7 @@
   <use name="rootgraphics"/>
   <use name="CommonTools/UtilAlgos"/>
   <use name="DataFormats/PatCandidates"/>
-  <use name="CustoTnP"/>
+  <use name="CustoTnP/Analyzer"/>
 </library>
 
 # to filter events on miniAOD

@@ -1,6 +1,6 @@
 //#define PTDRSTYLE
 #ifdef PTDRSTYLE
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/tdrstyle.h"
+#include "CustoTnP/Analyzer/src/tdrstyle.h"
 #else
 #include "TH1.h"
 #include "TStyle.h"
@@ -13,9 +13,9 @@
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
 
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/DileptonUtilities.h"
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/GeneralUtilities.h"
-#include "SUSYBSMAnalysis/Zprime2muAnalysis/src/ToConcrete.h"
+#include "CustoTnP/Analyzer/src/DileptonUtilities.h"
+#include "CustoTnP/Analyzer/src/GeneralUtilities.h"
+#include "CustoTnP/Analyzer/src/ToConcrete.h"
 
 using namespace std;
 
