@@ -21,8 +21,8 @@ from MuonPhotonMatch_cff import muonPhotonMatch, muonPhotonMatchMiniAOD
 
 leptonsMini = cms.EDProducer('CustoTnPLeptonProducer_miniAOD',
                               muon_src = cms.InputTag('slimmedMuons'), #JMTBAD changeme after new PAT tuples
-                              electron_src = cms.InputTag('slimmedElectrons'),
-                              electron_id = cms.InputTag('egmGsfElectronIDs:heepElectronID-HEEPV60'),
+                              #electron_src = cms.InputTag('slimmedElectrons'),
+                              #electron_id = cms.InputTag('egmGsfElectronIDs:heepElectronID-HEEPV60'),
                               muon_srcSecond = cms.InputTag('slimmedMuons'), #JMTBAD changeme after new PAT tuples
                               muon_cuts = cms.string(''),
                               muon_track_for_momentum = cms.string('TunePNew'),
