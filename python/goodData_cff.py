@@ -23,7 +23,7 @@ noscraping = cms.EDFilter('FilterOutScraping',
                           numtrack = cms.untracked.uint32(10),
                           thresh = cms.untracked.double(0.25)
                           )
-from METFilterMiniAOD_cfi import defaultSelector
+from METFilter_miniAOD_cfi import defaultSelector
 
 primaryVertexMiniAOD = defaultSelector.clone()
 primaryVertexMiniAOD.flag = "Flag_goodVertices"
