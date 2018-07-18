@@ -1,7 +1,14 @@
-#OSX
+# OSX
 .DS_Store
 
-# Local files
+# Previous versions
+*_2018*.py
+*_2018*.cc
+*_2018*.C
+*_2018*.h
+*_2018*.xml
+
+# Local files/directories
 Local*/
 *.root
 *.log
