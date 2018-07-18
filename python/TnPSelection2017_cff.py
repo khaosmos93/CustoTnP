@@ -6,11 +6,11 @@ PI = math.pi
 from CustoTnP.Analyzer.hltTriggerMatch_cfi import trigger_match, offline_pt_threshold
 
 # -- For both Tag and Probe -- ##
-loose_cut = 'isGlobalMuon && ' \
-            'isTrackerMuon && ' \
-            'abs(eta) < 2.4 && ' \
-            'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
-            'isolationR03.sumPt < 30'
+default_cut = 'isGlobalMuon && ' \
+              'isTrackerMuon && ' \
+              'abs(eta) < 2.4 && ' \
+              'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
+              'isolationR03.sumPt < 30'
 
 tight_cut = ''  #trigger_match
 
@@ -74,7 +74,7 @@ Passing_probe_dz_max = 0.5
 allDimuons = cms.EDProducer('CustoTnPCombiner',
                             decay = cms.string('leptons:muons@+ leptons:muons@-'),
                             cut = cms.string(''),
-                            loose_cut = cms.string(loose_cut),
+                            loose_cut = cms.string(default_cut),
                             tight_cut = cms.string(tight_cut)
 )
 
