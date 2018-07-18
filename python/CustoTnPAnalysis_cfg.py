@@ -3,12 +3,12 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process('CustoTnPAnalysis')
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.source = cms.Source('PoolSource', fileNames = cms.untracked.vstring('file:patTuneP.root'))
-process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(False))
+process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.load('FWCore.MessageLogger.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
-process.TFileService = cms.Service('TFileService', fileName=cms.string('zp2mu_histos.root'))
+process.TFileService = cms.Service('TFileService', fileName=cms.string('custoTnP_histos.root'))
 
 #process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
