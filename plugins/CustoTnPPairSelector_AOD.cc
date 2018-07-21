@@ -256,8 +256,8 @@ CustoTnPPairSelector_AOD::CustoTnPPairSelector_AOD(const edm::ParameterSet& cfg)
  consumes<reco::VertexCollection>(vertex_src);
  produces<pat::CompositeCandidateCollection>();
 
- isTag0Probe1(false);
- isTag1Probe0(false);
+ isTag0Probe1 = false;
+ isTag1Probe0 = false;
 
 }
 
