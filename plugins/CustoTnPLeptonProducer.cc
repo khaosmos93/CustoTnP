@@ -40,8 +40,6 @@ private:
   std::vector<std::string> muon_tracks_for_momentum;
   edm::InputTag muon_photon_match_src;
   edm::Handle<reco::CandViewMatchMap> muon_photon_match_map;
-  double electron_muon_veto_dR;
-  std::vector<std::pair<float,float> > muon_eta_phis;
   double trigger_match_max_dR;
   
   edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
@@ -65,8 +63,6 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
     muon_track_for_momentum(cfg.getParameter<std::string>("muon_track_for_momentum")),
     muon_track_for_momentum_primary(muon_track_for_momentum),
     muon_photon_match_src(cfg.getParameter<edm::InputTag>("muon_photon_match_src")),
-    electron_muon_veto_dR(cfg.getParameter<double>("electron_muon_veto_dR")),
-    //trigger_summary_src(cfg.getParameter<edm::InputTag>("trigger_summary_src")),
     trigger_match_max_dR(cfg.getParameter<double>("trigger_match_max_dR")),
     
     triggerBits_(consumes<edm::TriggerResults>(cfg.getParameter<edm::InputTag>("bits"))),
@@ -464,17 +460,6 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
     muon_track_for_momentum = muon_track_for_momentum_primary;
     edm::OrphanHandle<pat::MuonCollection> muons = doLeptons<pat::Muon>(event, muon_src, muon_view_src, "muons");
 
-    // If requested, prepare list of eta,phi coordinates of muons for
-    // vetoing electrons near them.
-    muon_eta_phis.clear();
-    if (electron_muon_veto_dR > 0) {
-      if (!muons.isValid())
-	throw cms::Exception("CustoTnPLeptonProducer") << "requested to veto electrons near muons, but main muon collection is invalid!\n";
-      
-      for (pat::MuonCollection::const_iterator mu = muons->begin(), end = muons->end(); mu != end; ++mu)
-	muon_eta_phis.push_back(std::make_pair(mu->eta(), mu->phi()));
-    }
-    
     // Now make secondary collections of muons using the momentum
     // assignments specified. They will come out as e.g. leptons:tpfms,
     // leptons:picky, ...
