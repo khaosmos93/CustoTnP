@@ -166,9 +166,6 @@ CustoTnPPairSelector::CustoTnPPairSelector(const edm::ParameterSet& cfg)
     tag_selector(cfg.getParameter<std::string>("tag_cut")),
     probe_selector(cfg.getParameter<std::string>("probe_cut")),
 
-    isTag0Probe1(false),
-    isTag1Probe0(false),
-
     max_candidates(cfg.getParameter<unsigned>("max_candidates")),
     sort_by_pt(cfg.getParameter<bool>("sort_by_pt")),
     do_remove_overlap(cfg.getParameter<bool>("do_remove_overlap")),
@@ -198,6 +195,9 @@ CustoTnPPairSelector::CustoTnPPairSelector(const edm::ParameterSet& cfg)
  consumes<pat::CompositeCandidateCollection>(src);
  consumes<reco::VertexCollection>(vertex_src);
  produces<pat::CompositeCandidateCollection>();
+
+ isTag0Probe1(false);
+ isTag1Probe0(false);
 
 }
 
