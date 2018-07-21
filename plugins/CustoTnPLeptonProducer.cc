@@ -40,8 +40,9 @@ private:
   std::vector<std::string> muon_tracks_for_momentum;
   edm::InputTag muon_photon_match_src;
   edm::Handle<reco::CandViewMatchMap> muon_photon_match_map;
+
+  bool trigger_or;
   double trigger_match_max_dR;
-  
   edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> trigger_summary_src_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
@@ -50,9 +51,11 @@ private:
   pat::TriggerObjectStandAloneCollection L3_muons;
   pat::TriggerObjectStandAloneCollection L3_muons_2;
   pat::TriggerObjectStandAloneCollection prescaled_L3_muons;
+  pat::TriggerObjectStandAloneCollection prescaled_L3_muons_2;
   std::vector<int> L3_muons_matched;
   std::vector<int> L3_muons_matched_2;
   std::vector<int> prescaled_L3_muons_matched;
+  std::vector<int> prescaled_L3_muons_matched_2;
 
 };
 
@@ -63,6 +66,8 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
     muon_track_for_momentum(cfg.getParameter<std::string>("muon_track_for_momentum")),
     muon_track_for_momentum_primary(muon_track_for_momentum),
     muon_photon_match_src(cfg.getParameter<edm::InputTag>("muon_photon_match_src")),
+
+    trigger_or(cfg.getParameter<bool>("trigger_or")),
     trigger_match_max_dR(cfg.getParameter<double>("trigger_match_max_dR")),
     
     triggerBits_(consumes<edm::TriggerResults>(cfg.getParameter<edm::InputTag>("bits"))),
@@ -325,10 +330,14 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
   // pair of function calls, there will be new user floats:
   // {TriggerMatch, prescaledTriggerMatch} x {Pt, Eta, Phi,
   // Charge}. (Maybe embed whole candidates later.)
-  
-  embedTriggerMatch(new_mu, "",          L3_muons,           L3_muons_matched);
-  // embedTriggerMatch_or(new_mu, "",         L3_muons, L3_muons_2,        L3_muons_matched, L3_muons_matched_2);
-  embedTriggerMatch(new_mu, "prescaled", prescaled_L3_muons, prescaled_L3_muons_matched);
+  if(trigger_or) {
+    embedTriggerMatch_or(new_mu, "",          L3_muons,           L3_muons_2,           L3_muons_matched,           L3_muons_matched_2);
+    embedTriggerMatch_or(new_mu, "prescaled", prescaled_L3_muons, prescaled_L3_muons_2, prescaled_L3_muons_matched, prescaled_L3_muons_matched_2);
+  }
+  else {
+    embedTriggerMatch(new_mu, "",          L3_muons,           L3_muons_matched);
+    embedTriggerMatch(new_mu, "prescaled", prescaled_L3_muons, prescaled_L3_muons_matched);
+  }
 
   // Evaluate cuts here with string object selector, and any code that
   // cannot be done in the string object selector (none so far).
@@ -391,90 +400,108 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
   // the main path and the prescaled path.
   
   CustoTnPTriggerPathsAndFilters pandf(event);
-    if (!pandf.valid)
-      throw cms::Exception("CustoTnPLeptonProducer") << "could not determine the HLT path and filter names for this event\n";
- 
+  if (!pandf.valid)
+    throw cms::Exception("CustoTnPLeptonProducer") << "could not determine the HLT path and filter names for this event\n";
 
-    edm::Handle<edm::TriggerResults> triggerBits;
-    edm::Handle<pat::TriggerObjectStandAloneCollection> trigger_summary_src;
-    edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
+  edm::Handle<edm::TriggerResults> triggerBits;
+  edm::Handle<pat::TriggerObjectStandAloneCollection> trigger_summary_src;
+  edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
 
-    event.getByToken(triggerBits_, triggerBits);
-    event.getByToken(trigger_summary_src_, trigger_summary_src);
-    event.getByToken(triggerPrescales_, triggerPrescales);
-    
-    const edm::TriggerNames &names = event.triggerNames(*triggerBits);
-    
+  event.getByToken(triggerBits_, triggerBits);
+  event.getByToken(trigger_summary_src_, trigger_summary_src);
+  event.getByToken(triggerPrescales_, triggerPrescales);
+  
+  const edm::TriggerNames &names = event.triggerNames(*triggerBits);
 
-    int j = 0;
-    
+  if(trigger_or) {
     L3_muons.clear();
-    // L3_muons_2.clear();
+    L3_muons_2.clear();
     prescaled_L3_muons.clear();
+    prescaled_L3_muons_2.clear();
     for (pat::TriggerObjectStandAlone obj : *trigger_summary_src) { // note: not "const &" since we want to call unpackPathNames
-        obj.unpackPathNames(names);
-        obj.unpackFilterLabels(event, *triggerBits);
-	
-	//if (obj.collection() == "hltL3MuonCandidates::HLT"){
-	for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
-	  
-	  
-	 //this should not be hard coded! 
-	//std::cout << obj.filterLabels()[h] << std::endl;   
-	if (obj.filterLabels()[h] == pandf.filter){ 
-	    //FilterMatched[j] = 1;
-	    L3_muons.push_back(obj);
+      obj.unpackPathNames(names);
+      obj.unpackFilterLabels(event, *triggerBits);
+
+      for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
+        if (obj.filterLabels()[h] == pandf.filter){ 
+          L3_muons.push_back(obj);
+        }
+        if (obj.filterLabels()[h] == pandf.filter_2) {
+          L3_muons_2.push_back(obj);
+        }
+        if (obj.filterLabels()[h] ==  pandf.prescaled_filter){
+          prescaled_L3_muons.push_back(obj);
+        }
+        if (obj.filterLabels()[h] ==  pandf.prescaled_filter_2){
+          prescaled_L3_muons_2.push_back(obj);
+        }
+      }
     }
-    //if (obj.filterLabels()[h] == pandf.filter_2){
-    //     //FilterMatched[j] = 1;
-    //     L3_muons_2.push_back(obj);
-    //}
-    
-	  if (obj.filterLabels()[h] ==	pandf.prescaled_filter){
-	    //FilterMatched[j] = 1;
-	    prescaled_L3_muons.push_back(obj);
-	  } 
-	 }
-       // }
-	j++;
-    }
-//    std::cout<<"quel trigger path = "<<pandf.filter<<std::endl;
-//    std::cout<<"nombre de muon that triggered HLT_50 = "<<L3_muons.size()<<std::endl;
-//    std::cout<<"quel trigger path = "<<pandf.filter_2<<std::endl;
-//    std::cout<<"nombre de muon that triggered HLT_Tk50 = "<<L3_muons_2.size()<<std::endl;
-    
+
     L3_muons_matched.clear();
     L3_muons_matched.resize(L3_muons.size(), 0);
-    // L3_muons_matched_2.clear();
-    // L3_muons_matched_2.resize(L3_muons_2.size(), 0);
+    L3_muons_matched_2.clear();
+    L3_muons_matched_2.resize(L3_muons_2.size(), 0);
     prescaled_L3_muons_matched.clear();
     prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
-//    std::cout<<"filter "<<pandf.filter<<std::endl;
-//    std::cout<<"L3_muons.size()"<<L3_muons.size()<<std::endl;
-//    std::cout<<"prescaled filter "<<pandf.prescaled_filter<<std::endl;
-//    std::cout<<"prescaled_L3_muons.size()"<<prescaled_L3_muons.size()<<std::endl;
-    
-    // Using the main choice for momentum assignment, make the primary
-    // collection of muons, which will have branch name
-    // e.g. leptons:muons.
-    muon_track_for_momentum = muon_track_for_momentum_primary;
-    edm::OrphanHandle<pat::MuonCollection> muons = doLeptons<pat::Muon>(event, muon_src, muon_view_src, "muons");
+    prescaled_L3_muons_matched_2.clear();
+    prescaled_L3_muons_matched_2.resize(prescaled_L3_muons_2.size(), 0);
+  }
+  else {
+    L3_muons.clear();
+    prescaled_L3_muons.clear();
+    for (pat::TriggerObjectStandAlone obj : *trigger_summary_src) { // note: not "const &" since we want to call unpackPathNames
+      obj.unpackPathNames(names);
+      obj.unpackFilterLabels(event, *triggerBits);
 
-    // Now make secondary collections of muons using the momentum
-    // assignments specified. They will come out as e.g. leptons:tpfms,
-    // leptons:picky, ...
-    for (size_t i = 0; i < muon_tracks_for_momentum.size(); ++i) {
-      // Reset the flags so the matching can be redone.
-        L3_muons_matched.clear();
-        L3_muons_matched.resize(L3_muons.size(), 0);
-        // L3_muons_matched_2.clear();
-        // L3_muons_matched_2.resize(L3_muons_2.size(), 0);
-        prescaled_L3_muons_matched.clear();
-        prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
-      
-      muon_track_for_momentum = muon_tracks_for_momentum[i];
-      doLeptons<pat::Muon>(event, muon_src, muon_view_src, muon_track_for_momentum);
+      for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
+        if (obj.filterLabels()[h] == pandf.filter){ 
+          L3_muons.push_back(obj);
+        }
+        if (obj.filterLabels()[h] ==  pandf.prescaled_filter){
+          prescaled_L3_muons.push_back(obj);
+        }
+      }
     }
+
+    L3_muons_matched.clear();
+    L3_muons_matched.resize(L3_muons.size(), 0);
+    prescaled_L3_muons_matched.clear();
+    prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
+  }
+
+
+  // Using the main choice for momentum assignment, make the primary
+  // collection of muons, which will have branch name
+  // e.g. leptons:muons.
+  muon_track_for_momentum = muon_track_for_momentum_primary;
+  edm::OrphanHandle<pat::MuonCollection> muons = doLeptons<pat::Muon>(event, muon_src, muon_view_src, "muons");
+
+  // Now make secondary collections of muons using the momentum
+  // assignments specified. They will come out as e.g. leptons:tpfms,
+  // leptons:picky, ...
+  for (size_t i = 0; i < muon_tracks_for_momentum.size(); ++i) {
+    // Reset the flags so the matching can be redone.
+    if(trigger_or) {
+      L3_muons_matched.clear();
+      L3_muons_matched.resize(L3_muons.size(), 0);
+      L3_muons_matched_2.clear();
+      L3_muons_matched_2.resize(L3_muons_2.size(), 0);
+      prescaled_L3_muons_matched.clear();
+      prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
+      prescaled_L3_muons_matched_2.clear();
+      prescaled_L3_muons_matched_2.resize(prescaled_L3_muons_2.size(), 0);
+    }
+    else {
+      L3_muons_matched.clear();
+      L3_muons_matched.resize(L3_muons.size(), 0);
+      prescaled_L3_muons_matched.clear();
+      prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
+    }
+
+    muon_track_for_momentum = muon_tracks_for_momentum[i];
+    doLeptons<pat::Muon>(event, muon_src, muon_view_src, muon_track_for_momentum);
+  }
 
 }
 
