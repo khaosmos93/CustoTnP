@@ -18,16 +18,6 @@
   <use name="PhysicsTools/PatUtils"/>
 </library>
 
-<library file="CustoTnPCompositeCandidatePicker.cc" name="CustoTnPCompositeCandidatePicker">
-  <use name="CommonTools/Utils"/>
-  <use name="DataFormats/PatCandidates"/>
-  <use name="RecoVertex/KalmanVertexFit"/>
-  <use name="RecoVertex/KinematicFit"/>
-  <use name="CustoTnP/Analyzer"/>
-  <use name="TrackingTools/Records"/>
-  <use name="TrackingTools/TransientTrack"/>
-</library>
-
 <library file="CustoTnPPairSelector.cc" name="CustoTnPPairSelector">
   <use name="CommonTools/Utils"/>
   <use name="DataFormats/PatCandidates"/>
@@ -71,9 +61,6 @@
   <use name="DataFormats/PatCandidates"/>
   <use name="CustoTnP/Analyzer"/>
 </library>
-
-<!-- <library file="AsymmetryFrameAnalysis.cc,AsymmetryParametrizer.cc,CocktailAnalyzer.cc,EfficiencyFromMC.cc,EfficiencyFromMCMini.cc,EfficiencyFromMCnoTrigger.cc,HardInteractionFilter.cc,DibosonGenMass.cc,TauTauSelection.cc,HardInteractionNtuple.cc,HistosFromPAT.cc, MuonsFromDimuons.cc,PrintEvent.cc,QCDBackground.cc,ResolutionUsingMC.cc,ResolutionAtZ.cc,SimpleNtupler.cc,SimpleNtupler_miniAOD.cc,CustoTnPAsymmetry.cc,CustoTnPMassReach.cc" name="CustoTnPAnalyzers"> -->
-<!--<library file="AsymmetryFrameAnalysis.cc,AsymmetryParametrizer.cc,CocktailAnalyzer.cc,EfficiencyFromMC.cc,EfficiencyFromMCMini.cc,EfficiencyFromMCnoTrigger.cc,HardInteractionFilter.cc,DibosonGenMass.cc,TauTauSelection.cc,DyGenMass.cc,DyGenPt.cc,TTbarGenMass.cc,HardInteractionNtuple.cc,HistosFromPAT.cc, MuonsFromDimuons.cc,PrintEvent.cc,QCDBackground.cc,ResolutionUsingMC.cc,SimpleNtupler.cc,SimpleNtupler_miniAOD.cc,CustoTnPAsymmetry.cc,CustoTnPMassReach.cc,PickDilepton.cc,DileptonCategorizer.cc,GenWeight.cc,GenPileup.cc,HistosValMuHitsSigleMuon.cc" name="CustoTnPAnalyzers"> -->
 
 <library file="DibosonGenMass.cc,TauTauSelection.cc,DyGenMass.cc,DyGenPt.cc,TTbarGenMass.cc" name="CustoTnPAnalyzers">
   <use name="ostream"/>
