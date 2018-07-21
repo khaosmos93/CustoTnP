@@ -8,12 +8,12 @@ namespace edm { class Event; class InputTag; }
 struct CustoTnPTriggerPathsAndFilters {
   std::string path;
   std::string filter;
-//  std::string path_2;
-//  std::string filter_2;
+  std::string path_2;
+  std::string filter_2;
   std::string prescaled_path;
   std::string prescaled_filter;
-//  std::string prescaled_path_2;
-//  std::string prescaled_filter_2;
+  std::string prescaled_path_2;
+  std::string prescaled_filter_2;
   bool valid;
   
   CustoTnPTriggerPathsAndFilters() : valid(false) {}
