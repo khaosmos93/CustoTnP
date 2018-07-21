@@ -409,11 +409,30 @@ float CustoTnPPairSelector_AOD::veto_others_dphi(edm::Event& event, const reco::
     const pat::Muon* mu = toConcretePtr<pat::Muon>(lep);
 
     for (std::vector<reco::Muon>::const_iterator imu = recoMuons->begin(); imu != recoMuons->end(); imu++) {
-      if( imu->pt() < 10 || (imu->standAloneMuon()).isNull() )  continue;
-      if( imu->standAloneMuon()->pt()  == mu->standAloneMuon()->pt() &&
-          imu->standAloneMuon()->eta() == mu->standAloneMuon()->eta() &&
-          imu->standAloneMuon()->phi() == mu->standAloneMuon()->phi() )
-        continue;
+
+      if( imu->pt() < 8 || !( imu->isGlobalMuon() || imu->isStandAloneMuon() || imu->isTrackerMuon() ) )  continue;
+
+      if( imu->globalTrack().isNonnull() ) {
+        if(
+            imu->globalTrack()->pt()  == mu->globalTrack()->pt() &&
+            imu->globalTrack()->eta() == mu->globalTrack()->eta() &&
+            imu->globalTrack()->phi() == mu->globalTrack()->phi()
+          )  continue;
+      }
+      if( imu->standAloneMuon().isNonnull() ) {
+        if(
+            imu->standAloneMuon()->pt()  == mu->standAloneMuon()->pt() &&
+            imu->standAloneMuon()->eta() == mu->standAloneMuon()->eta() &&
+            imu->standAloneMuon()->phi() == mu->standAloneMuon()->phi()
+          )  continue;
+      }
+      if( imu->innerTrack().isNonnull() ) {
+        if(
+            imu->innerTrack()->pt()  == mu->innerTrack()->pt() &&
+            imu->innerTrack()->eta() == mu->innerTrack()->eta() &&
+            imu->innerTrack()->phi() == mu->innerTrack()->phi()
+           )  continue;
+      }
 
       float temp_dphi = fabs( reco::deltaPhi(imu->phi(), mu->phi()) );
       if( temp_dphi < the_dphi )
