@@ -125,8 +125,7 @@ private:
   // decision or not (controlled by the cut_on_* variables); that will
   // be handled in the loop in produce.
 
-  // FIXME : add muon around probe veto!!!
-  bool                               TagAndProbeSelector(const pat::CompositeCandidate&, float, float, float, float) const;
+  bool                               TagAndProbeSelector(const pat::CompositeCandidate&, float, float, float, float);
 
   std::pair<bool, float>             back_to_back_cos_angle(const pat::CompositeCandidate&) const;
   std::pair<bool, CachingVertex<5> > vertex_constrained_fit(const pat::CompositeCandidate&) const;
@@ -218,6 +217,9 @@ CustoTnPPairSelector_AOD::CustoTnPPairSelector_AOD(const edm::ParameterSet& cfg)
     tag_selector(cfg.getParameter<std::string>("tag_cut")),
     probe_selector(cfg.getParameter<std::string>("probe_cut")),
 
+    isTag0Probe1(false),
+    isTag1Probe0(false),
+
     max_candidates(cfg.getParameter<unsigned>("max_candidates")),
     sort_by_pt(cfg.getParameter<bool>("sort_by_pt")),
     do_remove_overlap(cfg.getParameter<bool>("do_remove_overlap")),
@@ -255,9 +257,6 @@ CustoTnPPairSelector_AOD::CustoTnPPairSelector_AOD(const edm::ParameterSet& cfg)
 
  consumes<reco::VertexCollection>(vertex_src);
  produces<pat::CompositeCandidateCollection>();
-
- isTag0Probe1 = false;
- isTag1Probe0 = false;
 
 }
 
@@ -450,8 +449,8 @@ float CustoTnPPairSelector_AOD::veto_others_dphi(edm::Event& event, const reco::
 }
 
 bool CustoTnPPairSelector_AOD::TagAndProbeSelector(const pat::CompositeCandidate& dil,
-                                                        float lep0_dpt_over_pt,      float lep1_dpt_over_pt,
-                                                        float lep0_veto_others_dphi, float lep1_veto_others_dphi) const {
+                                                   float lep0_dpt_over_pt,      float lep1_dpt_over_pt,
+                                                   float lep0_veto_others_dphi, float lep1_veto_others_dphi) {
   // bool isTag0Probe1 = false;
   // bool isTag1Probe0 = false;
 
