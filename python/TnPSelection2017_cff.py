@@ -55,6 +55,7 @@ Probe_cut = 'isGlobalMuon && ' \
             'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
             'isolationR03.sumPt < 30'
 Probe_dpt_over_pt_max = 1e9
+Probe_dz_max = 1e9
 Probe_pt_cut = 53.0
 
 TnP_deltaR_min = 0.4
@@ -87,6 +88,7 @@ dimuons = cms.EDProducer('CustoTnPPairSelector',
                          tag_dz_max = cms.double(Tag_dz_max),                         # Tag dz
                          probe_cut = cms.string(Probe_cut),                           # Probe lepton selection, Probe_cut
                          probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
+                         probe_dz_max = cms.double(Probe_dz_max),                     # Probe dz
 
                          back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
                          vertex_chi2_max = cms.double(20),
@@ -115,6 +117,7 @@ dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
                          tag_dz_max = cms.double(Tag_dz_max),                         # Tag dz
                          probe_cut = cms.string(Probe_cut),                           # Probe lepton selection, Probe_cut
                          probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
+                         probe_dz_max = cms.double(Probe_dz_max),                     # Probe dz
 
                          back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
                          vertex_chi2_max = cms.double(20),
@@ -249,43 +252,4 @@ HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_AOD',
 
                                ShutUp = cms.bool(True)  #True
 )
-
-HistosForExtraSegsAOD = cms.EDAnalyzer('CustoTnPHistosForExtraSegs_AOD',
-                               dilepton_src = cms.InputTag('dimuonsAOD'),
-                               beamspot_src = cms.InputTag('offlineBeamSpot'),
-                               vertex_src = cms.InputTag('offlinePrimaryVertices'),
-                               use_bs_and_pv = cms.bool(True),
-                               useMadgraphWeight = cms.bool(True),
-
-                               # bin width = 1, starting from 0
-                               pileup_src = cms.InputTag('addPileupInfo'),
-
-                               # minBias Xsec = ??? #
-                               vec_PileUpWeight = cms.vdouble( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ),
-
-                               tag_cut = cms.string(Tag_cut),
-                               tag_dpt_over_pt_max = cms.double(Tag_dpt_over_pt_max),       # Tag dpT/pT
-                               tag_dz_max = cms.double(Tag_dz_max),
-
-                               probe_cut = cms.string(Probe_cut),
-                               probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
-                               probe_pt_min = cms.double(53),
-
-                               passing_probe_cut = cms.string(Passing_probe_cut),
-                               passing_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
-                               passing_probe_dz_max = cms.double(Passing_probe_dz_max),
-
-                               nshowers_threshold_min = cms.int32(nshowers_threshold_min),
-
-                               comparison_probe_cut = cms.string(Passing_probe_cut),
-                               comparison_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
-                               comparison_probe_dz_max = cms.double(Passing_probe_dz_max),
-
-                               minMass = cms.double(0),
-                               maxMass = cms.double(10000),
-
-                               ShutUp = cms.bool(True)  #True
-)
-
-
 
