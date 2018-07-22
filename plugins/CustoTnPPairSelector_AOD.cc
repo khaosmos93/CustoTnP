@@ -695,7 +695,7 @@ std::vector<int> CustoTnPPairSelector_AOD::nSegments_matches(edm::Event& event, 
   if( MuRef.isNonnull() ) {
     for (const auto &ch : MuRef->matches()) {
       int nsegs=ch.segmentMatches.size();
-      if (nsegs>count_matches[ch.station()-1]) count_matches[ch.station()-1]=nsegs;
+      if (nsegs>nsegments[ch.station()-1]) nsegments[ch.station()-1]=nsegs;
     }
   }
 
