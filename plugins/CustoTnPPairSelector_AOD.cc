@@ -461,11 +461,11 @@ bool CustoTnPPairSelector_AOD::TagAndProbeSelector(const pat::CompositeCandidate
 
     if (mu0 && mu1) {
 
-      isTag0Probe1 = ( tag_selector(*mu0)   && (lep0_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu0->muonBestTrack()->dz( PV->position() )) < tag_dz_max) &&
-                       probe_selector(*mu1) && (lep1_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu1->muonBestTrack()->dz( PV->position() )) < probe_dz_max) );
+      isTag0Probe1 = ( tag_selector(*mu0)   && (lep0_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu0->innerTrack()->dz( PV->position() )) < tag_dz_max) &&
+                       probe_selector(*mu1) && (lep1_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( PV->position() )) < probe_dz_max) );
 
-      isTag1Probe0 = ( tag_selector(*mu1)   && (lep1_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu1->muonBestTrack()->dz( PV->position() )) < tag_dz_max) &&
-                       probe_selector(*mu0) && (lep0_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu0->muonBestTrack()->dz( PV->position() )) < probe_dz_max) );
+      isTag1Probe0 = ( tag_selector(*mu1)   && (lep1_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu1->innerTrack()->dz( PV->position() )) < tag_dz_max) &&
+                       probe_selector(*mu0) && (lep0_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( PV->position() )) < probe_dz_max) );
 
       if(cut_on_veto_others_dphi) {
         isTag0Probe1 = ( isTag0Probe1 && (lep1_veto_others_dphi>veto_others_dphi_min) );
@@ -473,16 +473,16 @@ bool CustoTnPPairSelector_AOD::TagAndProbeSelector(const pat::CompositeCandidate
       }
 
       if(!ShutUp && !cut_on_veto_others_dphi)  std::cout << "CustoTnPPairSelector_AOD::TagAndProbeSelector[" << (isTag0Probe1 || isTag1Probe0) << "] : isTag0=" 
-        << ( tag_selector(*mu0)   && (lep0_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu0->muonBestTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isTag1=" 
-        << ( tag_selector(*mu1)   && (lep1_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu1->muonBestTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isProbe0=" 
-        << ( probe_selector(*mu0) && (lep0_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu0->muonBestTrack()->dz( PV->position() )) < probe_dz_max) ) << " " << "isProbe1=" 
-        << ( probe_selector(*mu1) && (lep1_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu1->muonBestTrack()->dz( PV->position() )) < probe_dz_max) ) << std::endl;
+        << ( tag_selector(*mu0)   && (lep0_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu0->innerTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isTag1=" 
+        << ( tag_selector(*mu1)   && (lep1_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu1->innerTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isProbe0=" 
+        << ( probe_selector(*mu0) && (lep0_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( PV->position() )) < probe_dz_max) ) << " " << "isProbe1=" 
+        << ( probe_selector(*mu1) && (lep1_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( PV->position() )) < probe_dz_max) ) << std::endl;
 
       if(!ShutUp && cut_on_veto_others_dphi)  std::cout << "CustoTnPPairSelector_AOD::TagAndProbeSelector[" << (isTag0Probe1 || isTag1Probe0) << "] : isTag0=" 
-        << ( tag_selector(*mu0)   && (lep0_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu0->muonBestTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isTag1=" 
-        << ( tag_selector(*mu1)   && (lep1_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu1->muonBestTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isProbe0=" 
-        << ( probe_selector(*mu0) && (lep0_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu0->muonBestTrack()->dz( PV->position() )) < probe_dz_max) && (lep0_veto_others_dphi>veto_others_dphi_min) ) << " " << "isProbe1=" 
-        << ( probe_selector(*mu1) && (lep1_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu1->muonBestTrack()->dz( PV->position() )) < probe_dz_max) && (lep1_veto_others_dphi>veto_others_dphi_min) ) << std::endl;
+        << ( tag_selector(*mu0)   && (lep0_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu0->innerTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isTag1=" 
+        << ( tag_selector(*mu1)   && (lep1_dpt_over_pt<tag_dpt_over_pt_max)   && (fabs(mu1->innerTrack()->dz( PV->position() )) < tag_dz_max) ) << " " << "isProbe0=" 
+        << ( probe_selector(*mu0) && (lep0_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( PV->position() )) < probe_dz_max) && (lep0_veto_others_dphi>veto_others_dphi_min) ) << " " << "isProbe1=" 
+        << ( probe_selector(*mu1) && (lep1_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( PV->position() )) < probe_dz_max) && (lep1_veto_others_dphi>veto_others_dphi_min) ) << std::endl;
 
       double DeltaX = fabs(mu0->innerTrack()->referencePoint().x() - mu1->innerTrack()->referencePoint().x());
       double DeltaY = fabs(mu0->innerTrack()->referencePoint().y() - mu1->innerTrack()->referencePoint().y());
