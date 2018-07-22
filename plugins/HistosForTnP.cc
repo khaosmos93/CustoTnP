@@ -60,16 +60,11 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   const reco::Vertex*   vertex;
   int                   nVtx;
 
-  StringCutObjectSelector<pat::Muon> tag_selector;
-  StringCutObjectSelector<pat::Muon> probe_selector;
   StringCutObjectSelector<pat::Muon> passing_probe_selector;
   StringCutObjectSelector<pat::Muon> comparison_probe_selector;
 
   double minMass;
   double maxMass;
-  double tag_dpt_over_pt_max;
-  double tag_dz_max;
-  double probe_dpt_over_pt_max;
   double probe_pt_min;
   double passing_probe_dpt_over_pt_max;
   double passing_probe_dz_max;
@@ -124,6 +119,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *ProbePhi;
   TH1F *ProbeNVertices;
   TH2F *ProbeEtaPhi;
+  TH2F *ProbePtEta;
 
   TH1F* ProbeAbsTkIso;
   TH1F* ProbeRelTkIso;
@@ -146,12 +142,14 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *PassingProbePhi;
   TH1F *PassingProbeNVertices;
   TH2F *PassingProbeEtaPhi;
+  TH2F *PassingProbePtEta;
 
   TH1F *FailingProbePt;
   TH1F *FailingProbeEta;
   TH1F *FailingProbePhi;
   TH1F *FailingProbeNVertices;
   TH2F *FailingProbeEtaPhi;
+  TH2F *FailingProbePtEta;
 
   TH1F *PairNoPtMass;
   TH1F *PairNoPtPt;
@@ -250,17 +248,12 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
     vertex(0),
     nVtx(0),
 
-    tag_selector(cfg.getParameter<std::string>("tag_cut")),
-    probe_selector(cfg.getParameter<std::string>("probe_cut")),
     passing_probe_selector(cfg.getParameter<std::string>("passing_probe_cut")),
     comparison_probe_selector(cfg.getParameter<std::string>("comparison_probe_cut")),
 
     minMass(cfg.getParameter<double>("minMass")),
     maxMass(cfg.getParameter<double>("maxMass")),
 
-    tag_dpt_over_pt_max(cfg.getParameter<double>("tag_dpt_over_pt_max")),
-    tag_dz_max(cfg.getParameter<double>("tag_dz_max")),
-    probe_dpt_over_pt_max(cfg.getParameter<double>("probe_dpt_over_pt_max")),
     probe_pt_min(cfg.getParameter<double>("probe_pt_min")),
     passing_probe_dpt_over_pt_max(cfg.getParameter<double>("passing_probe_dpt_over_pt_max")),
     passing_probe_dz_max(cfg.getParameter<double>("passing_probe_dz_max")),
@@ -333,6 +326,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbePhi = fs->make<TH1F>("ProbePhi", "Probe #phi", 100, -TMath::Pi(), TMath::Pi());
   ProbeNVertices = fs->make<TH1F>("ProbeNVertices", "Probe # vertices/event",  200, 0, 200);
   ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    100, -5, 5, 100, -TMath::Pi(), TMath::Pi());
+  ProbePtEta = fs->make<TH2F>("ProbePtEta", "Probe pT #eta",    10000, 0, 10000, 100, -5, 5);
 
   ProbeAbsTkIso = fs->make<TH1F>("ProbeAbsTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
   ProbeRelTkIso = fs->make<TH1F>("ProbeRelTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT / tk. pT", 500, 0, 5);
@@ -355,12 +349,14 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   PassingProbePhi = fs->make<TH1F>("PassingProbePhi", "PassingProbe #phi", 100, -TMath::Pi(), TMath::Pi());
   PassingProbeNVertices = fs->make<TH1F>("PassingProbeNVertices", "PassingProbe # vertices/event",  200, 0, 200);
   PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    100, -5, 5, 100, -TMath::Pi(), TMath::Pi());
+  PassingProbePtEta = fs->make<TH2F>("PassingProbePtEta", "PassingProbe pT #eta",    10000, 0, 10000, 100, -5, 5);
 
   FailingProbePt = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
   FailingProbeEta = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    100, -5, 5);
   FailingProbePhi = fs->make<TH1F>("FailingProbePhi", "FailingProbe #phi", 100, -TMath::Pi(), TMath::Pi());
   FailingProbeNVertices = fs->make<TH1F>("FailingProbeNVertices", "FailingProbe # vertices/event",  200, 0, 200);
   FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    100, -5, 5, 100, -TMath::Pi(), TMath::Pi());
+  FailingProbePtEta = fs->make<TH2F>("FailingProbePtEta", "FailingProbe pT #eta",    10000, 0, 10000, 100, -5, 5);
 
   // TnP pair
   PairNoPtMass = fs->make<TH1F>("PairNoPtMass", "TnP PairNoPt mass", 20000, 0, 20000);
@@ -519,6 +515,7 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
     ProbePhi->Fill( ProbeMu->phi(), _totalWeight );
     ProbeNVertices->Fill( nVtx, _totalWeight );
     ProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
+    ProbePtEta->Fill( ProbeMu->pt(), ProbeMu->eta(), _totalWeight );
 
     PairMass->Fill( dil.mass(), _totalWeight );
     PairPt->Fill( dil.pt(), _totalWeight );
@@ -530,6 +527,7 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       PassingProbePhi->Fill( ProbeMu->phi(), _totalWeight );
       PassingProbeNVertices->Fill( nVtx, _totalWeight );
       PassingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
+      PassingProbePtEta->Fill( ProbeMu->pt(), ProbeMu->eta(), _totalWeight );
 
       PassingPairMass->Fill( dil.mass(), _totalWeight );
       PassingPairPt->Fill( dil.pt(), _totalWeight );
@@ -541,6 +539,7 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       FailingProbePhi->Fill( ProbeMu->phi(), _totalWeight );
       FailingProbeNVertices->Fill( nVtx, _totalWeight );
       FailingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
+      FailingProbePtEta->Fill( ProbeMu->pt(), ProbeMu->eta(), _totalWeight );
 
       FailingPairMass->Fill( dil.mass(), _totalWeight );
       FailingPairPt->Fill( dil.pt(), _totalWeight );

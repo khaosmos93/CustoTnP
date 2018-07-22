@@ -61,16 +61,11 @@ class CustoTnPHistosForTnP_AOD : public edm::EDAnalyzer {
   const reco::Vertex*   vertex;
   int                   nVtx;
 
-  StringCutObjectSelector<pat::Muon> tag_selector;
-  StringCutObjectSelector<pat::Muon> probe_selector;
   StringCutObjectSelector<pat::Muon> passing_probe_selector;
   StringCutObjectSelector<pat::Muon> comparison_probe_selector;
 
   double minMass;
   double maxMass;
-  double tag_dpt_over_pt_max;
-  double tag_dz_max;
-  double probe_dpt_over_pt_max;
   double probe_pt_min;
   double passing_probe_dpt_over_pt_max;
   double passing_probe_dz_max;
@@ -285,17 +280,12 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
     vertex(0),
     nVtx(0),
 
-    tag_selector(cfg.getParameter<std::string>("tag_cut")),
-    probe_selector(cfg.getParameter<std::string>("probe_cut")),
     passing_probe_selector(cfg.getParameter<std::string>("passing_probe_cut")),
     comparison_probe_selector(cfg.getParameter<std::string>("comparison_probe_cut")),
 
     minMass(cfg.getParameter<double>("minMass")),
     maxMass(cfg.getParameter<double>("maxMass")),
 
-    tag_dpt_over_pt_max(cfg.getParameter<double>("tag_dpt_over_pt_max")),
-    tag_dz_max(cfg.getParameter<double>("tag_dz_max")),
-    probe_dpt_over_pt_max(cfg.getParameter<double>("probe_dpt_over_pt_max")),
     probe_pt_min(cfg.getParameter<double>("probe_pt_min")),
     passing_probe_dpt_over_pt_max(cfg.getParameter<double>("passing_probe_dpt_over_pt_max")),
     passing_probe_dz_max(cfg.getParameter<double>("passing_probe_dz_max")),
