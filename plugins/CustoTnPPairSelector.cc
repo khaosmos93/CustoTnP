@@ -369,13 +369,15 @@ bool CustoTnPPairSelector::TagAndProbeSelector(const pat::CompositeCandidate& di
         << ( probe_selector(*mu0) && (lep0_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( PV->position() )) < probe_dz_max) ) << " " << "isProbe1=" 
         << ( probe_selector(*mu1) && (lep1_dpt_over_pt<probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( PV->position() )) < probe_dz_max)) << std::endl;
 
+      //-- Requiring same vertex, this should not be hardcorded...
       double DeltaX = fabs(mu0->innerTrack()->referencePoint().x() - mu1->innerTrack()->referencePoint().x());
       double DeltaY = fabs(mu0->innerTrack()->referencePoint().y() - mu1->innerTrack()->referencePoint().y());
       double DeltaZ = fabs(mu0->innerTrack()->referencePoint().z() - mu1->innerTrack()->referencePoint().z());
       if( samePV && !( (sqrt( DeltaX*DeltaX + DeltaY*DeltaY ) < 0.02) && (DeltaZ < 0.05) ) ) {
         if(!ShutUp) std::cout << "Not from same PV(|dxy|<0.02 && |dz|<0.05)" << " : " 
                               << sqrt( DeltaX*DeltaX + DeltaY*DeltaY ) << ", " << DeltaZ << std::endl;
-        return false;
+        isTag0Probe1 = false;
+        isTag1Probe0 = false;
       }
 
     }
@@ -432,7 +434,7 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
       continue;
 
 
-    // -- Selection for Tang and Probe pair -- //
+    // -- Selection for Tag and Probe pair -- //
 
     //---- Back-to-back cut to kill cosmics.
     std::pair<bool, float> cos_angle = back_to_back_cos_angle(*c);
