@@ -2,6 +2,7 @@
 .DS_Store
 
 # Previous versions
+Old*/
 *_2018*.py
 *_2018*.cc
 *_2018*.C

@@ -8,9 +8,9 @@ from CustoTnP.Analyzer.hltTriggerMatch_cfi import trigger_match, offline_pt_thre
 # -- For both Tag and Probe -- ##
 default_cut = 'isGlobalMuon && ' \
               'isTrackerMuon && ' \
-              'abs(eta) < 2.4 && ' \
-              'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
-              'isolationR03.sumPt < 30'
+              'abs(eta) < 2.4 && '
+              # 'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
+              # 'isolationR03.sumPt < 30'
 
 tight_cut = ''  #trigger_match
 

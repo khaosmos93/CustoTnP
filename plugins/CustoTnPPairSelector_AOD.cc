@@ -138,7 +138,6 @@ private:
 
   std::vector<int> countDTsegs(edm::Event&, reco::MuonRef);
   std::vector<int> countCSCsegs(edm::Event&, reco::MuonRef);
-  void testCSChits(edm::Event&, reco::TrackRef);
 
   std::vector<int> nSegments(edm::Event&, reco::MuonRef);
 
@@ -670,59 +669,6 @@ std::vector<int> CustoTnPPairSelector_AOD::countCSCsegs(edm::Event& event, reco:
   return stations;
 }
 
-void CustoTnPPairSelector_AOD::testCSChits(edm::Event& event, reco::TrackRef muon) {
-
-  int endcap = -1;
-  std::vector<int> stations={0,0,0,0};
-
-  edm::Handle<CSCSegmentCollection> cscRecHits;
-  event.getByLabel(cscseg_src, cscRecHits);  
-
-  std::cout << std::endl << " *** CSC muon recHit search" << std::endl;
-
-  // Loop over muon recHits
-  for(trackingRecHit_iterator muonHit = muon->recHitsBegin(); muonHit != muon->recHitsEnd(); ++muonHit) {
-    if ( (*muonHit)->geographicalId().det() != DetId::Muon ) continue; 
-    if ( (*muonHit)->geographicalId().subdetId() != MuonSubdetId::CSC ) continue;
-
-    CSCDetId cscDetIdHitT((*muonHit)->geographicalId());
-    LocalPoint posLocalMuon = (*muonHit)->localPosition();
-    std::cout << "Found in " << std::endl;
-    std::cout << "\t  Endcap " << cscDetIdHitT.endcap() << std::endl;
-    std::cout << "\t Station " << cscDetIdHitT.station() << std::endl;
-    std::cout << "\t    Ring " << cscDetIdHitT.ring() << std::endl;
-    std::cout << "\t Chamber " << cscDetIdHitT.chamber() << std::endl;
-    std::cout << "\t LocalPo " << posLocalMuon << std::endl;
-    std::cout << std::endl;
-
-    endcap = cscDetIdHitT.endcap();
-    stations[cscDetIdHitT.station()-1]++;
-  }
-  std::cout << " Muon recHit in stations : ";
-  for (int i=0;i<4;i++) {
-    std::cout << stations[i] << " ";
-  }
-  std::cout << std::endl;
-
-  for(int st=0; st<4; ++st) {
-    if(stations[st] == 0) {
-      std::cout << " No muon rechit in station " << (st+1) << std::endl;
-
-      for (auto rechit = cscRecHits->begin(); rechit!=cscRecHits->end();++rechit) {
-        CSCDetId myChamber((*rechit).geographicalId().rawId());
-        if( ( (int)(myChamber.station()-1) == st ) && ( endcap == (int)(myChamber.endcap()) ) ) {
-          LocalPoint posLocalHit = rechit->localPosition();
-          std::cout << "\t  Endcap " << myChamber.endcap() << std::endl;
-          std::cout << "\t Station " << myChamber.station() << std::endl;
-          std::cout << "\t    Ring " << myChamber.ring() << std::endl;
-          std::cout << "\t Chamber " << myChamber.chamber() << std::endl;
-          std::cout << "\t LocalPo " << posLocalHit << std::endl;
-        }
-      }
-
-    }
-  }
-}
 
 std::vector<int> CustoTnPPairSelector_AOD::nSegments(edm::Event& event, reco::MuonRef MuRef) {
 
@@ -853,9 +799,6 @@ void CustoTnPPairSelector_AOD::produce(edm::Event& event, const edm::EventSetup&
       continue;
 
     //--- Adding nShower variables
-    // HERE
-    bool testCSC = false;
-
     std::vector<int> lep0_nHits = {-1,-1,-1,-1};
     std::vector<int> lep0_nSegs = {-1,-1,-1,-1};
     std::pair<bool, reco::MuonRef> pair_lep0Ref = getMuonRef(event, lep0);
@@ -867,10 +810,6 @@ void CustoTnPPairSelector_AOD::produce(edm::Event& event, const edm::EventSetup&
       lep0_nValidMuonHits = (int)((pair_lep0Ref.second)->standAloneMuon()->hitPattern().numberOfValidMuonHits());
       lep0_nHits = nHits(event, pair_lep0Ref.second);
       lep0_nSegs = nSegments(event, pair_lep0Ref.second);
-      if(testCSC) {
-        std::cout << "lep0 testCSC" << std::endl;
-        testCSChits(event, (pair_lep0Ref.second)->standAloneMuon());
-      }
     }
     else
       std::cout <<  "CustoTnPPairSelector_AOD::produce : No RECO MuonRef found for lep0" << std::endl;
@@ -887,10 +826,6 @@ void CustoTnPPairSelector_AOD::produce(edm::Event& event, const edm::EventSetup&
       lep1_nValidMuonHits = (int)((pair_lep1Ref.second)->standAloneMuon()->hitPattern().numberOfValidMuonHits());
       lep1_nHits = nHits(event, pair_lep1Ref.second);
       lep1_nSegs = nSegments(event, pair_lep1Ref.second);
-      if(testCSC) {
-        std::cout << "lep1 testCSC" << std::endl;
-        testCSChits(event, (pair_lep1Ref.second)->standAloneMuon());
-      }
     }
     else
       std::cout <<  "CustoTnPPairSelector_AOD::produce : No RECO MuonRef found for lep1" << std::endl;
@@ -974,13 +909,12 @@ void CustoTnPPairSelector_AOD::produce(edm::Event& event, const edm::EventSetup&
     new_cands->back().addUserInt("lep1_nSegs_3", lep1_nSegs[2]);
     new_cands->back().addUserInt("lep1_nSegs_4", lep1_nSegs[3]);
 
-
-    if(!ShutUp) {
+    /* if(!ShutUp) {
       if( (lep0_nSegs[0]+lep0_nSegs[1]+lep0_nSegs[2]+lep0_nSegs[3]) > 0 ||
           (lep1_nSegs[0]+lep1_nSegs[1]+lep1_nSegs[2]+lep1_nSegs[3]) > 0
        )
         std::cout << "Event ID  " << event.id().run() << ":" << event.id().luminosityBlock() << ":" << event.id().event() << std::endl;
-    }
+    } */
   }
 
   // Sort candidates so we keep either the ones with higher-pT

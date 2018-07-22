@@ -202,7 +202,6 @@ class CustoTnPHistosForTnP_AOD : public edm::EDAnalyzer {
   std::vector<double> vec_PhiBins;
   std::vector<double> vec_VtxBins;
 
-  //^^ std::vector<double> vec_NHitsBins;
   std::vector<double> vec_NSegsBins;
   std::vector<double> vec_NShowersBins;
 
@@ -212,7 +211,6 @@ class CustoTnPHistosForTnP_AOD : public edm::EDAnalyzer {
   TH1F *hEffTemplateEta;
   TH1F *hEffTemplatePhi;
   TH1F *hEffTemplateVtx;
-  //^^ TH1F *hEffTemplateNHits;
   TH1F *hEffTemplateNSegs;
   TH1F *hEffTemplateNShowers;
 
@@ -252,13 +250,6 @@ class CustoTnPHistosForTnP_AOD : public edm::EDAnalyzer {
   BinHistos Eta;
   BinHistos Phi;
   BinHistos Vtx;*/
-
-  //^^ BinHistos NHitsBP200;  // 0.0 < |eta| < 0.9
-  //^^ BinHistos NHitsBP500;  // 0.0 < |eta| < 0.9
-  //^^ BinHistos NHitsBP1000;  // 0.0 < |eta| < 0.9
-  //^^ BinHistos NHitsEP200;  // 1.2 < |eta| < 2.1
-  //^^ BinHistos NHitsEP500;  // 1.2 < |eta| < 2.1
-  //^^ BinHistos NHitsEP1000;  // 1.2 < |eta| < 2.1
 
   BinHistos NSegsBP200;  // 0.0 < |eta| < 0.9
   BinHistos NSegsBP500;  // 0.0 < |eta| < 0.9
@@ -332,7 +323,6 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
     vec_PhiBins(cfg.getParameter<std::vector<double>>("vec_PhiBins")),
     vec_VtxBins(cfg.getParameter<std::vector<double>>("vec_VtxBins")),
 
-    //^^ vec_NHitsBins(cfg.getParameter<std::vector<double>>("vec_NHitsBins")),
     vec_NSegsBins(cfg.getParameter<std::vector<double>>("vec_NSegsBins")),
     vec_NShowersBins(cfg.getParameter<std::vector<double>>("vec_NShowersBins"))
 {
@@ -465,13 +455,6 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
   Phi = make_bin_histos("Phi", vec_PhiBins);
   Vtx = make_bin_histos("Vtx", vec_VtxBins);*/
 
-  //^^ NHitsBP200 = make_bin_histos("NHitsBP200", vec_NHitsBins);
-  //^^ NHitsBP500 = make_bin_histos("NHitsBP500", vec_NHitsBins);
-  //^^ NHitsBP1000 = make_bin_histos("NHitsBP1000", vec_NHitsBins);
-  //^^ NHitsEP200 = make_bin_histos("NHitsEP200", vec_NHitsBins);
-  //^^ NHitsEP500 = make_bin_histos("NHitsEP500", vec_NHitsBins);
-  //^^ NHitsEP1000 = make_bin_histos("NHitsEP1000", vec_NHitsBins);
-
   NSegsBP200 = make_bin_histos("NSegsBP200", vec_NSegsBins);
   NSegsBP500 = make_bin_histos("NSegsBP500", vec_NSegsBins);
   NSegsBP1000 = make_bin_histos("NSegsBP1000", vec_NSegsBins);
@@ -491,21 +474,18 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
   double *arr_EtaBins;
   double *arr_PhiBins;
   double *arr_VtxBins;
-  //^^ double *arr_NHitsBins;
   double *arr_NSegsBins;
   double *arr_NShowersBins;
   CopyVectorToArray(vec_PtBins, arr_PtBins);
   CopyVectorToArray(vec_EtaBins, arr_EtaBins);
   CopyVectorToArray(vec_PhiBins, arr_PhiBins);
   CopyVectorToArray(vec_VtxBins, arr_VtxBins);
-  //^^ CopyVectorToArray(vec_NHitsBins, arr_NHitsBins);
   CopyVectorToArray(vec_NSegsBins, arr_NSegsBins);
   CopyVectorToArray(vec_NShowersBins, arr_NShowersBins);
   hEffTemplatePt = fs->make<TH1F>("hEffTemplatePt", "", (int)vec_PtBins.size()-1, arr_PtBins);
   hEffTemplateEta = fs->make<TH1F>("hEffTemplateEta", "", (int)vec_EtaBins.size()-1, arr_EtaBins);
   hEffTemplatePhi = fs->make<TH1F>("hEffTemplatePhi", "", (int)vec_PhiBins.size()-1, arr_PhiBins);
   hEffTemplateVtx = fs->make<TH1F>("hEffTemplateVtx", "", (int)vec_VtxBins.size()-1, arr_VtxBins);
-  //^^ hEffTemplateNHits = fs->make<TH1F>("hEffTemplateNHits", "", (int)vec_NHitsBins.size()-1, arr_NHitsBins);
   hEffTemplateNSegs = fs->make<TH1F>("hEffTemplateNSegs", "", (int)vec_NSegsBins.size()-1, arr_NSegsBins);
   hEffTemplateNShowers = fs->make<TH1F>("hEffTemplateNShowers", "", (int)vec_NShowersBins.size()-1, arr_NShowersBins);
 
@@ -927,12 +907,10 @@ void CustoTnPHistosForTnP_AOD::analyze(const edm::Event& event, const edm::Event
 
           if(ProbeMu->p()>=200. && ProbeMu->p()<500.) {
             if( fabs(ProbeMu->eta())<0.9 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsBP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsBP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersBP200, true);
             }
             else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.4 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsEP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsEP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersEP200, true);
             }
@@ -940,12 +918,10 @@ void CustoTnPHistosForTnP_AOD::analyze(const edm::Event& event, const edm::Event
 
           else if(ProbeMu->p()>=500. && ProbeMu->p()<1000.) {
             if( fabs(ProbeMu->eta())<0.9 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsBP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsBP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersBP500, true);
             }
             else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.4 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsEP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsEP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersEP500, true);
             }
@@ -953,12 +929,10 @@ void CustoTnPHistosForTnP_AOD::analyze(const edm::Event& event, const edm::Event
 
           else if(ProbeMu->p()>=1000.) {
             if( fabs(ProbeMu->eta())<0.9 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsBP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsBP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersBP1000, true);
             }
             else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.4 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsEP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsEP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersEP1000, true);
             }
@@ -1026,12 +1000,10 @@ void CustoTnPHistosForTnP_AOD::analyze(const edm::Event& event, const edm::Event
 
           if(ProbeMu->p()>=200. && ProbeMu->p()<500.) {
             if( fabs(ProbeMu->eta())<0.9 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsBP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsBP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersBP200, true);
             }
             else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.4 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsEP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsEP200, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersEP200, true);
             }
@@ -1039,12 +1011,10 @@ void CustoTnPHistosForTnP_AOD::analyze(const edm::Event& event, const edm::Event
 
           else if(ProbeMu->p()>=500. && ProbeMu->p()<1000.) {
             if( fabs(ProbeMu->eta())<0.9 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsBP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsBP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersBP500, true);
             }
             else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.4 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsEP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsEP500, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersEP500, true);
             }
@@ -1052,12 +1022,10 @@ void CustoTnPHistosForTnP_AOD::analyze(const edm::Event& event, const edm::Event
 
           else if(ProbeMu->p()>=1000.) {
             if( fabs(ProbeMu->eta())<0.9 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsBP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsBP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersBP1000, true);
             }
             else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.4 ) {
-              //^^ fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nHits, vec_NHitsBins, NHitsEP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nSegs, vec_NSegsBins, NSegsEP1000, true);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nShowers, vec_NShowersBins, NShowersEP1000, true);
             }
