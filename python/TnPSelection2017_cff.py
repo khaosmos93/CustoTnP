@@ -63,8 +63,8 @@ TnP_deltaR_min = 0.4
 #--- For efficiency vs nShowers
 Probe_veto_other_dphi_min = 0.6
 
-#--- Minium # extra segments in each chamber
-nshowers_threshold_min = 1
+#--- Minium # matched segments in each station
+nshowers_threshold_min = 2
 
 # -- For Passing Probe -- #
 Passing_probe_cut = custo_cut_nopt
