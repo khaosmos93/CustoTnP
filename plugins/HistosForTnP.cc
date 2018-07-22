@@ -691,7 +691,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
 
   _totalWeight = 1.;
   if( _madgraphWeight != 1. || _pileupWeight != 1. )
-    _totalWeight = _madgraphWeight * _pileupWeight;  // prescale weight is not considered yet
+    _totalWeight = _madgraphWeight * _pileupWeight;  // prescale weight is not considered
   if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : Total weight = " << _totalWeight << std::endl;
 
   if (use_bs_and_pv)
@@ -710,6 +710,11 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
   pat::CompositeCandidateCollection::const_iterator dil = dileptons->begin(), dile = dileptons->end();
   for ( ; dil != dile; ++dil) {
 
+    if( !( dil->hasUserInt("isTag0Probe1") && dil->hasUserInt("isTag1Probe0") ) ) {
+      std::cout << "CustoTnPHistosForTnP::analyze : no isTag0Probe1 or isTag1Probe0 in dil" << std::endl;
+      continue;
+    }
+
     double dil_mass = dil->mass();
     double dil_vertex_mass = dil->userFloat("vertexM");
     float lep0_dpt_over_pt = dil->userFloat("lep0_dpt_over_pt");
@@ -726,8 +731,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
         bool isAleadyFilled = false;
 
         //---- Tag0 and Probe1
-        if( tag_selector(*mu0) && (lep0_dpt_over_pt < tag_dpt_over_pt_max) && (fabs(mu0->muonBestTrack()->dz( vertex->position() )) < tag_dz_max) &&
-            probe_selector(*mu1) && (lep1_dpt_over_pt < probe_dpt_over_pt_max) ) {
+        if( dil->userInt("isTag0Probe1") ) {
           const reco::CandidateBaseRef& TagMu = lep0;
           const reco::CandidateBaseRef& ProbeMu = lep1;
 
@@ -785,8 +789,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
         } // Tag0 and Probe1
 
         //---- Tag1 and Probe0
-        if( tag_selector(*mu1) && (lep1_dpt_over_pt < tag_dpt_over_pt_max) && (fabs(mu1->muonBestTrack()->dz( vertex->position() )) < tag_dz_max) &&
-            probe_selector(*mu0) && (lep0_dpt_over_pt < probe_dpt_over_pt_max) ) {
+        if( dil->userInt("isTag1Probe0") ) {
           const reco::CandidateBaseRef& TagMu = lep1;
           const reco::CandidateBaseRef& ProbeMu = lep0;
 
