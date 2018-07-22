@@ -740,7 +740,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           if(!ShutUp)  std::cout << "                                             phi=" << ProbeMu->phi() << std::endl;
           if(!ShutUp)  std::cout << "                                            nVtx=" << nVtx << std::endl;
 
-          bool isPassingProbe = ( passing_probe_selector(*mu1) && (lep1_dpt_over_pt < passing_probe_dpt_over_pt_max) && (fabs(mu1->muonBestTrack()->dz( vertex->position() )) < passing_probe_dz_max) );
+          bool isPassingProbe = ( passing_probe_selector(*mu1) && (lep1_dpt_over_pt < passing_probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( vertex->position() )) < passing_probe_dz_max) );
           if(!ShutUp)  std::cout << "                                  isPassingProbe = " << isPassingProbe << std::endl;
 
           fillTnPControlHistos(*dil, TagMu, ProbeMu, isPassingProbe);
@@ -770,7 +770,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
 
           if( ProbeMu->pt() > probe_pt_min ) {
-            bool isComparisonProbe = ( comparison_probe_selector(*mu1) && (lep1_dpt_over_pt < comparison_probe_dpt_over_pt_max) && (fabs(mu1->muonBestTrack()->dz( vertex->position() )) < comparison_probe_dz_max) );
+            bool isComparisonProbe = ( comparison_probe_selector(*mu1) && (lep1_dpt_over_pt < comparison_probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( vertex->position() )) < comparison_probe_dz_max) );
             if(!ShutUp)  std::cout << "                               isComparisonProbe = " << isComparisonProbe << std::endl;
             if( isPassingProbe && !isComparisonProbe ) {
               IsRealData = event.isRealData();
@@ -798,7 +798,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           if(!ShutUp)  std::cout << "                                             phi=" << ProbeMu->phi() << std::endl;
           if(!ShutUp)  std::cout << "                                            nVtx=" << nVtx << std::endl;
 
-          bool isPassingProbe = ( passing_probe_selector(*mu0) && (lep0_dpt_over_pt < passing_probe_dpt_over_pt_max) && (fabs(mu0->muonBestTrack()->dz( vertex->position() )) < passing_probe_dz_max) );
+          bool isPassingProbe = ( passing_probe_selector(*mu0) && (lep0_dpt_over_pt < passing_probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( vertex->position() )) < passing_probe_dz_max) );
           if(!ShutUp)  std::cout << "                                  isPassingProbe = " << isPassingProbe << std::endl;
 
           fillTnPControlHistos(*dil, TagMu, ProbeMu, isPassingProbe);
@@ -828,7 +828,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
 
           if( ProbeMu->pt() > probe_pt_min ) {
-            bool isComparisonProbe = ( comparison_probe_selector(*mu0) && (lep0_dpt_over_pt < comparison_probe_dpt_over_pt_max) && (fabs(mu0->muonBestTrack()->dz( vertex->position() )) < comparison_probe_dz_max) );
+            bool isComparisonProbe = ( comparison_probe_selector(*mu0) && (lep0_dpt_over_pt < comparison_probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( vertex->position() )) < comparison_probe_dz_max) );
             if(!ShutUp)  std::cout << "                               isComparisonProbe = " << isComparisonProbe << std::endl;
             if( !isAleadyFilled && isPassingProbe && !isComparisonProbe ) {
               IsRealData = event.isRealData();

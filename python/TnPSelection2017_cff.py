@@ -71,6 +71,11 @@ Passing_probe_cut = custo_cut_nopt
 Passing_probe_dpt_over_pt_max = 0.3
 Passing_probe_dz_max = 0.5
 
+# -- For comparison probe -- #
+Comparison_probe_cut = ''
+Comparison_probe_dpt_over_pt_max = 1e9
+Comparison_probe_dz_max = 1e9
+
 
 allDimuons = cms.EDProducer('CustoTnPCombiner',
                             decay = cms.string('leptons:muons@+ leptons:muons@-'),
@@ -156,9 +161,9 @@ HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
                                passing_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
                                passing_probe_dz_max = cms.double(Passing_probe_dz_max),
 
-                               comparison_probe_cut = cms.string(Passing_probe_cut),
-                               comparison_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
-                               comparison_probe_dz_max = cms.double(Passing_probe_dz_max),
+                               comparison_probe_cut = cms.string(Comparison_probe_cut),
+                               comparison_probe_dpt_over_pt_max = cms.double(Comparison_probe_dpt_over_pt_max),
+                               comparison_probe_dz_max = cms.double(Comparison_probe_dz_max),
 
                                minMass = cms.double(0),
                                maxMass = cms.double(10000),
@@ -206,9 +211,9 @@ HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_AOD',
 
                                nshowers_threshold_min = cms.int32(nshowers_threshold_min),
 
-                               comparison_probe_cut = cms.string(Passing_probe_cut),
-                               comparison_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
-                               comparison_probe_dz_max = cms.double(Passing_probe_dz_max),
+                               comparison_probe_cut = cms.string(Comparison_probe_cut),
+                               comparison_probe_dpt_over_pt_max = cms.double(Comparison_probe_dpt_over_pt_max),
+                               comparison_probe_dz_max = cms.double(Comparison_probe_dz_max),
 
                                minMass = cms.double(0),
                                maxMass = cms.double(10000),
