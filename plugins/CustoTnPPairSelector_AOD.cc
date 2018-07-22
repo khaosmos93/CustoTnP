@@ -139,7 +139,8 @@ private:
   std::vector<int> countDTsegs(edm::Event&, reco::MuonRef);
   std::vector<int> countCSCsegs(edm::Event&, reco::MuonRef);
 
-  std::vector<int> nSegments(edm::Event&, reco::MuonRef);
+  std::vector<int> nSegments_custom(edm::Event&, reco::MuonRef);
+  std::vector<int> nSegments_matches(edm::Event&, reco::MuonRef);
 
   std::pair<bool, reco::MuonRef> getMuonRef(edm::Event&, const reco::CandidateBaseRef&);
   std::vector<int> nHits(edm::Event&, reco::MuonRef);
@@ -672,7 +673,7 @@ std::vector<int> CustoTnPPairSelector_AOD::countCSCsegs(edm::Event& event, reco:
 }
 
 
-std::vector<int> CustoTnPPairSelector_AOD::nSegments(edm::Event& event, reco::MuonRef MuRef) {
+std::vector<int> CustoTnPPairSelector_AOD::nSegments_custom(edm::Event& event, reco::MuonRef MuRef) {
 
   std::vector<int> nsegments = {0,0,0,0};
 
@@ -681,6 +682,20 @@ std::vector<int> CustoTnPPairSelector_AOD::nSegments(edm::Event& event, reco::Mu
     std::vector<int> cschits = countCSCsegs(event, MuRef);
     for(int i=0; i<4; ++i) {
       nsegments[i] = dthits[i] + cschits[i];
+    }
+  }
+
+  return nsegments;
+}
+
+std::vector<int> CustoTnPPairSelector_AOD::nSegments_matches(edm::Event& event, reco::MuonRef MuRef) {
+
+  std::vector<int> nsegments = {0,0,0,0};
+
+  if( MuRef.isNonnull() ) {
+    for (const auto &ch : MuRef->matches()) {
+      int nsegs=ch.segmentMatches.size();
+      if (nsegs>count_matches[ch.station()-1]) count_matches[ch.station()-1]=nsegs;
     }
   }
 
@@ -811,7 +826,7 @@ void CustoTnPPairSelector_AOD::produce(edm::Event& event, const edm::EventSetup&
       lep0_nMuonHits = (int)((pair_lep0Ref.second)->standAloneMuon()->hitPattern().numberOfMuonHits());
       lep0_nValidMuonHits = (int)((pair_lep0Ref.second)->standAloneMuon()->hitPattern().numberOfValidMuonHits());
       lep0_nHits = nHits(event, pair_lep0Ref.second);
-      lep0_nSegs = nSegments(event, pair_lep0Ref.second);
+      lep0_nSegs = nSegments_matches(event, pair_lep0Ref.second);
     }
     else
       std::cout <<  "CustoTnPPairSelector_AOD::produce : No RECO MuonRef found for lep0" << std::endl;
@@ -827,7 +842,7 @@ void CustoTnPPairSelector_AOD::produce(edm::Event& event, const edm::EventSetup&
       lep1_nMuonHits = (int)((pair_lep1Ref.second)->standAloneMuon()->hitPattern().numberOfMuonHits());
       lep1_nValidMuonHits = (int)((pair_lep1Ref.second)->standAloneMuon()->hitPattern().numberOfValidMuonHits());
       lep1_nHits = nHits(event, pair_lep1Ref.second);
-      lep1_nSegs = nSegments(event, pair_lep1Ref.second);
+      lep1_nSegs = nSegments_matches(event, pair_lep1Ref.second);
     }
     else
       std::cout <<  "CustoTnPPairSelector_AOD::produce : No RECO MuonRef found for lep1" << std::endl;
