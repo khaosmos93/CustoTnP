@@ -606,7 +606,7 @@ void CustoTnPHistosForTnP::fillTnPBinHistos( double               dil_mass,
   int nbins = ( (int)vec_bins.size() ) - 1;
 
   for(int i=0; i<nbins; ++i) {
-    if( binValue > vec_bins[i] && binValue < vec_bins[i+1] ) {
+    if( binValue >= vec_bins[i] && binValue < vec_bins[i+1] ) {
 
       if(isPass)
         (Histos.first)[i]->Fill( dil_mass, _totalWeight );
