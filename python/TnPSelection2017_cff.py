@@ -25,7 +25,7 @@ custo_cut =       'isGlobalMuon && ' \
                   'isolationR03.sumPt < 30 && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
-                  'globalTrack.hitPattern.numberOfValidMuonHits > 0 && ' \
+                  '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
                   '( numberOfMatchedStations > 1 || (numberOfMatchedStations == 1 && !(stationMask == 1 || stationMask == 16)) || (numberOfMatchedStations == 1 && (stationMask == 1 || stationMask == 16) && numberOfMatchedRPCLayers > 2))'
 
 custo_cut_nopt =  'isGlobalMuon && ' \
@@ -36,7 +36,7 @@ custo_cut_nopt =  'isGlobalMuon && ' \
                   'isolationR03.sumPt < 30 && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
-                  'globalTrack.hitPattern.numberOfValidMuonHits > 0 && ' \
+                  '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
                   '( numberOfMatchedStations > 1 || (numberOfMatchedStations == 1 && !(stationMask == 1 || stationMask == 16)) || (numberOfMatchedStations == 1 && (stationMask == 1 || stationMask == 16) && numberOfMatchedRPCLayers > 2))'
 
 
