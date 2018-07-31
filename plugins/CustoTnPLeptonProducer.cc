@@ -452,7 +452,7 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
     prescaled_L3_muons.clear();
     for (pat::TriggerObjectStandAlone obj : *trigger_summary_src) { // note: not "const &" since we want to call unpackPathNames
       obj.unpackPathNames(names);
-      obj.unpackFilterLabels(event, *triggerBits);
+      // obj.unpackFilterLabels(event, *triggerBits); // for 2016
 
       for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
         if (obj.filterLabels()[h] == pandf.filter){ 
