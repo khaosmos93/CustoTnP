@@ -11,9 +11,10 @@ Old*/
 
 # Local files/directories
 Local*/
+Crab*/
 *.root
 *.log
-*TEST*
+
 
 # output from batch jobs
 *.o*
