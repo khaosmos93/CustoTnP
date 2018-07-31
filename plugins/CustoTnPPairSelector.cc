@@ -408,7 +408,7 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
   // does this get cached correctly? do we care?
   setup.get<TransientTrackRecord>().get("TransientTrackBuilder", ttkb);
 
-  std::unique_ptr<pat::CompositeCandidateCollection> new_cands(new pat::CompositeCandidateCollection);
+  std::auto_ptr<pat::CompositeCandidateCollection> new_cands(new pat::CompositeCandidateCollection);
 
   // Copy all the candidates that pass the specified cuts into the new
   // output vector. Also embed into the output dimuons any other
@@ -498,7 +498,7 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
               << "\tdil_deltaR : " << new_cands->at(0).userFloat("dil_deltaR") << "\n";
   }
 
-  event.put(move(new_cands));
+  event.put(new_cands);
 }
 
 DEFINE_FWK_MODULE(CustoTnPPairSelector);

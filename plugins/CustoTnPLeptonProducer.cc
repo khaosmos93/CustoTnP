@@ -364,7 +364,7 @@ edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer::doLeptons(edm::Event&
   edm::Handle<reco::CandidateView> lepton_view;
   event.getByLabel(view_src, lepton_view);
 
-  std::unique_ptr<TCollection> new_leptons(new TCollection);
+  std::auto_ptr<TCollection> new_leptons(new TCollection);
 
   for (size_t i = 0; i < leptons->size(); ++i) {
     std::pair<T*,int> res = doLepton(event, leptons->at(i), lepton_view->refAt(i));
@@ -375,7 +375,7 @@ edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer::doLeptons(edm::Event&
     delete res.first;
   }
 
-  return event.put(std::move(new_leptons), instance_label);
+  return event.put(new_leptons, instance_label);
 }
 
 
