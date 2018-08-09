@@ -14,6 +14,21 @@
 #include "DataFormats/Common/interface/View.h"
 #include "TLorentzVector.h"
 
+//~
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "Geometry/Records/interface/MuonGeometryRecord.h"
+#include "Geometry/DTGeometry/interface/DTGeometry.h"
+#include "Geometry/DTGeometry/interface/DTLayer.h"
+#include "Geometry/DTGeometry/interface/DTSuperLayer.h"
+#include "DataFormats/DTRecHit/interface/DTSLRecSegment2D.h"
+#include "RecoLocalMuon/DTSegment/src/DTSegmentUpdator.h"
+#include "RecoLocalMuon/DTSegment/src/DTSegmentCleaner.h"
+#include "RecoLocalMuon/DTSegment/src/DTHitPairForFit.h"
+
+#include "Geometry/CSCGeometry/interface/CSCLayer.h"
+#include "DataFormats/MuonDetId/interface/CSCDetId.h"
+#include "DataFormats/CSCRecHit/interface/CSCRecHit2D.h"
+#include "DataFormats/CSCRecHit/interface/CSCRangeMapAccessor.h"
 
 class CustoTnPLeptonProducer : public edm::EDProducer {
 public:
@@ -27,6 +42,8 @@ private:
   void embedTriggerMatch(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&);
   void embedTriggerMatch_or(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&, std::vector<int>&);
 
+  //~
+  void embedExpectedMatchedStations(pat::Muon*);
 
   std::pair<pat::Muon*,     int> doLepton(const edm::Event&, const pat::Muon&,     const reco::CandidateBaseRef&);
 
@@ -296,6 +313,26 @@ void CustoTnPLeptonProducer::embedTriggerMatch_or(pat::Muon* new_mu, const std::
     }
 }
 
+//~
+void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu) {
+  float minDistanceFromEdge = 10.;
+  unsigned int stationMask = 0;
+  for( auto& chamberMatch : new_mu->matches() )
+  {
+    if (chamberMatch.detector()!=MuonSubdetId::DT && chamberMatch.detector()!=MuonSubdetId::CSC) continue;
+    float edgeX = chamberMatch.edgeX;
+    float edgeY = chamberMatch.edgeY;
+    // check we if the trajectory is well within the acceptance
+    if(edgeX<0 && fabs(edgeX)>fabs(minDistanceFromEdge) && edgeY<0 && fabs(edgeY)>fabs(minDistanceFromEdge))
+      stationMask |= 1<<( (chamberMatch.station()-1)+4*(chamberMatch.detector()-1) );
+  }
+  unsigned int n = 0;
+  for(unsigned int i=0; i<8; ++i)
+    if (stationMask&(1<<i)) n++;
+
+  new_mu->addUserInt("expectedNnumberOfMatchedStations", n);
+}
+
 
 std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand) {
   // Failure is indicated by a null pointer as the first member of the
@@ -338,6 +375,10 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
     embedTriggerMatch(new_mu, "",          L3_muons,           L3_muons_matched);
     embedTriggerMatch(new_mu, "prescaled", prescaled_L3_muons, prescaled_L3_muons_matched);
   }
+
+  //~
+  embedExpectedMatchedStations(new_mu);
+  std::cout << "embedExpectedMatchedStations: " << new_mu->userInt("embedExpectedMatchedStations") << std::endl;
 
   // Evaluate cuts here with string object selector, and any code that
   // cannot be done in the string object selector (none so far).
