@@ -378,7 +378,7 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
 
   //~
   embedExpectedMatchedStations(new_mu);
-  std::cout << "embedExpectedMatchedStations: " << new_mu->userInt("embedExpectedMatchedStations") << std::endl;
+  std::cout << "expectedNnumberOfMatchedStations: " << new_mu->userInt("expectedNnumberOfMatchedStations") << std::endl;
 
   // Evaluate cuts here with string object selector, and any code that
   // cannot be done in the string object selector (none so far).
