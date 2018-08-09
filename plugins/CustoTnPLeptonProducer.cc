@@ -323,6 +323,17 @@ void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu) {
     float edgeX = chamberMatch.edgeX;
     float edgeY = chamberMatch.edgeY;
     // check we if the trajectory is well within the acceptance
+    /*
+    if(chamberMatch.detector()==MuonSubdetId::DT) {
+      DTChamberId ID( chamberMatch.id.rawId() );
+      std::cout << "\tChamberId: " << ID << std::endl;
+    }
+    if(chamberMatch.detector()==MuonSubdetId::CSC) {
+      CSCDetId    ID( chamberMatch.id.rawId() );
+      std::cout << "\tChamberId: " << ID << std::endl;
+    }
+    std::cout << "\t\tedgeX: " << edgeX << "\tedgeY: " << edgeY << "\t" << (edgeX<0 && fabs(edgeX)>fabs(minDistanceFromEdge) && edgeY<0 && fabs(edgeY)>fabs(minDistanceFromEdge)) <<std::endl;
+    */
     if(edgeX<0 && fabs(edgeX)>fabs(minDistanceFromEdge) && edgeY<0 && fabs(edgeY)>fabs(minDistanceFromEdge))
       stationMask |= 1<<( (chamberMatch.station()-1)+4*(chamberMatch.detector()-1) );
   }
@@ -377,8 +388,9 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
   }
 
   //~
+  // std::cout << "Muon pT= " << new_mu->pt() << "\teta= " << new_mu->eta() << "\tphi= " << new_mu->phi() << std::endl;
   embedExpectedMatchedStations(new_mu);
-  std::cout << "expectedNnumberOfMatchedStations: " << new_mu->userInt("expectedNnumberOfMatchedStations") << std::endl;
+  // std::cout << "\texpectedNnumberOfMatchedStations: " << new_mu->userInt("expectedNnumberOfMatchedStations") << std::endl;
 
   // Evaluate cuts here with string object selector, and any code that
   // cannot be done in the string object selector (none so far).
