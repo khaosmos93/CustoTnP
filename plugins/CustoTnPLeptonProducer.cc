@@ -43,7 +43,7 @@ private:
   void embedTriggerMatch_or(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&, std::vector<int>&);
 
   //~
-  void embedExpectedMatchedStations(pat::Muon*);
+  void embedExpectedMatchedStations(pat::Muon*, float);
 
   std::pair<pat::Muon*,     int> doLepton(const edm::Event&, const pat::Muon&,     const reco::CandidateBaseRef&);
 
@@ -314,8 +314,7 @@ void CustoTnPLeptonProducer::embedTriggerMatch_or(pat::Muon* new_mu, const std::
 }
 
 //~
-void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu) {
-  float minDistanceFromEdge = 10.;
+void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu, float minDistanceFromEdge = 10.) {
   unsigned int stationMask = 0;
   for( auto& chamberMatch : new_mu->matches() )
   {
@@ -341,7 +340,8 @@ void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu) {
   for(unsigned int i=0; i<8; ++i)
     if (stationMask&(1<<i)) n++;
 
-  new_mu->addUserInt("expectedNnumberOfMatchedStations", n);
+  std::string var_temp = "expectedNnumberOfMatchedStations"+std::to_string( int(minDistanceFromEdge) );
+  new_mu->addUserInt(var_temp, n);
 }
 
 
@@ -389,7 +389,10 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
 
   //~
   // std::cout << "Muon pT= " << new_mu->pt() << "\teta= " << new_mu->eta() << "\tphi= " << new_mu->phi() << std::endl;
-  embedExpectedMatchedStations(new_mu);
+  embedExpectedMatchedStations(new_mu, 5.);
+  embedExpectedMatchedStations(new_mu, 10.);
+  embedExpectedMatchedStations(new_mu, 15.);
+  embedExpectedMatchedStations(new_mu, 20.);
   // std::cout << "\texpectedNnumberOfMatchedStations: " << new_mu->userInt("expectedNnumberOfMatchedStations") << std::endl;
 
   // Evaluate cuts here with string object selector, and any code that
