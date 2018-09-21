@@ -418,7 +418,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   comparison_tree->Branch("IsRealData", &IsRealData, "IsRealData/O");
   comparison_tree->Branch("RunNum",&RunNum,"RunNum/I");
   comparison_tree->Branch("LumiBlockNum",&LumiBlockNum,"LumiBlockNum/I");
-  comparison_tree->Branch("EventNum",&EventNum,"EventNum/I");
+  comparison_tree->Branch("EventNum",&EventNum,"EventNum/l");
   comparison_tree->Branch("Mass",&Mass,"Mass/D");
   comparison_tree->Branch("VertexMass",&VertexMass,"VertexMass/D");
   comparison_tree->Branch("Probe_Pt",&Probe_Pt,"Probe_Pt/D");
