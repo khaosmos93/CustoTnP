@@ -188,7 +188,7 @@ pat::Muon* CustoTnPLeptonProducer::cloneAndSwitchMuonTrack(const pat::Muon& muon
 }
 
 
-void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, const std::string& ex, const pat::TriggerObjectStandAloneCollection& L3, std::vector<int>& L3_matched) {
+void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, std::string& ex, const pat::TriggerObjectStandAloneCollection& L3, std::vector<int>& L3_matched) {
   
   int best = -1;
   float defaultpTvalue = 20.;
@@ -495,11 +495,10 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
   for (size_t i = 0; i < muon_tracks_for_momentum.size(); ++i) {
 
     vec_L3_muons_matched.clear();
-      for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f) {
-        vec_L3_muons_matched.push_back({});
-        vec_L3_muons_matched.back().clear();
-        vec_L3_muons_matched.back().resize(vec_L3_muons[i_f].size(), 0);
-      }
+    for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f) {
+      vec_L3_muons_matched.push_back({});
+      vec_L3_muons_matched.back().clear();
+      vec_L3_muons_matched.back().resize(vec_L3_muons[i_f].size(), 0);
     }
 
     muon_track_for_momentum = muon_tracks_for_momentum[i];
