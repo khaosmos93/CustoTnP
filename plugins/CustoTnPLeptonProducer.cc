@@ -39,7 +39,7 @@ private:
 
   pat::Muon*     cloneAndSwitchMuonTrack     (const pat::Muon&, const edm::Event& event)     const;
 
-  void embedTriggerMatch(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&);
+  void embedTriggerMatch(pat::Muon*, std::string&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&);
   // void embedTriggerMatch_or(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&, std::vector<int>&);
 
   //~
