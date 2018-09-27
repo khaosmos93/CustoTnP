@@ -40,7 +40,7 @@ private:
   pat::Muon*     cloneAndSwitchMuonTrack     (const pat::Muon&, const edm::Event& event)     const;
 
   void embedTriggerMatch(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&);
-  void embedTriggerMatch_or(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&, std::vector<int>&);
+  // void embedTriggerMatch_or(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&, std::vector<int>&);
 
   //~
   void embedExpectedMatchedStations(pat::Muon*, float);
@@ -58,21 +58,15 @@ private:
   edm::InputTag muon_photon_match_src;
   edm::Handle<reco::CandViewMatchMap> muon_photon_match_map;
 
-  bool trigger_or;
   double trigger_match_max_dR;
+  std::vector<std::string> trigger_filters;
+  std::vector<std::string> trigger_path_names;
   edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> trigger_summary_src_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
-  
-  
-  pat::TriggerObjectStandAloneCollection L3_muons;
-  pat::TriggerObjectStandAloneCollection L3_muons_2;
-  pat::TriggerObjectStandAloneCollection prescaled_L3_muons;
-  pat::TriggerObjectStandAloneCollection prescaled_L3_muons_2;
-  std::vector<int> L3_muons_matched;
-  std::vector<int> L3_muons_matched_2;
-  std::vector<int> prescaled_L3_muons_matched;
-  std::vector<int> prescaled_L3_muons_matched_2;
+
+  std::vector<pat::TriggerObjectStandAloneCollection> vec_L3_muons;
+  std::vector<std::vector<int>> vec_L3_muons_matched;
 
 };
 
@@ -84,9 +78,10 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
     muon_track_for_momentum_primary(muon_track_for_momentum),
     muon_photon_match_src(cfg.getParameter<edm::InputTag>("muon_photon_match_src")),
 
-    trigger_or(cfg.getParameter<bool>("trigger_or")),
     trigger_match_max_dR(cfg.getParameter<double>("trigger_match_max_dR")),
-    
+    trigger_filters(cfg.getParameter<std::vector<std::string>>("trigger_filters")),
+    trigger_path_names(cfg.getParameter<std::vector<std::string>>("trigger_path_names")),
+
     triggerBits_(consumes<edm::TriggerResults>(cfg.getParameter<edm::InputTag>("bits"))),
     trigger_summary_src_(consumes<pat::TriggerObjectStandAloneCollection>(cfg.getParameter<edm::InputTag>("trigger_summary"))),
     triggerPrescales_(consumes<pat::PackedTriggerPrescales>(cfg.getParameter<edm::InputTag>("prescales")))
@@ -211,107 +206,107 @@ void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, const std::str
     }
   }
 
-//  if (best < 0)
-//    return;
+  // if (best < 0)
+  //  return;
+  if (ex.length()>0) ex += "_";
   if (best >= 0) {
-  const pat::TriggerObjectStandAlone& L3_mu = L3[best];
-  L3_matched[best] = 1;
-  
-  int id = L3_mu.pdgId();
-  new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
-  new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
-  new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
-  new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
+    const pat::TriggerObjectStandAlone& L3_mu = L3[best];
+    L3_matched[best] = 1;
+    
+    int id = L3_mu.pdgId();
+    new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
+    new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
+    new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
+    new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
   }
-    else{
-        new_mu->addUserFloat(ex + "TriggerMatchPt",    defaultpTvalue);
-    }
-  
-  
+  else {
+    new_mu->addUserFloat(ex + "TriggerMatchPt",    defaultpTvalue);
+  }
+
 }
 
-void CustoTnPLeptonProducer::embedTriggerMatch_or(pat::Muon* new_mu, const std::string& ex, const pat::TriggerObjectStandAloneCollection& L3, const pat::TriggerObjectStandAloneCollection& L3_or, std::vector<int>& L3_matched, std::vector<int>& L3_matched_2) {
-    int best_1 = -1;
-    int best_2 = -1;
-    float defaultpTvalue = 20.;
-    float best_dR_1 = trigger_match_max_dR;
-    float best_dR_2 = trigger_match_max_dR;
-    //    std::cout<<"embedded trigger function"<<std::endl;
-    for (size_t i = 0; i < L3.size(); ++i) {
-        // Skip those already used.
-        if (L3_matched[i])
-        continue;
+// void CustoTnPLeptonProducer::embedTriggerMatch_or(pat::Muon* new_mu, const std::string& ex, const pat::TriggerObjectStandAloneCollection& L3, const pat::TriggerObjectStandAloneCollection& L3_or, std::vector<int>& L3_matched, std::vector<int>& L3_matched_2) {
+//     int best_1 = -1;
+//     int best_2 = -1;
+//     float defaultpTvalue = 20.;
+//     float best_dR_1 = trigger_match_max_dR;
+//     float best_dR_2 = trigger_match_max_dR;
+//     //    std::cout<<"embedded trigger function"<<std::endl;
+//     for (size_t i = 0; i < L3.size(); ++i) {
+//         // Skip those already used.
+//         if (L3_matched[i])
+//         continue;
         
-        const float dR = reco::deltaR(L3[i], *new_mu);
-        if (dR < best_dR_1) {
-            best_1 = int(i);
-            best_dR_1 = dR;
-        }
-    }
-    //std::cout<<"filtro2"<<std::endl;
-    for (size_t i = 0; i < L3_or.size(); ++i) {
-        // Skip those already used.
-        if (L3_matched_2[i])
-        continue;
+//         const float dR = reco::deltaR(L3[i], *new_mu);
+//         if (dR < best_dR_1) {
+//             best_1 = int(i);
+//             best_dR_1 = dR;
+//         }
+//     }
+//     //std::cout<<"filtro2"<<std::endl;
+//     for (size_t i = 0; i < L3_or.size(); ++i) {
+//         // Skip those already used.
+//         if (L3_matched_2[i])
+//         continue;
         
-        const float dR = reco::deltaR(L3_or[i], *new_mu);
-        if (dR < best_dR_2) {
-            best_2 = int(i);
-            best_dR_2 = dR;
-        }
-    }
-    //    std::cout<<" best1 "<<best_1<<" best2 "<<best_2<<" best_dR_1 "<<best_dR_1<<" best_dR_2 "<<best_dR_2<<std::endl;
-    //    if (best_1 < 0 && best_2 < 0 )
-    //    return;
+//         const float dR = reco::deltaR(L3_or[i], *new_mu);
+//         if (dR < best_dR_2) {
+//             best_2 = int(i);
+//             best_dR_2 = dR;
+//         }
+//     }
+//     //    std::cout<<" best1 "<<best_1<<" best2 "<<best_2<<" best_dR_1 "<<best_dR_1<<" best_dR_2 "<<best_dR_2<<std::endl;
+//     //    if (best_1 < 0 && best_2 < 0 )
+//     //    return;
     
-    if (best_2 <0 && best_1 >= 0){
-        const pat::TriggerObjectStandAlone& L3_mu = L3[best_1];
-        L3_matched[best_1] = 1;
+//     if (best_2 <0 && best_1 >= 0){
+//         const pat::TriggerObjectStandAlone& L3_mu = L3[best_1];
+//         L3_matched[best_1] = 1;
         
-        int id = L3_mu.pdgId();
-        new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
-        new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
-        new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
-        new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
-//        std::cout<<"ex + trigger match = "<<ex<<"...TriggerMatchPt = "<<L3_mu.pt()<<std::endl;
-//        std::cout<<"TriggerMatchPt muon producer = "<<new_mu->hasUserFloat(ex + "TriggerMatchPt")<<std::endl;
-    }
-    else if (best_1 <0 && best_2 >= 0){
-        const pat::TriggerObjectStandAlone& L3_mu = L3_or[best_2];
-        L3_matched_2[best_2] = 1;
+//         int id = L3_mu.pdgId();
+//         new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
+//         new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
+//         new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
+//         new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
+// //        std::cout<<"ex + trigger match = "<<ex<<"...TriggerMatchPt = "<<L3_mu.pt()<<std::endl;
+// //        std::cout<<"TriggerMatchPt muon producer = "<<new_mu->hasUserFloat(ex + "TriggerMatchPt")<<std::endl;
+//     }
+//     else if (best_1 <0 && best_2 >= 0){
+//         const pat::TriggerObjectStandAlone& L3_mu = L3_or[best_2];
+//         L3_matched_2[best_2] = 1;
         
-        int id = L3_mu.pdgId();
-        new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
-        new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
-        new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
-        new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
-    }
-    else if (best_1 >=0 && best_2 >=0 && best_dR_1 <= best_dR_2){
-        const pat::TriggerObjectStandAlone& L3_mu = L3[best_1];
-        L3_matched[best_1] = 1;
+//         int id = L3_mu.pdgId();
+//         new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
+//         new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
+//         new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
+//         new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
+//     }
+//     else if (best_1 >=0 && best_2 >=0 && best_dR_1 <= best_dR_2){
+//         const pat::TriggerObjectStandAlone& L3_mu = L3[best_1];
+//         L3_matched[best_1] = 1;
         
-        int id = L3_mu.pdgId();
-        new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
-        new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
-        new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
-        new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
-    }
-    else if (best_1 >=0 && best_2 >=0 && best_dR_1 > best_dR_2){
-        const pat::TriggerObjectStandAlone& L3_mu = L3_or[best_2];
-        L3_matched_2[best_2] = 1;
+//         int id = L3_mu.pdgId();
+//         new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
+//         new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
+//         new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
+//         new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
+//     }
+//     else if (best_1 >=0 && best_2 >=0 && best_dR_1 > best_dR_2){
+//         const pat::TriggerObjectStandAlone& L3_mu = L3_or[best_2];
+//         L3_matched_2[best_2] = 1;
         
-        int id = L3_mu.pdgId();
-        new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
-        new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
-        new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
-        new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
-    }
-    else {
-        // std::cout<<"embedded trigger function 4"<<std::endl;
-        new_mu->addUserFloat(ex + "TriggerMatchPt",    defaultpTvalue);
-        //std::cout<<"TriggerMatchPt muon producer own = "<<new_mu->hasUserFloat(ex + "TriggerMatchPt")<<std::endl;
-    }
-}
+//         int id = L3_mu.pdgId();
+//         new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
+//         new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
+//         new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
+//         new_mu->addUserFloat(ex + "TriggerMatchPhi",    L3_mu.phi());
+//     }
+//     else {
+//         // std::cout<<"embedded trigger function 4"<<std::endl;
+//         new_mu->addUserFloat(ex + "TriggerMatchPt",    defaultpTvalue);
+//         //std::cout<<"TriggerMatchPt muon producer own = "<<new_mu->hasUserFloat(ex + "TriggerMatchPt")<<std::endl;
+//     }
+// }
 
 //~
 void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu, float minDistanceFromEdge = 10.) {
@@ -374,18 +369,9 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
     }    
   }
 
-  // Do our own trigger matching and embed the results. After the next
-  // pair of function calls, there will be new user floats:
-  // {TriggerMatch, prescaledTriggerMatch} x {Pt, Eta, Phi,
-  // Charge}. (Maybe embed whole candidates later.)
-  if(trigger_or) {
-    embedTriggerMatch_or(new_mu, "",          L3_muons,           L3_muons_2,           L3_muons_matched,           L3_muons_matched_2);
-    embedTriggerMatch_or(new_mu, "prescaled", prescaled_L3_muons, prescaled_L3_muons_2, prescaled_L3_muons_matched, prescaled_L3_muons_matched_2);
-  }
-  else {
-    embedTriggerMatch(new_mu, "",          L3_muons,           L3_muons_matched);
-    embedTriggerMatch(new_mu, "prescaled", prescaled_L3_muons, prescaled_L3_muons_matched);
-  }
+  //--- Trig match
+  for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f)
+    embedTriggerMatch(new_mu, trigger_path_names[i_f], vec_L3_muons[i_f], vec_L3_muons_matched[i_f]);
 
   //~
   // std::cout << "Muon pT= " << new_mu->pt() << "\teta= " << new_mu->eta() << "\tphi= " << new_mu->phi() << std::endl;
@@ -453,7 +439,7 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
   // candidates; no attempt is done to find a global best
   // matching. (This is how it was done in our configuration of the
   // PATTrigger matcher previously, so why not.) We do this for both
-  // the main path and the prescaled path.
+  // the main path and the pres caled path.
   
   CustoTnPTriggerPathsAndFilters pandf(event);
   if (!pandf.valid)
@@ -466,64 +452,34 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
   event.getByToken(triggerBits_, triggerBits);
   event.getByToken(trigger_summary_src_, trigger_summary_src);
   event.getByToken(triggerPrescales_, triggerPrescales);
-  
+
   const edm::TriggerNames &names = event.triggerNames(*triggerBits);
 
-  if(trigger_or) {
-    L3_muons.clear();
-    L3_muons_2.clear();
-    prescaled_L3_muons.clear();
-    prescaled_L3_muons_2.clear();
-    for (pat::TriggerObjectStandAlone obj : *trigger_summary_src) { // note: not "const &" since we want to call unpackPathNames
-      obj.unpackPathNames(names);
-      obj.unpackFilterLabels(event, *triggerBits);
-
-      for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
-        if (obj.filterLabels()[h] == pandf.filter){ 
-          L3_muons.push_back(obj);
-        }
-        if (obj.filterLabels()[h] == pandf.filter_2) {
-          L3_muons_2.push_back(obj);
-        }
-        if (obj.filterLabels()[h] ==  pandf.prescaled_filter){
-          prescaled_L3_muons.push_back(obj);
-        }
-        if (obj.filterLabels()[h] ==  pandf.prescaled_filter_2){
-          prescaled_L3_muons_2.push_back(obj);
-        }
-      }
-    }
-
-    L3_muons_matched.clear();
-    L3_muons_matched.resize(L3_muons.size(), 0);
-    L3_muons_matched_2.clear();
-    L3_muons_matched_2.resize(L3_muons_2.size(), 0);
-    prescaled_L3_muons_matched.clear();
-    prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
-    prescaled_L3_muons_matched_2.clear();
-    prescaled_L3_muons_matched_2.resize(prescaled_L3_muons_2.size(), 0);
+  vec_L3_muons.clear();
+  for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f) {
+    vec_L3_muons.push_back({});
+    vec_L3_muons.back().clear();
   }
-  else {
-    L3_muons.clear();
-    prescaled_L3_muons.clear();
-    for (pat::TriggerObjectStandAlone obj : *trigger_summary_src) { // note: not "const &" since we want to call unpackPathNames
-      obj.unpackPathNames(names);
-      obj.unpackFilterLabels(event, *triggerBits);
 
-      for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
-        if (obj.filterLabels()[h] == pandf.filter){ 
-          L3_muons.push_back(obj);
-        }
-        if (obj.filterLabels()[h] ==  pandf.prescaled_filter){
-          prescaled_L3_muons.push_back(obj);
+  for(pat::TriggerObjectStandAlone obj : *trigger_summary_src) {
+    obj.unpackPathNames(names);
+    obj.unpackFilterLabels(event, *triggerBits); // for 2017~
+    for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
+
+      for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f) {
+        if (obj.filterLabels()[h] == trigger_filters[i_f]){ 
+          vec_L3_muons[i_f].push_back(obj);
         }
       }
-    }
 
-    L3_muons_matched.clear();
-    L3_muons_matched.resize(L3_muons.size(), 0);
-    prescaled_L3_muons_matched.clear();
-    prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
+    }
+  }
+
+  vec_L3_muons_matched.clear();
+  for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f) {
+    vec_L3_muons_matched.push_back({});
+    vec_L3_muons_matched.back().clear();
+    vec_L3_muons_matched.back().resize(vec_L3_muons[i_f].size(), 0);
   }
 
 
@@ -537,22 +493,13 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
   // assignments specified. They will come out as e.g. leptons:tpfms,
   // leptons:picky, ...
   for (size_t i = 0; i < muon_tracks_for_momentum.size(); ++i) {
-    // Reset the flags so the matching can be redone.
-    if(trigger_or) {
-      L3_muons_matched.clear();
-      L3_muons_matched.resize(L3_muons.size(), 0);
-      L3_muons_matched_2.clear();
-      L3_muons_matched_2.resize(L3_muons_2.size(), 0);
-      prescaled_L3_muons_matched.clear();
-      prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
-      prescaled_L3_muons_matched_2.clear();
-      prescaled_L3_muons_matched_2.resize(prescaled_L3_muons_2.size(), 0);
-    }
-    else {
-      L3_muons_matched.clear();
-      L3_muons_matched.resize(L3_muons.size(), 0);
-      prescaled_L3_muons_matched.clear();
-      prescaled_L3_muons_matched.resize(prescaled_L3_muons.size(), 0);
+
+    vec_L3_muons_matched.clear();
+      for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f) {
+        vec_L3_muons_matched.push_back({});
+        vec_L3_muons_matched.back().clear();
+        vec_L3_muons_matched.back().resize(vec_L3_muons[i_f].size(), 0);
+      }
     }
 
     muon_track_for_momentum = muon_tracks_for_momentum[i];
