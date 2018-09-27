@@ -39,7 +39,7 @@ private:
 
   pat::Muon*     cloneAndSwitchMuonTrack     (const pat::Muon&, const edm::Event& event)     const;
 
-  void embedTriggerMatch(pat::Muon*, std::string&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&);
+  void embedTriggerMatch(pat::Muon*, std::string, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&);
   // void embedTriggerMatch_or(pat::Muon*, const std::string&, const pat::TriggerObjectStandAloneCollection&, const pat::TriggerObjectStandAloneCollection&, std::vector<int>&, std::vector<int>&);
 
   //~
@@ -188,7 +188,7 @@ pat::Muon* CustoTnPLeptonProducer::cloneAndSwitchMuonTrack(const pat::Muon& muon
 }
 
 
-void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, std::string& ex, const pat::TriggerObjectStandAloneCollection& L3, std::vector<int>& L3_matched) {
+void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, std::string ex, const pat::TriggerObjectStandAloneCollection& L3, std::vector<int>& L3_matched) {
   
   int best = -1;
   float defaultpTvalue = -1.;
@@ -223,7 +223,6 @@ void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, std::string& e
     new_mu->addUserFloat(ex + "TriggerMatchPt",    defaultpTvalue);
   }
 
-  std::cout << new_mu->pt() << ex << std::endl;
 }
 
 // void CustoTnPLeptonProducer::embedTriggerMatch_or(pat::Muon* new_mu, const std::string& ex, const pat::TriggerObjectStandAloneCollection& L3, const pat::TriggerObjectStandAloneCollection& L3_or, std::vector<int>& L3_matched, std::vector<int>& L3_matched_2) {
