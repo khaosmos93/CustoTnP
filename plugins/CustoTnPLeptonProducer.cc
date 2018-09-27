@@ -214,7 +214,6 @@ void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, std::string& e
     L3_matched[best] = 1;
     
     int id = L3_mu.pdgId();
-    std::cout << ex + "TriggerMatchPt" << std::endl;
     new_mu->addUserFloat(ex + "TriggerMatchCharge", -id/abs(id));
     new_mu->addUserFloat(ex + "TriggerMatchPt",     L3_mu.pt());
     new_mu->addUserFloat(ex + "TriggerMatchEta",    L3_mu.eta());
@@ -224,6 +223,7 @@ void CustoTnPLeptonProducer::embedTriggerMatch(pat::Muon* new_mu, std::string& e
     new_mu->addUserFloat(ex + "TriggerMatchPt",    defaultpTvalue);
   }
 
+  std::cout << new_mu->pt() << ex << std::endl;
 }
 
 // void CustoTnPLeptonProducer::embedTriggerMatch_or(pat::Muon* new_mu, const std::string& ex, const pat::TriggerObjectStandAloneCollection& L3, const pat::TriggerObjectStandAloneCollection& L3_or, std::vector<int>& L3_matched, std::vector<int>& L3_matched_2) {
