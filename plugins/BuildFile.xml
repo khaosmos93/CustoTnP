@@ -8,6 +8,12 @@
   <use name="DataFormats/Common"/>
   <use name="DataFormats/EgammaCandidates"/>
   <use name="CustoTnP/Analyzer"/>
+  <use name="Geometry/DTGeometry"/>
+  <use name="DataFormats/DetId"/>
+  <use name="DataFormats/MuonDetId"/>
+  <use name="DataFormats/MuonReco"/>
+  <use name="DataFormats/TrackReco"/>
+  <use name="DataFormats/CSCRecHit"/>
 </library>
 
 <library file="CustoTnPCombiner.cc" name="CustoTnPCombiner">
