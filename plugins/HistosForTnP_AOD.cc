@@ -336,7 +336,7 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
 
   // Tag
   TagPt = fs->make<TH1F>("TagPt", "Tag pT", 10000, 0, 10000);
-  TagEta = fs->make<TH1F>("TagEta", "Tag #eta",    100, -5, 5);
+  TagEta = fs->make<TH1F>("TagEta", "Tag #eta",    96, -4.8, 4.8);
   TagPhi = fs->make<TH1F>("TagPhi", "Tag #phi", 100, -TMath::Pi(), TMath::Pi());
 
   /*TagAbsTkIso = fs->make<TH1F>("TagAbsTkIso", "Tag Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
@@ -357,10 +357,10 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
 
   // Probe
   ProbePt = fs->make<TH1F>("ProbePt", "Probe pT", 10000, 0, 10000);
-  ProbeEta = fs->make<TH1F>("ProbeEta", "Probe #eta",    100, -5, 5);
+  ProbeEta = fs->make<TH1F>("ProbeEta", "Probe #eta",    96, -4.8, 4.8);
   ProbePhi = fs->make<TH1F>("ProbePhi", "Probe #phi", 100, -TMath::Pi(), TMath::Pi());
   ProbeNVertices = fs->make<TH1F>("ProbeNVertices", "Probe # vertices/event",  200, 0, 200);
-  ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    100, -5, 5, 100, -TMath::Pi(), TMath::Pi());
+  ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    96, -4.8, 4.8, 100, -TMath::Pi(), TMath::Pi());
 
   /*ProbeAbsTkIso = fs->make<TH1F>("ProbeAbsTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
   ProbeRelTkIso = fs->make<TH1F>("ProbeRelTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT / tk. pT", 500, 0, 5);
@@ -388,10 +388,10 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
   ProbeNShowerEP = fs->make<TH2F>("ProbeNShowerEP", "Probe # showers Endcap |P|",    6, -1, 5, 4, arr_PBins);
 
   PassingProbePt = fs->make<TH1F>("PassingProbePt", "PassingProbe pT", 10000, 0, 10000);
-  PassingProbeEta = fs->make<TH1F>("PassingProbeEta", "PassingProbe #eta",    100, -5, 5);
+  PassingProbeEta = fs->make<TH1F>("PassingProbeEta", "PassingProbe #eta",    96, -4.8, 4.8);
   PassingProbePhi = fs->make<TH1F>("PassingProbePhi", "PassingProbe #phi", 100, -TMath::Pi(), TMath::Pi());
   PassingProbeNVertices = fs->make<TH1F>("PassingProbeNVertices", "PassingProbe # vertices/event",  200, 0, 200);
-  PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    100, -5, 5, 100, -TMath::Pi(), TMath::Pi());
+  PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    96, -4.8, 4.8, 100, -TMath::Pi(), TMath::Pi());
 
   PassingProbeNHitsBP = fs->make<TH2F>("PassingProbeNHitsBP", "PassingProbe shower Barrel # hits |P|",    2000, 0, 2000, 4, arr_PBins);
   PassingProbeNHitsEP = fs->make<TH2F>("PassingProbeNHitsEP", "PassingProbe shower Endcap # hits |P|",    2000, 0, 2000, 4, arr_PBins);
@@ -401,10 +401,10 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
   PassingProbeNShowerEP = fs->make<TH2F>("PassingProbeNShowerEP", "PassingProbe # showers Endcap |P|",    6, -1, 5, 4, arr_PBins);
 
   FailingProbePt = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
-  FailingProbeEta = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    100, -5, 5);
+  FailingProbeEta = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    96, -4.8, 4.8);
   FailingProbePhi = fs->make<TH1F>("FailingProbePhi", "FailingProbe #phi", 100, -TMath::Pi(), TMath::Pi());
   FailingProbeNVertices = fs->make<TH1F>("FailingProbeNVertices", "FailingProbe # vertices/event",  200, 0, 200);
-  FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    100, -5, 5, 100, -TMath::Pi(), TMath::Pi());
+  FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    96, -4.8, 4.8, 100, -TMath::Pi(), TMath::Pi());
 
   FailingProbeNHitsBP = fs->make<TH2F>("FailingProbeNHitsBP", "FailingProbe shower Barrel # hits |P|",    2000, 0, 2000, 4, arr_PBins);
   FailingProbeNHitsEP = fs->make<TH2F>("FailingProbeNHitsEP", "FailingProbe shower Endcap # hits |P|",    2000, 0, 2000, 4, arr_PBins);
@@ -416,23 +416,23 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
   // TnP pair
   PairNoPtMass = fs->make<TH1F>("PairNoPtMass", "TnP PairNoPt mass", 20000, 0, 20000);
   PairNoPtPt = fs->make<TH1F>("PairNoPtPt", "TnP PairNoPt pT", 10000, 0, 10000);
-  PairNoPtEta = fs->make<TH1F>("PairNoPtEta", "TnP PairNoPt #eta",    100, -5, 5);
-  PairNoPtRap = fs->make<TH1F>("PairNoPtRap", "TnP PairNoPt y", 100, -5, 5);
+  PairNoPtEta = fs->make<TH1F>("PairNoPtEta", "TnP PairNoPt #eta",    96, -4.8, 4.8);
+  PairNoPtRap = fs->make<TH1F>("PairNoPtRap", "TnP PairNoPt y", 96, -4.8, 4.8);
 
   PairMass = fs->make<TH1F>("PairMass", "TnP Pair mass", 20000, 0, 20000);
   PairPt = fs->make<TH1F>("PairPt", "TnP Pair pT", 10000, 0, 10000);
-  PairEta = fs->make<TH1F>("PairEta", "TnP Pair #eta",    100, -5, 5);
-  PairRap = fs->make<TH1F>("PairRap", "TnP Pair y", 100, -5, 5);
+  PairEta = fs->make<TH1F>("PairEta", "TnP Pair #eta",    96, -4.8, 4.8);
+  PairRap = fs->make<TH1F>("PairRap", "TnP Pair y", 96, -4.8, 4.8);
 
   PassingPairMass = fs->make<TH1F>("PassingPairMass", "TnP PassingPair mass", 20000, 0, 20000);
   PassingPairPt = fs->make<TH1F>("PassingPairPt", "TnP PassingPair pT", 10000, 0, 10000);
-  PassingPairEta = fs->make<TH1F>("PassingPairEta", "TnP PassingPair #eta",    100, -5, 5);
-  PassingPairRap = fs->make<TH1F>("PassingPairRap", "TnP PassingPair y", 100, -5, 5);
+  PassingPairEta = fs->make<TH1F>("PassingPairEta", "TnP PassingPair #eta",    96, -4.8, 4.8);
+  PassingPairRap = fs->make<TH1F>("PassingPairRap", "TnP PassingPair y", 96, -4.8, 4.8);
 
   FailingPairMass = fs->make<TH1F>("FailingPairMass", "TnP FailingPair mass", 20000, 0, 20000);
   FailingPairPt = fs->make<TH1F>("FailingPairPt", "TnP FailingPair pT", 10000, 0, 10000);
-  FailingPairEta = fs->make<TH1F>("FailingPairEta", "TnP FailingPair #eta",    100, -5, 5);
-  FailingPairRap = fs->make<TH1F>("FailingPairRap", "TnP FailingPair y", 100, -5, 5);
+  FailingPairEta = fs->make<TH1F>("FailingPairEta", "TnP FailingPair #eta",    96, -4.8, 4.8);
+  FailingPairRap = fs->make<TH1F>("FailingPairRap", "TnP FailingPair y", 96, -4.8, 4.8);
 
 
   // Bin histograms
@@ -483,7 +483,7 @@ CustoTnPHistosForTnP_AOD::CustoTnPHistosForTnP_AOD(const edm::ParameterSet& cfg)
   comparison_tree->Branch("IsRealData", &IsRealData, "IsRealData/O");
   comparison_tree->Branch("RunNum",&RunNum,"RunNum/I");
   comparison_tree->Branch("LumiBlockNum",&LumiBlockNum,"LumiBlockNum/I");
-  comparison_tree->Branch("EventNum",&EventNum,"EventNum/I");
+  comparison_tree->Branch("EventNum",&EventNum,"EventNum/l");
   comparison_tree->Branch("Mass",&Mass,"Mass/D");
   comparison_tree->Branch("VertexMass",&VertexMass,"VertexMass/D");
   comparison_tree->Branch("Probe_Pt",&Probe_Pt,"Probe_Pt/D");
