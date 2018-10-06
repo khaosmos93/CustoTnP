@@ -26,7 +26,7 @@ custo_cut =       'isGlobalMuon && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
                   '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
-                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
+                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
 
 custo_cut_nopt =  'isGlobalMuon && ' \
                   'isTrackerMuon && ' \
@@ -37,7 +37,7 @@ custo_cut_nopt =  'isGlobalMuon && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
                   '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
-                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
+                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
 
 
 Pair_Cut = ''
