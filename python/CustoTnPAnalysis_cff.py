@@ -21,6 +21,7 @@ goodDataFiltersMiniAOD = [primaryVertexMiniAOD]
 
 
 from MuonPhotonMatch_cff import muonPhotonMatch, muonPhotonMatchMiniAOD
+from CustoTnP.Analyzer.hltTriggerMatch_cfi import trigger_path_names, trigger_filters, trigger_filters_pt
 
 leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               muon_src = cms.InputTag('slimmedMuons'),
@@ -29,25 +30,26 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               muon_track_for_momentum = cms.string('TunePNew'),
                               muon_track_for_momentum_CSC = cms.string('Inner'),
                               muon_photon_match_src = cms.InputTag('muonPhotonMatchMiniAOD'),
-                              trigger_or = cms.bool( True ), # 2016
                               trigger_match_max_dR = cms.double(0.2),
                               trigger_summary = cms.InputTag('selectedPatTrigger'),  # to run on 2016 Data
-                              # trigger_summary = cms.InputTag('slimmedPatTrigger'), # to run on 2017 Data
                               bits = cms.InputTag("TriggerResults","","HLT"),#data
                               prescales = cms.InputTag("patTrigger"),
+                              trigger_filters = cms.vstring(trigger_filters),
+                              trigger_path_names = cms.vstring(trigger_path_names),
                               )
 
 leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
                                 muon_src = cms.InputTag('slimmedMuonsCustom'),
                                 muon_srcSecond = cms.InputTag('slimmedMuonsCustom'),
+                                trigger_summary = cms.InputTag('selectedPatTriggerCustom'),
+                                muon_photon_match_src = cms.InputTag('muonPhotonMatchAOD'),
                                 muon_cuts = cms.string(''),
                                 muon_track_for_momentum = cms.string('TunePNew'),
                                 muon_track_for_momentum_CSC = cms.string('Inner'),
-                                muon_photon_match_src = cms.InputTag('muonPhotonMatchAOD'),
-                                trigger_or = cms.bool( True ), # 2016
                                 trigger_match_max_dR = cms.double(0.2),
-                                trigger_summary = cms.InputTag('selectedPatTriggerCustom'),
                                 bits = cms.InputTag("TriggerResults","","HLT"),
                                 prescales = cms.InputTag("patTrigger"),
+                                trigger_filters = cms.vstring(trigger_filters),
+                                trigger_path_names = cms.vstring(trigger_path_names),
                                 )
 
