@@ -463,7 +463,7 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
 
   for(pat::TriggerObjectStandAlone obj : *trigger_summary_src) {
     obj.unpackPathNames(names);
-    obj.unpackFilterLabels(event, *triggerBits); // for 2017~
+    // obj.unpackFilterLabels(event, *triggerBits); // for 2017~
     for (unsigned h = 0; h < obj.filterLabels().size(); ++h) {
 
       for(unsigned i_f=0; i_f<trigger_filters.size(); ++i_f) {
