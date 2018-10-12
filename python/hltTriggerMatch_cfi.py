@@ -29,7 +29,7 @@ trigger_filters_pt = [
   100
 ]
 
-trigger_match_2018 = make_string_cut_for_trigger_matching( trigger_path_names, trigger_filters_pt )
+trigger_match_2018 = '('+make_string_cut_for_trigger_matching( trigger_path_names, trigger_filters_pt )+')'
 
 
 trigger_path_names_2016 = [
@@ -45,7 +45,7 @@ trigger_filters_pt_2016 = [
   50
 ]
 
-trigger_match_2016 = make_string_cut_for_trigger_matching( trigger_path_names_2016, trigger_filters_pt_2016 )
+trigger_match_2016 = '('+make_string_cut_for_trigger_matching( trigger_path_names_2016, trigger_filters_pt_2016 )+')'
 
 
 # trigger_pt_threshold = 50
