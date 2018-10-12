@@ -13,6 +13,25 @@ def make_string_cut_for_trigger_matching( list_path_names, list_filters_pt ):
   return cut
 
 
+trigger_path_names = [
+  'Mu50',
+  'OldMu100',
+  'TkMu100'
+]
+trigger_filters = [
+  'hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q',
+  'hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q',
+  'hltL3fL1sMu25f0TkFiltered100Q'
+]
+trigger_filters_pt = [
+  50,
+  100,
+  100
+]
+
+trigger_match_2018 = make_string_cut_for_trigger_matching( trigger_path_names, trigger_filters_pt )
+
+
 trigger_path_names_2016 = [
   'Mu50',
   'TkMu50'
@@ -26,9 +45,7 @@ trigger_filters_pt_2016 = [
   50
 ]
 
-trigger_match_2018 = make_string_cut_for_trigger_matching( trigger_path_names_2016, trigger_filters_pt_2016 )
-trigger_match_2016 = trigger_match_2018
-
+trigger_match_2016 = make_string_cut_for_trigger_matching( trigger_path_names_2016, trigger_filters_pt_2016 )
 
 
 # trigger_pt_threshold = 50
