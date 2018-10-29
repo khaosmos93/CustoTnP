@@ -89,6 +89,20 @@ private:
     }
   };
 
+  struct lepton_pt_sort_Zwindow {
+    bool operator()(const pat::CompositeCandidate& lhs, const pat::CompositeCandidate& rhs) {
+
+      if( (fabs(lhs.mass()-91.2) < 10.0) && !(fabs(rhs.mass()-91.2) < 10.0) )
+        return true;
+      else if( !(fabs(lhs.mass()-91.2) < 10.0) && (fabs(rhs.mass()-91.2) < 10.0) )
+        return false;
+      else if( (fabs(lhs.mass()-91.2) < 10.0) && (fabs(rhs.mass()-91.2) < 10.0) )
+        return ( fabs(lhs.mass()-91.2) < fabs(rhs.mass()-91.2) );
+      else
+        return lepton_pt_sort()(lhs, rhs);
+    }
+  };
+
   void remove_overlap(pat::CompositeCandidateCollection&) const;
   std::vector<reco::TransientTrack> get_transient_tracks(const pat::CompositeCandidate&) const;
 
@@ -475,9 +489,18 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
   // Sort candidates so we keep either the ones with higher-pT
   // muons or the ones with larger invariant mass.
   if(sort_by_pt)
-    sort(new_cands->begin(), new_cands->end(), lepton_pt_sort());
+    sort(new_cands->begin(), new_cands->end(), lepton_pt_sort_Zwindow());
+    // sort(new_cands->begin(), new_cands->end(), lepton_pt_sort());
   else
     sort(new_cands->begin(), new_cands->end(), reverse_mass_sort());
+
+  if(new_cands->size() > 1) {
+    std::cout << "Size: " << new_cands->size() << std::endl;
+    pat::CompositeCandidateCollection::iterator c;
+    for(c = new_cands->begin(); c != new_cands->end(); ++c){
+      std::cout << "\t" << c->mass() << "\t\t" << dileptonDaughter(*c, 0)->pt() << "\t" << dileptonDaughter(*c, 1)->pt() << std::endl;
+    }
+  }
 
   // Remove cands of lower invariant mass that are comprised of a
   // lepton that has been used by a higher invariant mass one.
