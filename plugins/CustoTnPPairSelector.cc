@@ -89,20 +89,6 @@ private:
     }
   };
 
-  struct lepton_pt_sort_Zwindow {
-    bool operator()(const pat::CompositeCandidate& lhs, const pat::CompositeCandidate& rhs) {
-
-      if( (fabs(lhs.mass()-91.2) < 10.0) && !(fabs(rhs.mass()-91.2) < 10.0) )
-        return true;
-      else if( !(fabs(lhs.mass()-91.2) < 10.0) && (fabs(rhs.mass()-91.2) < 10.0) )
-        return false;
-      else if( (fabs(lhs.mass()-91.2) < 10.0) && (fabs(rhs.mass()-91.2) < 10.0) )
-        return ( fabs(lhs.mass()-91.2) < fabs(rhs.mass()-91.2) );
-      else
-        return lepton_pt_sort()(lhs, rhs);
-    }
-  };
-
   void remove_overlap(pat::CompositeCandidateCollection&) const;
   std::vector<reco::TransientTrack> get_transient_tracks(const pat::CompositeCandidate&) const;
 
@@ -120,6 +106,8 @@ private:
 
   std::pair<bool, float>             pt_ratio(const pat::CompositeCandidate&) const;
   std::pair<bool, float>             dil_deltaR(const pat::CompositeCandidate&) const;
+
+  bool                               is_multi_pair_with_Z(pat::CompositeCandidateCollection&) const;
 
   // If the variable to embed in the methods above is a simple int or
   // float or is going to be embedded wholesale with the generic
@@ -164,6 +152,8 @@ private:
   const bool cut_on_dil_deltaR;
   const double dil_deltaR_min;
 
+  const bool veto_multi_pair_with_Z;
+
   const bool samePV;
 
   edm::ESHandle<TransientTrackBuilder> ttkb;
@@ -204,6 +194,8 @@ CustoTnPPairSelector::CustoTnPPairSelector(const edm::ParameterSet& cfg)
     pt_ratio_max(cut_on_pt_ratio ? cfg.getParameter<double>("pt_ratio_max") : 1e99),
     cut_on_dil_deltaR(cfg.existsAs<double>("dil_deltaR_min")),
     dil_deltaR_min(cut_on_dil_deltaR ? cfg.getParameter<double>("dil_deltaR_min") : -2),
+
+    veto_multi_pair_with_Z(cfg.getParameter<bool>("veto_multi_pair_with_Z")),
 
     samePV(cfg.getParameter<bool>("samePV")),
 
@@ -358,6 +350,36 @@ std::pair<bool, float> CustoTnPPairSelector::dil_deltaR(const pat::CompositeCand
   return std::make_pair( the_deltaR > dil_deltaR_min , the_deltaR );
 }
 
+bool CustoTnPPairSelector::is_multi_pair_with_Z(pat::CompositeCandidateCollection& cands) const {
+
+  float window_size = 10.0;
+
+  if(cands.size() < 2)
+    return false;
+
+  bool is = false;
+
+  // temp
+  std::cout << "\nSize: " << new_cands->size() << std::endl;
+
+  pat::CompositeCandidateCollection::iterator c;
+  for(c = cands.begin(); c != cands.end(); ++c) {
+
+    // temp
+    std::cout << "\t" << c.mass() << std::endl;
+
+    if( fabs(c.mass()-91.2) < window_size ) {
+      is = true;
+      break;
+    }
+  }
+
+  // temp
+  std::cout << "\t\tis_multi_pair_with_Z --> " << is << std::endl;
+
+  return is;
+}
+
 bool CustoTnPPairSelector::TagAndProbeSelector(const pat::CompositeCandidate& dil,
                                                float lep0_dpt_over_pt, float lep1_dpt_over_pt) {
   // bool isTag0Probe1 = false;
@@ -489,18 +511,13 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
   // Sort candidates so we keep either the ones with higher-pT
   // muons or the ones with larger invariant mass.
   if(sort_by_pt)
-    sort(new_cands->begin(), new_cands->end(), lepton_pt_sort_Zwindow());
-    // sort(new_cands->begin(), new_cands->end(), lepton_pt_sort());
+    sort(new_cands->begin(), new_cands->end(), lepton_pt_sort());
   else
     sort(new_cands->begin(), new_cands->end(), reverse_mass_sort());
 
-  if(new_cands->size() > 1) {
-    std::cout << "Size: " << new_cands->size() << std::endl;
-    pat::CompositeCandidateCollection::iterator c;
-    for(c = new_cands->begin(); c != new_cands->end(); ++c){
-      std::cout << "\t" << c->mass() << "\t\t" << dileptonDaughter(*c, 0)->pt() << "\t" << dileptonDaughter(*c, 1)->pt() << std::endl;
-    }
-  }
+  // veto events with multiple dimuon pair with on-shell Z boson
+  if(veto_multi_pair_with_Z && is_multi_pair_with_Z(*new_cands))
+    new_cands->erase(new_cands->begin(), new_cands->end());
 
   // Remove cands of lower invariant mass that are comprised of a
   // lepton that has been used by a higher invariant mass one.
