@@ -7,8 +7,8 @@ from CustoTnP.Analyzer.hltTriggerMatch_cfi import trigger_match_2018
 
 # -- For both Tag and Probe -- ##
 default_cut = 'isGlobalMuon && ' \
-              'isTrackerMuon && ' \
               'abs(eta) < 2.4' # && '
+              # 'isTrackerMuon && ' \
               # 'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
               # 'isolationR03.sumPt < 30'
 
@@ -25,11 +25,12 @@ custo_cut =       'isGlobalMuon && ' \
                   'isolationR03.sumPt < 30 && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
-                  '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
-                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
+                  'globalTrack.hitPattern.numberOfValidMuonHits > 0 && ' \
+                  'numberOfMatchedStations > 1'
+                  # '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
+                  # '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
 
 custo_cut_nopt =  'isGlobalMuon && ' \
-                  'isTrackerMuon && ' \
                   'abs(eta) < 2.4 && ' \
                   'abs(dB) < 0.2 && ' \
                   'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
@@ -37,7 +38,7 @@ custo_cut_nopt =  'isGlobalMuon && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
                   '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
-                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
+                  'isTrackerMuon && ( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
 
 
 Pair_Cut = ''
@@ -50,10 +51,10 @@ Tag_dz_max = 0.5
 # -- For Probe -- #
 #--- no pT cut for eff vs pT, and apply pT cut separately
 Probe_cut = 'isGlobalMuon && ' \
-            'isTrackerMuon && ' \
             'abs(eta) < 2.4 && ' \
             'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
             'isolationR03.sumPt < 30'
+            # 'isTrackerMuon && ' \
 Probe_dpt_over_pt_max = 1e9
 Probe_dz_max = 1e9
 Probe_pt_cut = 53.0
@@ -76,6 +77,8 @@ Comparison_probe_cut = ''
 Comparison_probe_dpt_over_pt_max = 1e9
 Comparison_probe_dz_max = 1e9
 
+
+width = PI / 20.0
 
 allDimuons = cms.EDProducer('CustoTnPCombiner',
                             decay = cms.string('leptons:muons@+ leptons:muons@-'),
@@ -100,36 +103,7 @@ dimuons = cms.EDProducer('CustoTnPPairSelector',
                          pt_ratio_max = cms.double(3.0),
                          dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
 
-                         samePV = cms.bool( False ),
-
-                         max_candidates = cms.uint32(1),
-                         sort_by_pt = cms.bool(True),
-                         do_remove_overlap = cms.bool(True),
-                         ShutUp = cms.bool(True)  #True
-)
-
-dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
-                         src = cms.InputTag('allDimuons'),
-                         reco_muon_src = cms.InputTag('muons'),
-                         muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
-                         dtseg_src = cms.InputTag('dt4DSegments'),
-                         cscseg_src = cms.InputTag('cscSegments'),
-
-                         vertex_src = cms.InputTag('offlinePrimaryVertices'),
-                         cut = cms.string(Pair_Cut),                                  # simple cuts for dilepton pair, Pair_Cut
-                         tag_cut = cms.string(Tag_cut),                               # Tag lepton selection, Tag_cut
-                         tag_dpt_over_pt_max = cms.double(Tag_dpt_over_pt_max),       # Tag dpT/pT
-                         tag_dz_max = cms.double(Tag_dz_max),                         # Tag dz
-                         probe_cut = cms.string(Probe_cut),                           # Probe lepton selection, Probe_cut
-                         probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
-                         probe_dz_max = cms.double(Probe_dz_max),                     # Probe dz
-
-                         back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
-                         vertex_chi2_max = cms.double(20),
-                         pt_ratio_max = cms.double(3.0),
-                         dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
-
-                         veto_others_dphi_min = cms.double(Probe_veto_other_dphi_min),  #0.6
+                         veto_multi_pair_with_Z = cms.bool(True),
 
                          samePV = cms.bool( False ),
 
@@ -138,8 +112,6 @@ dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
                          do_remove_overlap = cms.bool(True),
                          ShutUp = cms.bool(True)  #True
 )
-
-width = PI / 20.0
 
 HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
                                dilepton_src = cms.InputTag('dimuons'),
@@ -187,6 +159,39 @@ HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
                                                           82.5, 84.5, 86.5, 88.5, 90.5, 92.5, 94.5, 96.5, 98.5, 100.5 ),
 
                                ShutUp = cms.bool(True)  #True
+)
+
+
+# Modules for AOD should be updated
+dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
+                         src = cms.InputTag('allDimuons'),
+                         reco_muon_src = cms.InputTag('muons'),
+                         muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
+                         dtseg_src = cms.InputTag('dt4DSegments'),
+                         cscseg_src = cms.InputTag('cscSegments'),
+
+                         vertex_src = cms.InputTag('offlinePrimaryVertices'),
+                         cut = cms.string(Pair_Cut),                                  # simple cuts for dilepton pair, Pair_Cut
+                         tag_cut = cms.string(Tag_cut),                               # Tag lepton selection, Tag_cut
+                         tag_dpt_over_pt_max = cms.double(Tag_dpt_over_pt_max),       # Tag dpT/pT
+                         tag_dz_max = cms.double(Tag_dz_max),                         # Tag dz
+                         probe_cut = cms.string(Probe_cut),                           # Probe lepton selection, Probe_cut
+                         probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
+                         probe_dz_max = cms.double(Probe_dz_max),                     # Probe dz
+
+                         back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
+                         vertex_chi2_max = cms.double(20),
+                         pt_ratio_max = cms.double(3.0),
+                         dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
+
+                         veto_others_dphi_min = cms.double(Probe_veto_other_dphi_min),  #0.6
+
+                         samePV = cms.bool( False ),
+
+                         max_candidates = cms.uint32(1),
+                         sort_by_pt = cms.bool(True),
+                         do_remove_overlap = cms.bool(True),
+                         ShutUp = cms.bool(True)  #True
 )
 
 HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_AOD',
