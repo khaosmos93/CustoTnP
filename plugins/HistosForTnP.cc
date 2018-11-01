@@ -326,29 +326,30 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   */
 
   Double_t eta_bins_for_2D[15] = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
+
   // Probe
   ProbePt = fs->make<TH1F>("ProbePt", "Probe pT", 10000, 0, 10000);
   ProbeEta = fs->make<TH1F>("ProbeEta", "Probe #eta",    96, -4.8, 4.8);
   ProbePhi = fs->make<TH1F>("ProbePhi", "Probe #phi", 41, -TMath::Pi(), TMath::Pi());
   ProbeNVertices = fs->make<TH1F>("ProbeNVertices", "Probe # vertices/event",  200, 0, 200);
-  ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  ProbeEtaPt = fs->make<TH2F>("ProbeEtaPt", "Probe #eta pT",    eta_bins_for_2D, 10000, 0, 10000);
+  ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  ProbeEtaPt = fs->make<TH2F>("ProbeEtaPt", "Probe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
   // ProbeDptPtEta = fs->make<TH2F>("ProbeDptPtEta", "Probe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
 
   PassingProbePt = fs->make<TH1F>("PassingProbePt", "PassingProbe pT", 10000, 0, 10000);
   PassingProbeEta = fs->make<TH1F>("PassingProbeEta", "PassingProbe #eta",    96, -4.8, 4.8);
   PassingProbePhi = fs->make<TH1F>("PassingProbePhi", "PassingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
   PassingProbeNVertices = fs->make<TH1F>("PassingProbeNVertices", "PassingProbe # vertices/event",  200, 0, 200);
-  PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  PassingProbeEtaPt = fs->make<TH2F>("PassingProbeEtaPt", "PassingProbe #eta pT",    eta_bins_for_2D, 10000, 0, 10000);
+  PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  PassingProbeEtaPt = fs->make<TH2F>("PassingProbeEtaPt", "PassingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
   // PassingProbeDptPtEta = fs->make<TH2F>("PassingProbeDptPtEta", "PassingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
 
   FailingProbePt = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
   FailingProbeEta = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    96, -4.8, 4.8);
   FailingProbePhi = fs->make<TH1F>("FailingProbePhi", "FailingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
   FailingProbeNVertices = fs->make<TH1F>("FailingProbeNVertices", "FailingProbe # vertices/event",  200, 0, 200);
-  FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  FailingProbeEtaPt = fs->make<TH2F>("FailingProbeEtaPt", "FailingProbe #eta pT",    eta_bins_for_2D, 10000, 0, 10000);
+  FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  FailingProbeEtaPt = fs->make<TH2F>("FailingProbeEtaPt", "FailingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
   // FailingProbeDptPtEta = fs->make<TH2F>("FailingProbeDptPtEta", "FailingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
 
   // TnP pair
