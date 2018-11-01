@@ -359,23 +359,13 @@ bool CustoTnPPairSelector::is_multi_pair_with_Z(pat::CompositeCandidateCollectio
 
   bool is = false;
 
-  // temp
-  std::cout << "\nSize: " << cands.size() << std::endl;
-
   pat::CompositeCandidateCollection::iterator c;
   for(c = cands.begin(); c != cands.end(); ++c) {
-
-    // temp
-    std::cout << "\t" << c->mass() << std::endl;
-
     if( fabs(c->mass()-91.2) < window_size ) {
       is = true;
       break;
     }
   }
-
-  // temp
-  std::cout << "\t\tis_multi_pair_with_Z --> " << is << std::endl;
 
   return is;
 }

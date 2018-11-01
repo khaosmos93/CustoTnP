@@ -321,12 +321,6 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
     }
   }
   if(the_pt > 0) {
-    // temp
-    std::cout << "\nL1 match:" << std::endl;
-    std::cout << "\t L122MatchDr:" << the_dr << std::endl;
-    std::cout << "\t L122MatchPt:" << the_pt << std::endl;
-    std::cout << "\t L122MatchQ :" << the_q << std::endl;
-
     new_mu->addUserFloat("L122MatchPt",     the_pt);
     new_mu->addUserFloat("L122MatchEta",    the_eta);
     new_mu->addUserFloat("L122MatchPhi",    the_phi);
