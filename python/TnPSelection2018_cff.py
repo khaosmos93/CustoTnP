@@ -16,8 +16,7 @@ tight_cut = ''  #trigger_match
 
 
 # -- Customized cuts -- #
-custo_cut =       'isGlobalMuon && ' \
-                  'isTrackerMuon && ' \
+tag_custo_cut =   'isGlobalMuon && ' \
                   'pt > 53 && ' \
                   'abs(eta) < 2.4 && ' \
                   'abs(dB) < 0.2 && ' \
@@ -28,6 +27,7 @@ custo_cut =       'isGlobalMuon && ' \
                   'globalTrack.hitPattern.numberOfValidMuonHits > 0 && ' \
                   'numberOfMatchedStations > 1'
                   # '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
+                  # 'isTrackerMuon && ' \
                   # '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
 
 custo_cut_nopt =  'isGlobalMuon && ' \
@@ -38,13 +38,12 @@ custo_cut_nopt =  'isGlobalMuon && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
                   '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
-                  'isTrackerMuon && ( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
-
+                  '( ( numberOfMatchedStations>1 ) || ( isTrackerMuon && numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
 
 Pair_Cut = ''
 
 # -- For Tag -- #
-Tag_cut = custo_cut + ' && ' + trigger_match_2018  # kill Trigger bias with Tag
+Tag_cut = tag_custo_cut + ' && ' + trigger_match_2018  # kill Trigger bias with Tag
 Tag_dpt_over_pt_max = 0.3
 Tag_dz_max = 0.5
 

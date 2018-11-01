@@ -48,6 +48,14 @@ trigger_filters_pt_2016 = [
 trigger_match_2016 = '('+make_string_cut_for_trigger_matching( trigger_path_names_2016, trigger_filters_pt_2016 )+')'
 
 
+#-- L1 match
+l1_match = '( userFloat("L122MatchPt")>=22 && userInt("L122MatchQ")==12 )'
+
+
+
+
+
+
 # trigger_pt_threshold = 50
 # offline_pt_threshold = 53 #?
 # trigger_paths = ['HLT_Mu50_v%i' % i for i in (6, 7, 8, 9, 10, 11)]
@@ -59,12 +67,6 @@ trigger_match_2016 = '('+make_string_cut_for_trigger_matching( trigger_path_name
 # prescaled_offline_pt_threshold = 27
 # prescaled_trigger_paths = ['HLT_Mu27_v%i' % i for i in (6, 7, 8, 9, 10, 11)]
 # prescaled_trigger_match = trigger_match.replace('Trigger', 'prescaledTrigger').replace('%i' % trigger_pt_threshold, '%i' % prescaled_trigger_pt_threshold)
-
-
-
-
-
-
 
 
 #--- Not using
