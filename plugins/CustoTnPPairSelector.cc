@@ -107,6 +107,8 @@ private:
   std::pair<bool, float>             pt_ratio(const pat::CompositeCandidate&) const;
   std::pair<bool, float>             dil_deltaR(const pat::CompositeCandidate&) const;
 
+  bool                               is_multi_pair_with_Z(pat::CompositeCandidateCollection&) const;
+
   // If the variable to embed in the methods above is a simple int or
   // float or is going to be embedded wholesale with the generic
   // userData mechanism, we'll do those explicitly in the loop in
@@ -150,6 +152,8 @@ private:
   const bool cut_on_dil_deltaR;
   const double dil_deltaR_min;
 
+  const bool veto_multi_pair_with_Z;
+
   const bool samePV;
 
   edm::ESHandle<TransientTrackBuilder> ttkb;
@@ -190,6 +194,8 @@ CustoTnPPairSelector::CustoTnPPairSelector(const edm::ParameterSet& cfg)
     pt_ratio_max(cut_on_pt_ratio ? cfg.getParameter<double>("pt_ratio_max") : 1e99),
     cut_on_dil_deltaR(cfg.existsAs<double>("dil_deltaR_min")),
     dil_deltaR_min(cut_on_dil_deltaR ? cfg.getParameter<double>("dil_deltaR_min") : -2),
+
+    veto_multi_pair_with_Z(cfg.getParameter<bool>("veto_multi_pair_with_Z")),
 
     samePV(cfg.getParameter<bool>("samePV")),
 
@@ -344,6 +350,26 @@ std::pair<bool, float> CustoTnPPairSelector::dil_deltaR(const pat::CompositeCand
   return std::make_pair( the_deltaR > dil_deltaR_min , the_deltaR );
 }
 
+bool CustoTnPPairSelector::is_multi_pair_with_Z(pat::CompositeCandidateCollection& cands) const {
+
+  float window_size = 10.0;
+
+  if(cands.size() < 2)
+    return false;
+
+  bool is = false;
+
+  pat::CompositeCandidateCollection::iterator c;
+  for(c = cands.begin(); c != cands.end(); ++c) {
+    if( fabs(c->mass()-91.2) < window_size ) {
+      is = true;
+      break;
+    }
+  }
+
+  return is;
+}
+
 bool CustoTnPPairSelector::TagAndProbeSelector(const pat::CompositeCandidate& dil,
                                                float lep0_dpt_over_pt, float lep1_dpt_over_pt) {
   // bool isTag0Probe1 = false;
@@ -478,6 +504,10 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
     sort(new_cands->begin(), new_cands->end(), lepton_pt_sort());
   else
     sort(new_cands->begin(), new_cands->end(), reverse_mass_sort());
+
+  // veto events with multiple dimuon pair with on-shell Z boson
+  if(veto_multi_pair_with_Z && is_multi_pair_with_Z(*new_cands))
+    new_cands->erase(new_cands->begin(), new_cands->end());
 
   // Remove cands of lower invariant mass that are comprised of a
   // lepton that has been used by a higher invariant mass one.

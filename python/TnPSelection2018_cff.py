@@ -7,8 +7,8 @@ from CustoTnP.Analyzer.hltTriggerMatch_cfi import trigger_match_2018
 
 # -- For both Tag and Probe -- ##
 default_cut = 'isGlobalMuon && ' \
-              'isTrackerMuon && ' \
               'abs(eta) < 2.4' # && '
+              # 'isTrackerMuon && ' \
               # 'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
               # 'isolationR03.sumPt < 30'
 
@@ -16,8 +16,7 @@ tight_cut = ''  #trigger_match
 
 
 # -- Customized cuts -- #
-custo_cut =       'isGlobalMuon && ' \
-                  'isTrackerMuon && ' \
+tag_custo_cut =   'isGlobalMuon && ' \
                   'pt > 53 && ' \
                   'abs(eta) < 2.4 && ' \
                   'abs(dB) < 0.2 && ' \
@@ -25,35 +24,36 @@ custo_cut =       'isGlobalMuon && ' \
                   'isolationR03.sumPt < 30 && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
-                  '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
-                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
+                  'globalTrack.hitPattern.numberOfValidMuonHits > 0 && ' \
+                  'numberOfMatchedStations > 1'
+                  # '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
+                  # 'isTrackerMuon && ' \
+                  # '( ( numberOfMatchedStations>1 ) || ( isTrackerMuon && numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
 
 custo_cut_nopt =  'isGlobalMuon && ' \
-                  'isTrackerMuon && ' \
                   'abs(eta) < 2.4 && ' \
                   'abs(dB) < 0.2 && ' \
-                  'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
-                  'isolationR03.sumPt < 30 && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
                   '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
-                  '( ( numberOfMatchedStations>1 ) || ( numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
-
+                  '( ( numberOfMatchedStations>1 ) || ( isTrackerMuon && numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
+                  # 'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
+                  # 'isolationR03.sumPt < 30 && ' \
 
 Pair_Cut = ''
 
 # -- For Tag -- #
-Tag_cut = custo_cut + ' && ' + trigger_match_2018  # kill Trigger bias with Tag
+Tag_cut = tag_custo_cut + ' && ' + trigger_match_2018  # kill Trigger bias with Tag
 Tag_dpt_over_pt_max = 0.3
 Tag_dz_max = 0.5
 
 # -- For Probe -- #
 #--- no pT cut for eff vs pT, and apply pT cut separately
 Probe_cut = 'isGlobalMuon && ' \
-            'isTrackerMuon && ' \
             'abs(eta) < 2.4 && ' \
             'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
             'isolationR03.sumPt < 30'
+            # 'isTrackerMuon && ' \
 Probe_dpt_over_pt_max = 1e9
 Probe_dz_max = 1e9
 Probe_pt_cut = 53.0
@@ -76,6 +76,27 @@ Comparison_probe_cut = ''
 Comparison_probe_dpt_over_pt_max = 1e9
 Comparison_probe_dz_max = 1e9
 
+# -- Binnings (for ID effificney) -- #
+width = PI / 20.0
+pt_bins   = [0, 20, 25, 30, 40, 50, 60, 120, 200, 500, 1e6]
+absp_bins = [0, 1e6]
+eta_bins  = [-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4]
+phi_bins  = [ -20*width, -19*width, -18*width, -17*width, -16*width,
+              -15*width, -14*width, -13*width, -12*width, -11*width,
+              -10*width, -9*width, -8*width, -7*width, -6*width,
+              -5*width, -4*width, -3*width, -2*width, -1*width,
+              0*width, 1*width, 2*width, 3*width, 4*width,
+              5*width, 6*width, 7*width, 8*width, 9*width,
+              10*width, 11*width, 12*width, 13*width, 14*width,
+              15*width, 16*width, 17*width, 18*width, 19*width,
+              20*width
+]
+vtx_bins  = [ 2.5, 4.5, 6.5, 8.5, 10.5, 12.5, 14.5, 16.5, 18.5, 20.5,
+              22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5, 36.5, 38.5, 40.5,
+              42.5, 44.5, 46.5, 48.5, 50.5, 52.5, 54.5, 56.5, 58.5, 60.5,
+              62.5, 64.5, 66.5, 68.5, 70.5, 72.5, 74.5, 76.5, 78.5, 80.5,
+              82.5, 84.5, 86.5, 88.5, 90.5, 92.5, 94.5, 96.5, 98.5, 100.5
+]
 
 allDimuons = cms.EDProducer('CustoTnPCombiner',
                             decay = cms.string('leptons:muons@+ leptons:muons@-'),
@@ -100,6 +121,8 @@ dimuons = cms.EDProducer('CustoTnPPairSelector',
                          pt_ratio_max = cms.double(3.0),
                          dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
 
+                         veto_multi_pair_with_Z = cms.bool(True),
+
                          samePV = cms.bool( False ),
 
                          max_candidates = cms.uint32(1),
@@ -108,6 +131,44 @@ dimuons = cms.EDProducer('CustoTnPPairSelector',
                          ShutUp = cms.bool(True)  #True
 )
 
+HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
+                               dilepton_src = cms.InputTag('dimuons'),
+                               beamspot_src = cms.InputTag('offlineBeamSpot'),
+                               vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
+                               use_bs_and_pv = cms.bool(True),
+                               useMadgraphWeight = cms.bool(True),
+
+                               # bin width = 1, starting from 0
+                               pileup_src = cms.InputTag('slimmedAddPileupInfo'),
+
+                               # minBias Xsec = ??? #
+                               vec_PileUpWeight = cms.vdouble( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ),
+
+
+                               probe_pt_min = cms.double(Probe_pt_cut),
+
+                               passing_probe_cut = cms.string(Passing_probe_cut),
+                               passing_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
+                               passing_probe_dz_max = cms.double(Passing_probe_dz_max),
+
+                               comparison_probe_cut = cms.string(Comparison_probe_cut),
+                               comparison_probe_dpt_over_pt_max = cms.double(Comparison_probe_dpt_over_pt_max),
+                               comparison_probe_dz_max = cms.double(Comparison_probe_dz_max),
+
+                               minMass = cms.double(0),
+                               maxMass = cms.double(10000),
+                                                                                        #probe pT cut
+                               vec_PtBins = cms.vdouble( pt_bins ),
+                               vec_AbsPBins = cms.vdouble( absp_bins ),
+                               vec_EtaBins = cms.vdouble( eta_bins ),
+                               vec_PhiBins = cms.vdouble( phi_bins ),
+                               vec_VtxBins = cms.vdouble( vtx_bins ),
+
+                               ShutUp = cms.bool(True)  #True
+)
+
+
+# Modules for AOD should be updated
 dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
                          src = cms.InputTag('allDimuons'),
                          reco_muon_src = cms.InputTag('muons'),
@@ -139,56 +200,6 @@ dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
                          ShutUp = cms.bool(True)  #True
 )
 
-width = PI / 20.0
-
-HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
-                               dilepton_src = cms.InputTag('dimuons'),
-                               beamspot_src = cms.InputTag('offlineBeamSpot'),
-                               vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
-                               use_bs_and_pv = cms.bool(True),
-                               useMadgraphWeight = cms.bool(True),
-
-                               # bin width = 1, starting from 0
-                               pileup_src = cms.InputTag('slimmedAddPileupInfo'),
-
-                               # minBias Xsec = ??? #
-                               vec_PileUpWeight = cms.vdouble( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ),
-
-
-                               probe_pt_min = cms.double(Probe_pt_cut),
-
-                               passing_probe_cut = cms.string(Passing_probe_cut),
-                               passing_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
-                               passing_probe_dz_max = cms.double(Passing_probe_dz_max),
-
-                               comparison_probe_cut = cms.string(Comparison_probe_cut),
-                               comparison_probe_dpt_over_pt_max = cms.double(Comparison_probe_dpt_over_pt_max),
-                               comparison_probe_dz_max = cms.double(Comparison_probe_dz_max),
-
-                               minMass = cms.double(0),
-                               maxMass = cms.double(10000),
-                                                                                        #probe pT cut
-                               vec_PtBins = cms.vdouble( 0, 20, 25, 30, 40, 45, 48, 50, 53, 55, 60, 80, 120, 200, 500, 1500, 3500, 5000 ),
-                               vec_AbsPBins = cms.vdouble( 0, 53, 55, 60, 80, 120, 200, 500, 1000, 3000, 5000 ),
-                               vec_EtaBins = cms.vdouble( -2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4 ),
-                               vec_PhiBins = cms.vdouble( -20*width, -19*width, -18*width, -17*width, -16*width,
-                                                          -15*width, -14*width, -13*width, -12*width, -11*width,
-                                                          -10*width, -9*width, -8*width, -7*width, -6*width,
-                                                          -5*width, -4*width, -3*width, -2*width, -1*width,
-                                                          0*width, 1*width, 2*width, 3*width, 4*width,
-                                                          5*width, 6*width, 7*width, 8*width, 9*width,
-                                                          10*width, 11*width, 12*width, 13*width, 14*width,
-                                                          15*width, 16*width, 17*width, 18*width, 19*width,
-                                                          20*width ),
-                               vec_VtxBins = cms.vdouble( 2.5, 4.5, 6.5, 8.5, 10.5, 12.5, 14.5, 16.5, 18.5, 20.5,
-                                                          22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5, 36.5, 38.5, 40.5,
-                                                          42.5, 44.5, 46.5, 48.5, 50.5, 52.5, 54.5, 56.5, 58.5, 60.5,
-                                                          62.5, 64.5, 66.5, 68.5, 70.5, 72.5, 74.5, 76.5, 78.5, 80.5,
-                                                          82.5, 84.5, 86.5, 88.5, 90.5, 92.5, 94.5, 96.5, 98.5, 100.5 ),
-
-                               ShutUp = cms.bool(True)  #True
-)
-
 HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_AOD',
                                dilepton_src = cms.InputTag('dimuonsAOD'),
                                beamspot_src = cms.InputTag('offlineBeamSpot'),
@@ -218,23 +229,11 @@ HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_AOD',
                                minMass = cms.double(0),
                                maxMass = cms.double(10000),
                                                                                         #probe pT cut
-                               vec_PtBins = cms.vdouble( 0, 20, 25, 30, 40, 45, 48, 50, 53, 55, 60, 80, 120, 200, 500, 1500, 3500, 5000 ),
-                               vec_AbsPBins = cms.vdouble( 0, 53, 55, 60, 80, 120, 200, 500, 1000, 3000, 5000 ),
-                               vec_EtaBins = cms.vdouble( -2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4 ),
-                               vec_PhiBins = cms.vdouble( -20*width, -19*width, -18*width, -17*width, -16*width,
-                                                          -15*width, -14*width, -13*width, -12*width, -11*width,
-                                                          -10*width, -9*width, -8*width, -7*width, -6*width,
-                                                          -5*width, -4*width, -3*width, -2*width, -1*width,
-                                                          0*width, 1*width, 2*width, 3*width, 4*width,
-                                                          5*width, 6*width, 7*width, 8*width, 9*width,
-                                                          10*width, 11*width, 12*width, 13*width, 14*width,
-                                                          15*width, 16*width, 17*width, 18*width, 19*width,
-                                                          20*width ),
-                               vec_VtxBins = cms.vdouble( 2.5, 4.5, 6.5, 8.5, 10.5, 12.5, 14.5, 16.5, 18.5, 20.5,
-                                                          22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5, 36.5, 38.5, 40.5,
-                                                          42.5, 44.5, 46.5, 48.5, 50.5, 52.5, 54.5, 56.5, 58.5, 60.5,
-                                                          62.5, 64.5, 66.5, 68.5, 70.5, 72.5, 74.5, 76.5, 78.5, 80.5,
-                                                          82.5, 84.5, 86.5, 88.5, 90.5, 92.5, 94.5, 96.5, 98.5, 100.5 ),
+                               vec_PtBins = cms.vdouble( pt_bins ),
+                               vec_AbsPBins = cms.vdouble( absp_bins ),
+                               vec_EtaBins = cms.vdouble( eta_bins ),
+                               vec_PhiBins = cms.vdouble( phi_bins ),
+                               vec_VtxBins = cms.vdouble( vtx_bins ),
 
                                vec_NSegsBins = cms.vdouble( -0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 13.5, 20.5, 40.5, 100.5, 500.5 ),
                                vec_NShowersBins = cms.vdouble( -0.5, 0.5, 1.5, 2.5, 3.5, 4.5 ),

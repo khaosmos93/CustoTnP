@@ -36,6 +36,7 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               prescales = cms.InputTag("patTrigger"),
                               trigger_filters = cms.vstring(trigger_filters),
                               trigger_path_names = cms.vstring(trigger_path_names),
+                              l1 = cms.InputTag("gmtStage2Digis", "Muon", "RECO")
                               )
 
 leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
@@ -51,5 +52,6 @@ leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
                                 prescales = cms.InputTag("patTrigger"),
                                 trigger_filters = cms.vstring(trigger_filters),
                                 trigger_path_names = cms.vstring(trigger_path_names),
+                                l1 = cms.InputTag("gmtStage2Digis", "Muon", "RECO")
                                 )
 

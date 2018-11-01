@@ -119,24 +119,24 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *ProbePhi;
   TH1F *ProbeNVertices;
   TH2F *ProbeEtaPhi;
-  TH2F *ProbePtEta;
-  TH2F *ProbeDptPtEta;
+  TH2F *ProbeEtaPt;
+  // TH2F *ProbeDptPtEta;
 
   TH1F *PassingProbePt;
   TH1F *PassingProbeEta;
   TH1F *PassingProbePhi;
   TH1F *PassingProbeNVertices;
   TH2F *PassingProbeEtaPhi;
-  TH2F *PassingProbePtEta;
-  TH2F *PassingProbeDptPtEta;
+  TH2F *PassingProbeEtaPt;
+  // TH2F *PassingProbeDptPtEta;
 
   TH1F *FailingProbePt;
   TH1F *FailingProbeEta;
   TH1F *FailingProbePhi;
   TH1F *FailingProbeNVertices;
   TH2F *FailingProbeEtaPhi;
-  TH2F *FailingProbePtEta;
-  TH2F *FailingProbeDptPtEta;
+  TH2F *FailingProbeEtaPt;
+  // TH2F *FailingProbeDptPtEta;
 
   TH1F *PairNoPtMass;
   TH1F *PairNoPtPt;
@@ -158,6 +158,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *FailingPairEta;
   TH1F *FailingPairRap;
 
+  /*
   TH1F* ProbeAbsTkIso;
   TH1F* ProbeRelTkIso;
   TH1F* ProbeChi2dof;
@@ -173,6 +174,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F* ProbeNPxLayers;
   TH1F* ProbeNStLayers;
   TH1F* ProbeNTkLayers;
+  */
 
   // -- bin distributions for passing and failing probes -- //
   std::vector<double> vec_PtBins;
@@ -303,7 +305,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   // Tag
   TagPt = fs->make<TH1F>("TagPt", "Tag pT", 10000, 0, 10000);
   TagEta = fs->make<TH1F>("TagEta", "Tag #eta",    96, -4.8, 4.8);
-  TagPhi = fs->make<TH1F>("TagPhi", "Tag #phi", 100, -TMath::Pi(), TMath::Pi());
+  TagPhi = fs->make<TH1F>("TagPhi", "Tag #phi", 41, -TMath::Pi(), TMath::Pi());
 
   /*
   TagAbsTkIso = fs->make<TH1F>("TagAbsTkIso", "Tag Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
@@ -323,53 +325,56 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   TagNTkLayers = fs->make<TH1F>("TagNTkLayers", "Tag # tracker layers", 30, 0, 30);
   */
 
+  Double_t eta_bins_for_2D[15] = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
+
   // Probe
   ProbePt = fs->make<TH1F>("ProbePt", "Probe pT", 10000, 0, 10000);
   ProbeEta = fs->make<TH1F>("ProbeEta", "Probe #eta",    96, -4.8, 4.8);
-  ProbePhi = fs->make<TH1F>("ProbePhi", "Probe #phi", 100, -TMath::Pi(), TMath::Pi());
+  ProbePhi = fs->make<TH1F>("ProbePhi", "Probe #phi", 41, -TMath::Pi(), TMath::Pi());
   ProbeNVertices = fs->make<TH1F>("ProbeNVertices", "Probe # vertices/event",  200, 0, 200);
-  ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    96, -4.8, 4.8, 100, -TMath::Pi(), TMath::Pi());
-  ProbePtEta = fs->make<TH2F>("ProbePtEta", "Probe pT #eta",    10000, 0, 10000, 96, -4.8, 4.8);
-  ProbeDptPtEta = fs->make<TH2F>("ProbeDptPtEta", "Probe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
+  ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  ProbeEtaPt = fs->make<TH2F>("ProbeEtaPt", "Probe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
+  // ProbeDptPtEta = fs->make<TH2F>("ProbeDptPtEta", "Probe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
 
   PassingProbePt = fs->make<TH1F>("PassingProbePt", "PassingProbe pT", 10000, 0, 10000);
   PassingProbeEta = fs->make<TH1F>("PassingProbeEta", "PassingProbe #eta",    96, -4.8, 4.8);
-  PassingProbePhi = fs->make<TH1F>("PassingProbePhi", "PassingProbe #phi", 100, -TMath::Pi(), TMath::Pi());
+  PassingProbePhi = fs->make<TH1F>("PassingProbePhi", "PassingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
   PassingProbeNVertices = fs->make<TH1F>("PassingProbeNVertices", "PassingProbe # vertices/event",  200, 0, 200);
-  PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    96, -4.8, 4.8, 100, -TMath::Pi(), TMath::Pi());
-  PassingProbePtEta = fs->make<TH2F>("PassingProbePtEta", "PassingProbe pT #eta",    10000, 0, 10000, 96, -4.8, 4.8);
-  PassingProbeDptPtEta = fs->make<TH2F>("PassingProbeDptPtEta", "PassingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
+  PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  PassingProbeEtaPt = fs->make<TH2F>("PassingProbeEtaPt", "PassingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
+  // PassingProbeDptPtEta = fs->make<TH2F>("PassingProbeDptPtEta", "PassingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
 
   FailingProbePt = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
   FailingProbeEta = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    96, -4.8, 4.8);
-  FailingProbePhi = fs->make<TH1F>("FailingProbePhi", "FailingProbe #phi", 100, -TMath::Pi(), TMath::Pi());
+  FailingProbePhi = fs->make<TH1F>("FailingProbePhi", "FailingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
   FailingProbeNVertices = fs->make<TH1F>("FailingProbeNVertices", "FailingProbe # vertices/event",  200, 0, 200);
-  FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    96, -4.8, 4.8, 100, -TMath::Pi(), TMath::Pi());
-  FailingProbePtEta = fs->make<TH2F>("FailingProbePtEta", "FailingProbe pT #eta",    10000, 0, 10000, 96, -4.8, 4.8);
-  FailingProbeDptPtEta = fs->make<TH2F>("FailingProbeDptPtEta", "FailingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
+  FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  FailingProbeEtaPt = fs->make<TH2F>("FailingProbeEtaPt", "FailingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
+  // FailingProbeDptPtEta = fs->make<TH2F>("FailingProbeDptPtEta", "FailingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
 
   // TnP pair
-  PairNoPtMass = fs->make<TH1F>("PairNoPtMass", "TnP PairNoPt mass", 20000, 0, 20000);
+  PairNoPtMass = fs->make<TH1F>("PairNoPtMass", "TnP PairNoPt mass", 10000, 0, 10000);
   PairNoPtPt = fs->make<TH1F>("PairNoPtPt", "TnP PairNoPt pT", 10000, 0, 10000);
   PairNoPtEta = fs->make<TH1F>("PairNoPtEta", "TnP PairNoPt #eta",    96, -4.8, 4.8);
   PairNoPtRap = fs->make<TH1F>("PairNoPtRap", "TnP PairNoPt y", 96, -4.8, 4.8);
 
-  PairMass = fs->make<TH1F>("PairMass", "TnP Pair mass", 20000, 0, 20000);
+  PairMass = fs->make<TH1F>("PairMass", "TnP Pair mass", 10000, 0, 10000);
   PairPt = fs->make<TH1F>("PairPt", "TnP Pair pT", 10000, 0, 10000);
   PairEta = fs->make<TH1F>("PairEta", "TnP Pair #eta",    96, -4.8, 4.8);
   PairRap = fs->make<TH1F>("PairRap", "TnP Pair y", 96, -4.8, 4.8);
 
-  PassingPairMass = fs->make<TH1F>("PassingPairMass", "TnP PassingPair mass", 20000, 0, 20000);
+  PassingPairMass = fs->make<TH1F>("PassingPairMass", "TnP PassingPair mass", 10000, 0, 10000);
   PassingPairPt = fs->make<TH1F>("PassingPairPt", "TnP PassingPair pT", 10000, 0, 10000);
   PassingPairEta = fs->make<TH1F>("PassingPairEta", "TnP PassingPair #eta",    96, -4.8, 4.8);
   PassingPairRap = fs->make<TH1F>("PassingPairRap", "TnP PassingPair y", 96, -4.8, 4.8);
 
-  FailingPairMass = fs->make<TH1F>("FailingPairMass", "TnP FailingPair mass", 20000, 0, 20000);
+  FailingPairMass = fs->make<TH1F>("FailingPairMass", "TnP FailingPair mass", 10000, 0, 10000);
   FailingPairPt = fs->make<TH1F>("FailingPairPt", "TnP FailingPair pT", 10000, 0, 10000);
   FailingPairEta = fs->make<TH1F>("FailingPairEta", "TnP FailingPair #eta",    96, -4.8, 4.8);
   FailingPairRap = fs->make<TH1F>("FailingPairRap", "TnP FailingPair y", 96, -4.8, 4.8);
 
   // Probe ID variable
+  /*
   ProbeAbsTkIso = fs->make<TH1F>("ProbeAbsTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
   ProbeRelTkIso = fs->make<TH1F>("ProbeRelTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT / tk. pT", 500, 0, 5);
   ProbeChi2dof = fs->make<TH1F>("ProbeChi2dof", "Probe #chi^{2}/dof", 500, 0, 50);
@@ -385,6 +390,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeNPxLayers = fs->make<TH1F>("ProbeNPxLayers", "Probe # pixel layers", 10, 0, 10);
   ProbeNStLayers = fs->make<TH1F>("ProbeNStLayers", "Probe # strip layers", 20, 0, 20);
   ProbeNTkLayers = fs->make<TH1F>("ProbeNTkLayers", "Probe # tracker layers", 30, 0, 30);
+  */
 
   // Bin histograms
   Pt = make_bin_histos("Pt", vec_PtBins);
@@ -461,8 +467,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
                                                  bool  isPassNoPt ) {
 
   //for offline variables
-  //const pat::Muon* TagPat = toConcretePtr<pat::Muon>(TagMu);
-  const pat::Muon* ProbePat = toConcretePtr<pat::Muon>(ProbeMu);
+  // const pat::Muon* TagPat = toConcretePtr<pat::Muon>(TagMu);
+  // const pat::Muon* ProbePat = toConcretePtr<pat::Muon>(ProbeMu);
 
   TagPt->Fill( TagMu->pt(), _totalWeight );
   TagEta->Fill( TagMu->eta(), _totalWeight );
@@ -522,8 +528,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
     ProbePhi->Fill( ProbeMu->phi(), _totalWeight );
     ProbeNVertices->Fill( nVtx, _totalWeight );
     ProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
-    ProbePtEta->Fill( ProbeMu->pt(), ProbeMu->eta(), _totalWeight );
-    ProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
+    ProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
+    // ProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
 
     PairMass->Fill( dil.mass(), _totalWeight );
     PairPt->Fill( dil.pt(), _totalWeight );
@@ -535,8 +541,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       PassingProbePhi->Fill( ProbeMu->phi(), _totalWeight );
       PassingProbeNVertices->Fill( nVtx, _totalWeight );
       PassingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
-      PassingProbePtEta->Fill( ProbeMu->pt(), ProbeMu->eta(), _totalWeight );
-      PassingProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
+      PassingProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
+      // PassingProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
 
       PassingPairMass->Fill( dil.mass(), _totalWeight );
       PassingPairPt->Fill( dil.pt(), _totalWeight );
@@ -548,8 +554,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       FailingProbePhi->Fill( ProbeMu->phi(), _totalWeight );
       FailingProbeNVertices->Fill( nVtx, _totalWeight );
       FailingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
-      FailingProbePtEta->Fill( ProbeMu->pt(), ProbeMu->eta(), _totalWeight );
-      FailingProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
+      FailingProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
+      // FailingProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
 
       FailingPairMass->Fill( dil.mass(), _totalWeight );
       FailingPairPt->Fill( dil.pt(), _totalWeight );
@@ -557,6 +563,7 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       FailingPairRap->Fill( dil.rapidity(), _totalWeight );
     }
 
+    /*
     if(ProbePat) {  // fill offline
       const reco::MuonIsolation& iso = ProbePat->isolationR03();
       ProbeAbsTkIso->Fill( iso.sumPt, _totalWeight );
@@ -592,6 +599,7 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
         ProbeNTkLayers->Fill( hp.trackerLayersWithMeasurement(), _totalWeight );
       }
     }
+    */
   }
 }
 
