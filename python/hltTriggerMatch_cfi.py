@@ -49,7 +49,8 @@ trigger_match_2016 = '('+make_string_cut_for_trigger_matching( trigger_path_name
 
 
 #-- L1 match
-l1_match = '( userFloat("L122MatchPt")>=22 && userInt("L122MatchQ")==12 )'
+l1_match_q8 = '( userFloat("L122MatchPt")>=22 && userInt("L122MatchQ")>=8 )'
+l1_match_q12 = '( userFloat("L122MatchPt")>=22 && userInt("L122MatchQ")==12 )'
 
 
 
