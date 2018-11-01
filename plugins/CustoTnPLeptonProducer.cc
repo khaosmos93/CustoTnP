@@ -8,6 +8,7 @@
 #include "CustoTnP/Analyzer/src/TriggerUtilities.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/L1Trigger/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 #include "DataFormats/Common/interface/ValueMap.h"

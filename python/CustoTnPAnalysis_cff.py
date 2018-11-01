@@ -32,24 +32,26 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               muon_photon_match_src = cms.InputTag('muonPhotonMatchMiniAOD'),
                               trigger_match_max_dR = cms.double(0.2),
                               trigger_summary = cms.InputTag('slimmedPatTrigger'), # to run on 2017 Data
-                              bits = cms.InputTag("TriggerResults","","HLT"),#data
+                              bits = cms.InputTag("TriggerResults","","HLT"),
                               prescales = cms.InputTag("patTrigger"),
                               trigger_filters = cms.vstring(trigger_filters),
                               trigger_path_names = cms.vstring(trigger_path_names),
+                              lt = cms.InputTag("gmtStage2Digis", "Muon", "RECO")
                               )
 
 leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
-                                muon_src = cms.InputTag('slimmedMuonsCustom'),
-                                muon_srcSecond = cms.InputTag('slimmedMuonsCustom'),
-                                trigger_summary = cms.InputTag('selectedPatTriggerCustom'),
-                                muon_photon_match_src = cms.InputTag('muonPhotonMatchAOD'),
-                                muon_cuts = cms.string(''),
-                                muon_track_for_momentum = cms.string('TunePNew'),
-                                muon_track_for_momentum_CSC = cms.string('Inner'),
-                                trigger_match_max_dR = cms.double(0.2),
-                                bits = cms.InputTag("TriggerResults","","HLT"),
-                                prescales = cms.InputTag("patTrigger"),
-                                trigger_filters = cms.vstring(trigger_filters),
-                                trigger_path_names = cms.vstring(trigger_path_names),
-                                )
+                              muon_src = cms.InputTag('slimmedMuonsCustom'),
+                              muon_srcSecond = cms.InputTag('slimmedMuonsCustom'),
+                              muon_cuts = cms.string(''),
+                              muon_track_for_momentum = cms.string('TunePNew'),
+                              muon_track_for_momentum_CSC = cms.string('Inner'),
+                              muon_photon_match_src = cms.InputTag('muonPhotonMatchAOD'),
+                              trigger_match_max_dR = cms.double(0.2),
+                              trigger_summary = cms.InputTag('selectedPatTriggerCustom'),
+                              bits = cms.InputTag("TriggerResults","","HLT"),
+                              prescales = cms.InputTag("patTrigger"),
+                              trigger_filters = cms.vstring(trigger_filters),
+                              trigger_path_names = cms.vstring(trigger_path_names),
+                              lt = cms.InputTag("gmtStage2Digis", "Muon", "RECO")
+                              )
 
