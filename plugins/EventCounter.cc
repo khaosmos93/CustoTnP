@@ -51,24 +51,19 @@ private:
 
   edm::EDGetTokenT<GenEventInfoProduct> GenInfoTag_;
 
-  //histos
-  std::map<std::string, TH1F* > count_; 
-  bool debug;
+  TH1F* Events;
+  TH1F* weights;
 };
 
 // constructors and destructor
 EventCounter::EventCounter(const edm::ParameterSet& iConfig):
   GenInfoTag_(consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genInfoTag")))
 {
-  debug = false;
- edm::Service<TFileService> fs;
- std::string name = "Events";
- count_[name] = fs->make<TH1F>(name.c_str() , name.c_str() , 2 , 0.5 ,  2.5);
- count_[name]->GetXaxis()->SetBinLabel(1, "Events");
- name = "weights";
- count_[name] = fs->make<TH1F>(name.c_str() , name.c_str() , 2 , -1.5 ,  1.5);
- count_[name]->GetXaxis()->SetBinLabel(1, "weights");
- 
+  edm::Service<TFileService> fs;
+  TH1::SetDefaultSumw2(true);
+
+  Events  = fs->make<TH1F>("Events",  "Events",  4, -1, 2);
+  weights = fs->make<TH1F>("weights", "weights", 4, -1, 2);
 }
 
 
@@ -86,28 +81,28 @@ EventCounter::~EventCounter()
 void
 EventCounter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  // count every event
-  count_["Events"]->Fill(1);	
+  Events->Fill(1.0);
+
   //get generator weigts
-  edm::Handle<GenEventInfoProduct> genInfoProduct;
-  iEvent.getByToken(GenInfoTag_, genInfoProduct);
+  if( !iEvent.isRealData() ) {
+    edm::Handle<GenEventInfoProduct> genInfoProduct;
+    iEvent.getByToken(GenInfoTag_, genInfoProduct);
 
-  if (genInfoProduct.isValid()){
-   	if ((*genInfoProduct).weight() < 0.0){
-   	
-   		count_["weights"]->Fill(-1);
-   	}
-   	else{
-   		count_["weights"]->Fill(1);
-   	}
+    if( genInfoProduct.isValid() ) {
+      if ((*genInfoProduct).weight() < 0.0) {
+        weights->Fill(-1.0);
+      }
+      else {
+        weights->Fill(1.0);
+      }
+    }
+    else {
+      weights->Fill(0.0);
+    }
   }
-  else{
- 
- 	count_["weights"]->Fill(1); 
-  
-  }  
-
-
+  else {
+    weights->Fill(1.0);
+  }
 
 }
 
