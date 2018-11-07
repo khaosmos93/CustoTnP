@@ -62,8 +62,8 @@ EventCounter::EventCounter(const edm::ParameterSet& iConfig):
   edm::Service<TFileService> fs;
   TH1::SetDefaultSumw2(true);
 
-  Events  = fs->make<TH1F>("Events",  "Events",  4, -1, 2);
-  weights = fs->make<TH1F>("weights", "weights", 4, -1, 2);
+  Events  = fs->make<TH1F>("Events",  "Events",  4, -2, 2);
+  weights = fs->make<TH1F>("weights", "weights", 4, -2, 2);
 }
 
 
