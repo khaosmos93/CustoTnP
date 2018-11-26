@@ -520,10 +520,10 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
       ShowerBP2002D  = make_bin_histos_2D("ShowerBP200", vec_ShowerBins);
       ShowerBP4002D  = make_bin_histos_2D("ShowerBP400", vec_ShowerBins);
       ShowerE2D      = make_bin_histos_2D("ShowerE", vec_ShowerBins);
-      ShowerEPt2002D = make_bin_histos_2D("ShowerEPt200", vec_ShowerEins);
-      ShowerEPt4002D = make_bin_histos_2D("ShowerEPt400", vec_ShowerEins);
-      ShowerEP2002D  = make_bin_histos_2D("ShowerEP200", vec_ShowerEins);
-      ShowerEP4002D  = make_bin_histos_2D("ShowerEP400", vec_ShowerEins);
+      ShowerEPt2002D = make_bin_histos_2D("ShowerEPt200", vec_ShowerBins);
+      ShowerEPt4002D = make_bin_histos_2D("ShowerEPt400", vec_ShowerBins);
+      ShowerEP2002D  = make_bin_histos_2D("ShowerEP200", vec_ShowerBins);
+      ShowerEP4002D  = make_bin_histos_2D("ShowerEP400", vec_ShowerBins);
     }
   }
 
@@ -550,10 +550,10 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
       ShowerBP200  = make_bin_histos("ShowerBP200", vec_ShowerBins);
       ShowerBP400  = make_bin_histos("ShowerBP400", vec_ShowerBins);
       ShowerE      = make_bin_histos("ShowerE", vec_ShowerBins);
-      ShowerEPt200 = make_bin_histos("ShowerEPt200", vec_ShowerEins);
-      ShowerEPt400 = make_bin_histos("ShowerEPt400", vec_ShowerEins);
-      ShowerEP200  = make_bin_histos("ShowerEP200", vec_ShowerEins);
-      ShowerEP400  = make_bin_histos("ShowerEP400", vec_ShowerEins);
+      ShowerEPt200 = make_bin_histos("ShowerEPt200", vec_ShowerBins);
+      ShowerEPt400 = make_bin_histos("ShowerEPt400", vec_ShowerBins);
+      ShowerEP200  = make_bin_histos("ShowerEP200", vec_ShowerBins);
+      ShowerEP400  = make_bin_histos("ShowerEP400", vec_ShowerBins);
     }
   }
 
