@@ -85,7 +85,7 @@ private:
   // edm::InputTag cscseg_src;
 
   std::pair<bool, reco::MuonRef> getMuonRef(edm::Event&, pat::Muon*);
-  void embedShowerInfo(pat::Muon*, reco::MuonRef);
+  void embedShowerInfo(edm::Event&, pat::Muon*, reco::MuonRef);
 };
 
 CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
@@ -119,8 +119,8 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
       produces<pat::MuonCollection>(muon_tracks_for_momentum[i]);
 
   if(isAOD) {
-    reco_muon_src(cfg.getParameter<edm::InputTag>("reco_muon_src"));
-    muonshower_src(cfg.getParameter<edm::InputTag>("muonshower_src"));
+    reco_muon_src = (cfg.getParameter<edm::InputTag>("reco_muon_src"));
+    muonshower_src = (cfg.getParameter<edm::InputTag>("muonshower_src"));
     // dtseg_src(cfg.getParameter<edm::InputTag>("dtseg_src"));
     // cscseg_src(cfg.getParameter<edm::InputTag>("cscseg_src"));
 
@@ -290,7 +290,7 @@ std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(edm::Event& ev
   event.getByLabel(reco_muon_src, recoMuons);
 
   bool isMatched = false;
-  reco::MuonRef matchedMuRef = nullptr; // reco::MuonRef(recoMuons, 0);
+  reco::MuonRef matchedMuRef = reco::MuonRef(recoMuons, 0);
 
   int imucount = 0;
   for (std::vector<reco::Muon>::const_iterator imu = recoMuons->begin(); imu != recoMuons->end(); imu++) {
@@ -307,7 +307,7 @@ std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(edm::Event& ev
   return make_pair(isMatched, matchedMuRef);
 }
 
-void CustoTnPLeptonProducer::embedShowerInfo(pat::Muon* new_mu, reco::MuonRef MuRef) {
+void CustoTnPLeptonProducer::embedShowerInfo(edm::Event& event, pat::Muon* new_mu, reco::MuonRef MuRef) {
   edm::Handle<edm::ValueMap<reco::MuonShower> > muonShowerInformationValueMap;
   event.getByLabel(muonshower_src, muonShowerInformationValueMap);
 
@@ -402,7 +402,7 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
   if(isAOD) {
     std::pair<bool, reco::MuonRef> pair_muRef = getMuonRef(event, new_mu);
     if( pair_muRef.first ) {
-      embedShowerInfo(new_mu, pair_muRef.second);
+      embedShowerInfo(event, new_mu, pair_muRef.second);
       std::cout << "\tembedShowerInfo: " << new_mu->userInt("nHits1") << std::endl;
       std::cout << "\tembedShowerInfo: " << new_mu->userInt("nHits2") << std::endl;
       std::cout << "\tembedShowerInfo: " << new_mu->userInt("nHits3") << std::endl;
