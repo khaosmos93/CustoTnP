@@ -81,8 +81,8 @@ private:
   bool isAOD;
   const edm::InputTag reco_muon_src;
   const edm::InputTag muonshower_src;
-  const edm::InputTag dtseg_src;
-  const edm::InputTag cscseg_src;
+  // const edm::InputTag dtseg_src;
+  // const edm::InputTag cscseg_src;
 
   void embedShowerInfo(pat::Muon*, reco::MuonRef muon);
 };
@@ -118,15 +118,15 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
       produces<pat::MuonCollection>(muon_tracks_for_momentum[i]);
 
   if(isAOD) {
-    reco_muon_src(cfg.getParameter<edm::InputTag>("reco_muon_src")),
-    muonshower_src(cfg.getParameter<edm::InputTag>("muonshower_src")),
-    dtseg_src(cfg.getParameter<edm::InputTag>("dtseg_src")),
-    cscseg_src(cfg.getParameter<edm::InputTag>("cscseg_src")),
+    reco_muon_src(cfg.getParameter<edm::InputTag>("reco_muon_src"));
+    muonshower_src(cfg.getParameter<edm::InputTag>("muonshower_src"));
+    // dtseg_src(cfg.getParameter<edm::InputTag>("dtseg_src"));
+    // cscseg_src(cfg.getParameter<edm::InputTag>("cscseg_src"));
 
     consumes<std::vector< reco::Muon >>(reco_muon_src);
     consumes<edm::ValueMap<reco::MuonShower>>(muonshower_src);
-    consumes<DTRecSegment4DCollection>(dtseg_src);
-    consumes<CSCSegmentCollection>(cscseg_src);
+    // consumes<DTRecSegment4DCollection>(dtseg_src);
+    // consumes<CSCSegmentCollection>(cscseg_src);
   }
 
   produces<pat::MuonCollection>("muons");
