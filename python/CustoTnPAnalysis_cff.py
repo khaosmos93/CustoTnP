@@ -37,6 +37,7 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               trigger_filters = cms.vstring(trigger_filters),
                               trigger_path_names = cms.vstring(trigger_path_names),
                               l1 = cms.InputTag("gmtStage2Digis", "Muon", "RECO"),
+                              isAOD = cms.bool(False),
                               reco_muon_src = cms.InputTag(''),            # only for AOD
                               muonshower_src = cms.InputTag('', '', ''),   # only for AOD
 )
@@ -55,6 +56,7 @@ leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
                               trigger_filters = cms.vstring(trigger_filters),
                               trigger_path_names = cms.vstring(trigger_path_names),
                               l1 = cms.InputTag("gmtStage2Digis", "Muon", "RECO"),
+                              isAOD = cms.bool(True),
                               reco_muon_src = cms.InputTag('muons'),
                               muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
 )
