@@ -276,25 +276,25 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   BinHistos ShowerE;
   BinHistos ShowerB;
 
-  BinHistos2D Pt2D
-  BinHistos2D PtB2D  // 0.0 < |eta| < 0.9
-  BinHistos2D PtO2D  // 0.9 < |eta| < 1.2
-  BinHistos2D PtE2D  // 1.2 < |eta| < 2.1
-  BinHistos2D PtF2D  // 2.1 < |eta| < 2.4
+  BinHistos2D Pt2D;
+  BinHistos2D PtB2D;  // 0.0 < |eta| < 0.9
+  BinHistos2D PtO2D;  // 0.9 < |eta| < 1.2
+  BinHistos2D PtE2D;  // 1.2 < |eta| < 2.1
+  BinHistos2D PtF2D;  // 2.1 < |eta| < 2.4
 
-  BinHistos2D AbsP2D
-  BinHistos2D AbsPB2D  // 0.0 < |eta| < 0.9
-  BinHistos2D AbsPO2D  // 0.9 < |eta| < 1.2
-  BinHistos2D AbsPE2D  // 1.2 < |eta| < 2.1
-  BinHistos2D AbsPF2D  // 2.1 < |eta| < 2.4
+  BinHistos2D AbsP2D;
+  BinHistos2D AbsPB2D;  // 0.0 < |eta| < 0.9
+  BinHistos2D AbsPO2D;  // 0.9 < |eta| < 1.2
+  BinHistos2D AbsPE2D;  // 1.2 < |eta| < 2.1
+  BinHistos2D AbsPF2D;  // 2.1 < |eta| < 2.4
 
-  BinHistos2D Eta2D
-  BinHistos2D Phi2D
-  BinHistos2D Vtx2D
+  BinHistos2D Eta2D;
+  BinHistos2D Phi2D;
+  BinHistos2D Vtx2D;
 
-  BinHistos2D Shower2D
-  BinHistos2D ShowerE2D
-  BinHistos2D ShowerB2D
+  BinHistos2D Shower2D;
+  BinHistos2D ShowerE2D;
+  BinHistos2D ShowerB2D;
 
   bool IsRealData;
   int RunNum;
@@ -403,7 +403,8 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaPhi           = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
   ProbeEtaPt            = fs->make<TH2F>("ProbeEtaPt", "Probe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
   ProbeEtaDptPt         = fs->make<TH2F>("ProbeEtaDptPt", "Probe #eta dpt/pT",    14, eta_bins_for_2D, 1000, 0, 2);
-  ProbeEtaShower        = fs->make<TH2F>("ProbeEtaShower", "Probe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
+  if(isAOD)
+    ProbeEtaShower        = fs->make<TH2F>("ProbeEtaShower", "Probe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
 
   PassingProbePt        = fs->make<TH1F>("PassingProbePt", "PassingProbe pT", 10000, 0, 10000);
   PassingProbeEta       = fs->make<TH1F>("PassingProbeEta", "PassingProbe #eta",    96, -4.8, 4.8);
@@ -412,7 +413,8 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   PassingProbeEtaPhi    = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
   PassingProbeEtaPt     = fs->make<TH2F>("PassingProbeEtaPt", "PassingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
   PassingProbeEtaDptPt  = fs->make<TH2F>("PassingProbeEtaDptPt", "PassingProbe #eta dpt/pT",    14, eta_bins_for_2D, 1000, 0, 2);
-  PassingProbeEtaShower = fs->make<TH2F>("PassingProbeEtaShower", "PassingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
+  if(isAOD)
+    PassingProbeEtaShower = fs->make<TH2F>("PassingProbeEtaShower", "PassingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
 
   FailingProbePt        = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
   FailingProbeEta       = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    96, -4.8, 4.8);
@@ -421,7 +423,8 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   FailingProbeEtaPhi    = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
   FailingProbeEtaPt     = fs->make<TH2F>("FailingProbeEtaPt", "FailingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
   FailingProbeEtaDptPt  = fs->make<TH2F>("FailingProbeEtaDptPt", "FailingProbe #eta dpt/pT",    14, eta_bins_for_2D, 1000, 0, 2);
-  FailingProbeEtaShower = fs->make<TH2F>("FailingProbeEtaShower", "FailingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
+  if(isAOD)
+    FailingProbeEtaShower = fs->make<TH2F>("FailingProbeEtaShower", "FailingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
 
   // TnP pair
   PairNoPtMass    = fs->make<TH1F>("PairNoPtMass", "TnP PairNoPt mass", 10000, 0, 10000);
@@ -687,7 +690,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
     ProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
     ProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
     ProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
-    ProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
+    if(isAOD)
+      ProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
 
     PairMass->Fill( dil.mass(), _totalWeight );
     PairPt->Fill( dil.pt(), _totalWeight );
@@ -701,7 +705,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       PassingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
       PassingProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
       PassingProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
-      PassingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
+      if(isAOD)
+        PassingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
 
       PassingPairMass->Fill( dil.mass(), _totalWeight );
       PassingPairPt->Fill( dil.pt(), _totalWeight );
@@ -715,7 +720,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       FailingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
       FailingProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
       FailingProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
-      FailingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
+      if(isAOD)
+        FailingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
 
       FailingPairMass->Fill( dil.mass(), _totalWeight );
       FailingPairPt->Fill( dil.pt(), _totalWeight );
@@ -939,6 +945,10 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           const reco::CandidateBaseRef& TagMu = lep0;
           const reco::CandidateBaseRef& ProbeMu = lep1;
 
+          int probe_nshowers = -999;
+          if(isAOD)
+            probe_nshowers = calcNShowers(ProbeMu);
+
           if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : Tag0 and Probe1" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
           if(!ShutUp)  std::cout << "                                             eta=" << ProbeMu->eta() << std::endl;
@@ -976,7 +986,6 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
             fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, Vtx2D, true);
 
             if(isAOD) {
-              int probe_nshowers = calcNShowers(ProbeMu);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, Shower2D, true);
               if( fabs(ProbeMu->eta())<0.9 )
                 fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerB2D, true);
@@ -1010,7 +1019,6 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
             fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
 
             if(isAOD) {
-              int probe_nshowers = calcNShowers(ProbeMu);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, Shower, true);
               if( fabs(ProbeMu->eta())<0.9 )
                 fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerB, true);
@@ -1041,6 +1049,10 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
         if( dil->userInt("isTag1Probe0") ) {
           const reco::CandidateBaseRef& TagMu = lep1;
           const reco::CandidateBaseRef& ProbeMu = lep0;
+
+          int probe_nshowers = -999;
+          if(isAOD)
+            probe_nshowers = calcNShowers(ProbeMu);
 
           if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : Tag1 and Probe0" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
@@ -1079,7 +1091,6 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
             fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, Vtx2D, true);
 
             if(isAOD) {
-              int probe_nshowers = calcNShowers(ProbeMu);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, Shower2D, true);
               if( fabs(ProbeMu->eta())<0.9 )
                 fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerB2D, true);
@@ -1113,7 +1124,6 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
             fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
 
             if(isAOD) {
-              int probe_nshowers = calcNShowers(ProbeMu);
               fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, Shower, true);
               if( fabs(ProbeMu->eta())<0.9 )
                 fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerB, true);
