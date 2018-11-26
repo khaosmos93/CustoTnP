@@ -34,7 +34,7 @@
   <use name="TrackingTools/TransientTrack"/>
 </library>
 
-<library file="CustoTnPPairSelector_AOD.cc" name="CustoTnPPairSelector_AOD">
+<!-- <library file="CustoTnPPairSelector_AOD.cc" name="CustoTnPPairSelector_AOD">
   <use name="CommonTools/Utils"/>
   <use name="DataFormats/PatCandidates"/>
   <use name="RecoVertex/KalmanVertexFit"/>
@@ -48,7 +48,7 @@
   <use name="DataFormats/MuonReco"/>
   <use name="DataFormats/TrackReco"/>
   <use name="DataFormats/CSCRecHit"/>
-</library>
+</library> -->
 
 <library file="HistosForTnP.cc" name="CustoTnPHistosForTnP">
   <use name="CommonTools/Utils"/>
@@ -59,14 +59,14 @@
   <use name="CustoTnP/Analyzer"/>
 </library>
 
-<library file="HistosForTnP_AOD.cc" name="CustoTnPHistosForTnP_AOD">
+<!-- <library file="HistosForTnP_AOD.cc" name="CustoTnPHistosForTnP_AOD">
   <use name="CommonTools/Utils"/>
   <use name="ostream"/>
   <use name="rootgraphics"/>
   <use name="CommonTools/UtilAlgos"/>
   <use name="DataFormats/PatCandidates"/>
   <use name="CustoTnP/Analyzer"/>
-</library>
+</library> -->
 
 <library file="DibosonGenMass.cc,TauTauSelection.cc,DyGenMass.cc,DyGenPt.cc,TTbarGenMass.cc" name="CustoTnPAnalyzers">
   <use name="ostream"/>

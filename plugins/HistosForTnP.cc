@@ -47,10 +47,15 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
 
  private:
   void getBSandPV(const edm::Event&);
-  void fillTnPControlHistos(const pat::CompositeCandidate&, const reco::CandidateBaseRef&, const reco::CandidateBaseRef&, float, bool );
+  void fillTnPControlHistos(const pat::CompositeCandidate&, const reco::CandidateBaseRef&, const reco::CandidateBaseRef&, float, int, bool );
 
   typedef std::pair< std::vector<TH1F*>, std::vector<TH1F*> > BinHistos;
   void fillTnPBinHistos( double, double, bool, double, std::vector<double>& , BinHistos&, bool );
+
+  typedef std::vector< TH2F* > BinHistos2D;
+  void fillTnPBinHistos2D( double, double, bool, double, BinHistos2D&, bool );
+
+  int calcNShowers(const reco::CandidateBaseRef&);
 
   edm::InputTag dilepton_src;
   edm::InputTag beamspot_src;
@@ -83,6 +88,8 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
 
   double _totalWeight;
 
+  bool isAOD;
+  bool useBinHistos2D;
   const bool ShutUp;
 
 
@@ -97,21 +104,21 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *TagPhi;
 
   /*
-  TH1F* TagAbsTkIso;
-  TH1F* TagRelTkIso;
-  TH1F* TagChi2dof;
-  TH1F* TagTrackDXYBS;
-  TH1F* TagTrackDZBS;
-  TH1F* TagTrackDXYPV;
-  TH1F* TagTrackDZPV;
-  TH1F* TagNPxHits;
-  TH1F* TagNStHits;
-  TH1F* TagNTkHits;
-  TH1F* TagNMuHits;
-  TH1F* TagNHits;
-  TH1F* TagNPxLayers;
-  TH1F* TagNStLayers;
-  TH1F* TagNTkLayers;
+    TH1F* TagAbsTkIso;
+    TH1F* TagRelTkIso;
+    TH1F* TagChi2dof;
+    TH1F* TagTrackDXYBS;
+    TH1F* TagTrackDZBS;
+    TH1F* TagTrackDXYPV;
+    TH1F* TagTrackDZPV;
+    TH1F* TagNPxHits;
+    TH1F* TagNStHits;
+    TH1F* TagNTkHits;
+    TH1F* TagNMuHits;
+    TH1F* TagNHits;
+    TH1F* TagNPxLayers;
+    TH1F* TagNStLayers;
+    TH1F* TagNTkLayers;
   */
 
   TH1F *ProbePt;
@@ -120,7 +127,12 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *ProbeNVertices;
   TH2F *ProbeEtaPhi;
   TH2F *ProbeEtaPt;
-  // TH2F *ProbeDptPtEta;
+  TH2F *ProbeEtaDptPt;
+  TH2F *ProbeEtaShower;
+  TH2F *ProbePtShowerB;
+  TH2F *ProbePtShowerE;
+  TH2F *ProbePShowerB;
+  TH2F *ProbePShowerE;
 
   TH1F *PassingProbePt;
   TH1F *PassingProbeEta;
@@ -128,7 +140,12 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *PassingProbeNVertices;
   TH2F *PassingProbeEtaPhi;
   TH2F *PassingProbeEtaPt;
-  // TH2F *PassingProbeDptPtEta;
+  TH2F *PassingProbeEtaDptPt;
+  TH2F *PassingProbeEtaShower;
+  TH2F *PassingProbePtShowerB;
+  TH2F *PassingProbePtShowerE;
+  TH2F *PassingProbePShowerB;
+  TH2F *PassingProbePShowerE;
 
   TH1F *FailingProbePt;
   TH1F *FailingProbeEta;
@@ -136,7 +153,12 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *FailingProbeNVertices;
   TH2F *FailingProbeEtaPhi;
   TH2F *FailingProbeEtaPt;
-  // TH2F *FailingProbeDptPtEta;
+  TH2F *FailingProbeEtaDptPt;
+  TH2F *FailingProbeEtaShower;
+  TH2F *FailingProbePtShowerB;
+  TH2F *FailingProbePtShowerE;
+  TH2F *FailingProbePShowerB;
+  TH2F *FailingProbePShowerE;
 
   TH1F *PairNoPtMass;
   TH1F *PairNoPtPt;
@@ -159,21 +181,21 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH1F *FailingPairRap;
 
   /*
-  TH1F* ProbeAbsTkIso;
-  TH1F* ProbeRelTkIso;
-  TH1F* ProbeChi2dof;
-  TH1F* ProbeTrackDXYBS;
-  TH1F* ProbeTrackDZBS;
-  TH1F* ProbeTrackDXYPV;
-  TH1F* ProbeTrackDZPV;
-  TH1F* ProbeNPxHits;
-  TH1F* ProbeNStHits;
-  TH1F* ProbeNTkHits;
-  TH1F* ProbeNMuHits;
-  TH1F* ProbeNHits;
-  TH1F* ProbeNPxLayers;
-  TH1F* ProbeNStLayers;
-  TH1F* ProbeNTkLayers;
+    TH1F* ProbeAbsTkIso;
+    TH1F* ProbeRelTkIso;
+    TH1F* ProbeChi2dof;
+    TH1F* ProbeTrackDXYBS;
+    TH1F* ProbeTrackDZBS;
+    TH1F* ProbeTrackDXYPV;
+    TH1F* ProbeTrackDZPV;
+    TH1F* ProbeNPxHits;
+    TH1F* ProbeNStHits;
+    TH1F* ProbeNTkHits;
+    TH1F* ProbeNMuHits;
+    TH1F* ProbeNHits;
+    TH1F* ProbeNPxLayers;
+    TH1F* ProbeNStLayers;
+    TH1F* ProbeNTkLayers;
   */
 
   // -- bin distributions for passing and failing probes -- //
@@ -182,12 +204,14 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   std::vector<double> vec_EtaBins;
   std::vector<double> vec_PhiBins;
   std::vector<double> vec_VtxBins;
+  std::vector<double> vec_ShowerBins;
 
   TH1F *hEffTemplatePt;
   TH1F *hEffTemplateAbsP;
   TH1F *hEffTemplateEta;
   TH1F *hEffTemplatePhi;
   TH1F *hEffTemplateVtx;
+  TH1F *hEffTemplateShower;
 
   std::pair< std::vector<TH1F*>, std::vector<TH1F*> > make_bin_histos(TString name, std::vector<double>& vec_bins) {
     edm::Service<TFileService> fs;
@@ -216,6 +240,33 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
     return std::make_pair(vec_pass, vec_fail);
   }
 
+  std::vector< TH2F* > make_bin_histos_2D(TString name, std::vector<double>& vec_bins) {
+    edm::Service<TFileService> fs;
+
+    std::vector< TH2F* > vec_h2d = {};
+
+    Double_t mass_bins_for_2D[13] = {0, 60, 120, 200, 300, 400, 800, 1400, 2300, 3500, 4500, 6000, 1e6};
+    unsigned nMassBin = (unsigned)(12);
+
+    int nbins = ( (int)vec_bins.size() ) - 1;
+    double *arr_bins;
+    CopyVectorToArray(vec_bins, arr_bins);
+
+    TString histNameBase = TString::Format("h2d%s", name.Data());
+
+    TH2F* h2d_pass = fs->make<TH2F>(histNameBase + "Pass", "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_pass->Sumw2();
+    TH2F* h2d_fail = fs->make<TH2F>(histNameBase + "Fail", "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_fail->Sumw2();
+    TH2F* h2d_sum  = fs->make<TH2F>(histNameBase + "Sum",  "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sum->Sumw2();
+    TH2F* h2d_sqs  = fs->make<TH2F>(histNameBase + "Sqs",  "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sqs->Sumw2();
+
+    vec_h2d.push_back( h2d_pass );
+    vec_h2d.push_back( h2d_fail );
+    vec_h2d.push_back( h2d_sum );
+    vec_h2d.push_back( h2d_sqs );
+
+    return vec_h2d;
+  }
+
   // -- Bin histograms -- //
   BinHistos Pt;
   BinHistos PtB;  // 0.0 < |eta| < 0.9
@@ -232,6 +283,44 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   BinHistos Eta;
   BinHistos Phi;
   BinHistos Vtx;
+
+  BinHistos ShowerB;
+  BinHistos ShowerBPt200;
+  BinHistos ShowerBPt400;
+  BinHistos ShowerBP200;
+  BinHistos ShowerBP400;
+  BinHistos ShowerE;
+  BinHistos ShowerEPt200;
+  BinHistos ShowerEPt400;
+  BinHistos ShowerEP200;
+  BinHistos ShowerEP400;
+
+  BinHistos2D Pt2D;
+  BinHistos2D PtB2D;  // 0.0 < |eta| < 0.9
+  BinHistos2D PtO2D;  // 0.9 < |eta| < 1.2
+  BinHistos2D PtE2D;  // 1.2 < |eta| < 2.1
+  BinHistos2D PtF2D;  // 2.1 < |eta| < 2.4
+
+  BinHistos2D AbsP2D;
+  BinHistos2D AbsPB2D;  // 0.0 < |eta| < 0.9
+  BinHistos2D AbsPO2D;  // 0.9 < |eta| < 1.2
+  BinHistos2D AbsPE2D;  // 1.2 < |eta| < 2.1
+  BinHistos2D AbsPF2D;  // 2.1 < |eta| < 2.4
+
+  BinHistos2D Eta2D;
+  BinHistos2D Phi2D;
+  BinHistos2D Vtx2D;
+
+  BinHistos2D ShowerB2D;
+  BinHistos2D ShowerBPt2002D;
+  BinHistos2D ShowerBPt4002D;
+  BinHistos2D ShowerBP2002D;
+  BinHistos2D ShowerBP4002D;
+  BinHistos2D ShowerE2D;
+  BinHistos2D ShowerEPt2002D;
+  BinHistos2D ShowerEPt4002D;
+  BinHistos2D ShowerEP2002D;
+  BinHistos2D ShowerEP4002D;
 
   bool IsRealData;
   int RunNum;
@@ -276,13 +365,17 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
 
     _totalWeight(1.),
 
+    isAOD(cfg.getParameter<bool>("isAOD")),
+    useBinHistos2D(cfg.getParameter<bool>("useBinHistos2D")),
+
     ShutUp(cfg.getParameter<bool>("ShutUp")),
 
     vec_PtBins(cfg.getParameter<std::vector<double>>("vec_PtBins")),
     vec_AbsPBins(cfg.getParameter<std::vector<double>>("vec_AbsPBins")),
     vec_EtaBins(cfg.getParameter<std::vector<double>>("vec_EtaBins")),
     vec_PhiBins(cfg.getParameter<std::vector<double>>("vec_PhiBins")),
-    vec_VtxBins(cfg.getParameter<std::vector<double>>("vec_VtxBins"))
+    vec_VtxBins(cfg.getParameter<std::vector<double>>("vec_VtxBins")),
+    vec_ShowerBins(cfg.getParameter<std::vector<double>>("vec_ShowerBins"))
 {
   consumes<pat::CompositeCandidateCollection>(dilepton_src);
   consumes<reco::BeamSpot>(beamspot_src);
@@ -292,6 +385,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
 
   edm::Service<TFileService> fs;
   TH1::SetDefaultSumw2(true);
+  TH2::SetDefaultSumw2(true);
 
   NBeamSpot = fs->make<TH1F>("NBeamSpot", "# beamspots/event",  2, 0,  2);
   NVertices = fs->make<TH1F>("NVertices", "# vertices/event",  200, 0, 200);
@@ -308,106 +402,172 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   TagPhi = fs->make<TH1F>("TagPhi", "Tag #phi", 41, -TMath::Pi(), TMath::Pi());
 
   /*
-  TagAbsTkIso = fs->make<TH1F>("TagAbsTkIso", "Tag Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
-  TagRelTkIso = fs->make<TH1F>("TagRelTkIso", "Tag Iso. (#Delta R < 0.3) #Sigma pT / tk. pT", 500, 0, 5);
-  TagChi2dof = fs->make<TH1F>("TagChi2dof", "Tag #chi^{2}/dof", 500, 0, 50);
-  TagTrackDXYBS = fs->make<TH1F>("TagTrackDXYBS", "Tag |dxy wrt BS|", 10000, 0, 2);
-  TagTrackDZBS = fs->make<TH1F>("TagTrackDZBS", "Tag |dz wrt BS|", 10000, 0, 20);
-  TagTrackDXYPV = fs->make<TH1F>("TagTrackDXYPV", "Tag |dxy wrt PV|", 10000, 0, 2);
-  TagTrackDZPV = fs->make<TH1F>("TagTrackDZPV", "Tag |dz wrt PV|", 10000, 0, 20);
-  TagNPxHits = fs->make<TH1F>("TagNPxHits", "Tag # pixel hits", 10, 0,  10);
-  TagNStHits = fs->make<TH1F>("TagNStHits", "Tag # strip hits", 40, 0, 40);
-  TagNTkHits = fs->make<TH1F>("TagNTkHits", "Tag # tracker hits", 50, 0, 50);
-  TagNMuHits = fs->make<TH1F>("TagNMuHits", "Tag # muon hits", 60, 0, 60);
-  TagNHits = fs->make<TH1F>("TagNHits", "Tag # hits", 80, 0, 80);
-  TagNPxLayers = fs->make<TH1F>("TagNPxLayers", "Tag # pixel layers", 10, 0, 10);
-  TagNStLayers = fs->make<TH1F>("TagNStLayers", "Tag # strip layers", 20, 0, 20);
-  TagNTkLayers = fs->make<TH1F>("TagNTkLayers", "Tag # tracker layers", 30, 0, 30);
+    TagAbsTkIso = fs->make<TH1F>("TagAbsTkIso", "Tag Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
+    TagRelTkIso = fs->make<TH1F>("TagRelTkIso", "Tag Iso. (#Delta R < 0.3) #Sigma pT / tk. pT", 500, 0, 5);
+    TagChi2dof = fs->make<TH1F>("TagChi2dof", "Tag #chi^{2}/dof", 500, 0, 50);
+    TagTrackDXYBS = fs->make<TH1F>("TagTrackDXYBS", "Tag |dxy wrt BS|", 10000, 0, 2);
+    TagTrackDZBS = fs->make<TH1F>("TagTrackDZBS", "Tag |dz wrt BS|", 10000, 0, 20);
+    TagTrackDXYPV = fs->make<TH1F>("TagTrackDXYPV", "Tag |dxy wrt PV|", 10000, 0, 2);
+    TagTrackDZPV = fs->make<TH1F>("TagTrackDZPV", "Tag |dz wrt PV|", 10000, 0, 20);
+    TagNPxHits = fs->make<TH1F>("TagNPxHits", "Tag # pixel hits", 10, 0,  10);
+    TagNStHits = fs->make<TH1F>("TagNStHits", "Tag # strip hits", 40, 0, 40);
+    TagNTkHits = fs->make<TH1F>("TagNTkHits", "Tag # tracker hits", 50, 0, 50);
+    TagNMuHits = fs->make<TH1F>("TagNMuHits", "Tag # muon hits", 60, 0, 60);
+    TagNHits = fs->make<TH1F>("TagNHits", "Tag # hits", 80, 0, 80);
+    TagNPxLayers = fs->make<TH1F>("TagNPxLayers", "Tag # pixel layers", 10, 0, 10);
+    TagNStLayers = fs->make<TH1F>("TagNStLayers", "Tag # strip layers", 20, 0, 20);
+    TagNTkLayers = fs->make<TH1F>("TagNTkLayers", "Tag # tracker layers", 30, 0, 30);
   */
 
   Double_t eta_bins_for_2D[15] = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
 
   // Probe
-  ProbePt = fs->make<TH1F>("ProbePt", "Probe pT", 10000, 0, 10000);
-  ProbeEta = fs->make<TH1F>("ProbeEta", "Probe #eta",    96, -4.8, 4.8);
-  ProbePhi = fs->make<TH1F>("ProbePhi", "Probe #phi", 41, -TMath::Pi(), TMath::Pi());
-  ProbeNVertices = fs->make<TH1F>("ProbeNVertices", "Probe # vertices/event",  200, 0, 200);
-  ProbeEtaPhi = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  ProbeEtaPt = fs->make<TH2F>("ProbeEtaPt", "Probe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
-  // ProbeDptPtEta = fs->make<TH2F>("ProbeDptPtEta", "Probe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
+  ProbePt               = fs->make<TH1F>("ProbePt", "Probe pT", 10000, 0, 10000);
+  ProbeEta              = fs->make<TH1F>("ProbeEta", "Probe #eta",    96, -4.8, 4.8);
+  ProbePhi              = fs->make<TH1F>("ProbePhi", "Probe #phi", 41, -TMath::Pi(), TMath::Pi());
+  ProbeNVertices        = fs->make<TH1F>("ProbeNVertices", "Probe # vertices/event",  200, 0, 200);
+  ProbeEtaPhi           = fs->make<TH2F>("ProbeEtaPhi", "Probe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  ProbeEtaPt            = fs->make<TH2F>("ProbeEtaPt", "Probe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
+  ProbeEtaDptPt         = fs->make<TH2F>("ProbeEtaDptPt", "Probe #eta dpt/pT",    14, eta_bins_for_2D, 1000, 0, 2);
+  if(isAOD) {
+  ProbeEtaShower        = fs->make<TH2F>("ProbeEtaShower", "Probe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
+  ProbePtShowerB        = fs->make<TH2F>("ProbePtShowerB", "Probe pT shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  ProbePtShowerE        = fs->make<TH2F>("ProbePtShowerE", "Probe pT shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  ProbePShowerB         = fs->make<TH2F>("ProbePShowerB", "Probe p shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  ProbePShowerE         = fs->make<TH2F>("ProbePShowerE", "Probe p shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  }
 
-  PassingProbePt = fs->make<TH1F>("PassingProbePt", "PassingProbe pT", 10000, 0, 10000);
-  PassingProbeEta = fs->make<TH1F>("PassingProbeEta", "PassingProbe #eta",    96, -4.8, 4.8);
-  PassingProbePhi = fs->make<TH1F>("PassingProbePhi", "PassingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
+  PassingProbePt        = fs->make<TH1F>("PassingProbePt", "PassingProbe pT", 10000, 0, 10000);
+  PassingProbeEta       = fs->make<TH1F>("PassingProbeEta", "PassingProbe #eta",    96, -4.8, 4.8);
+  PassingProbePhi       = fs->make<TH1F>("PassingProbePhi", "PassingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
   PassingProbeNVertices = fs->make<TH1F>("PassingProbeNVertices", "PassingProbe # vertices/event",  200, 0, 200);
-  PassingProbeEtaPhi = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  PassingProbeEtaPt = fs->make<TH2F>("PassingProbeEtaPt", "PassingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
-  // PassingProbeDptPtEta = fs->make<TH2F>("PassingProbeDptPtEta", "PassingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
+  PassingProbeEtaPhi    = fs->make<TH2F>("PassingProbeEtaPhi", "PassingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  PassingProbeEtaPt     = fs->make<TH2F>("PassingProbeEtaPt", "PassingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
+  PassingProbeEtaDptPt  = fs->make<TH2F>("PassingProbeEtaDptPt", "PassingProbe #eta dpt/pT",    14, eta_bins_for_2D, 1000, 0, 2);
+  if(isAOD) {
+  PassingProbeEtaShower = fs->make<TH2F>("PassingProbeEtaShower", "PassingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
+  PassingProbePtShowerB = fs->make<TH2F>("PassingProbePtShowerB", "PassingProbe pT shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  PassingProbePtShowerE = fs->make<TH2F>("PassingProbePtShowerE", "PassingProbe pT shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  PassingProbePShowerB  = fs->make<TH2F>("PassingProbePShowerB", "PassingProbe p shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  PassingProbePShowerE  = fs->make<TH2F>("PassingProbePShowerE", "PassingProbe p shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  }
 
-  FailingProbePt = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
-  FailingProbeEta = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    96, -4.8, 4.8);
-  FailingProbePhi = fs->make<TH1F>("FailingProbePhi", "FailingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
+  FailingProbePt        = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
+  FailingProbeEta       = fs->make<TH1F>("FailingProbeEta", "FailingProbe #eta",    96, -4.8, 4.8);
+  FailingProbePhi       = fs->make<TH1F>("FailingProbePhi", "FailingProbe #phi", 41, -TMath::Pi(), TMath::Pi());
   FailingProbeNVertices = fs->make<TH1F>("FailingProbeNVertices", "FailingProbe # vertices/event",  200, 0, 200);
-  FailingProbeEtaPhi = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  FailingProbeEtaPt = fs->make<TH2F>("FailingProbeEtaPt", "FailingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
-  // FailingProbeDptPtEta = fs->make<TH2F>("FailingProbeDptPtEta", "FailingProbe dpt/pT #eta",    1000, 0, 2, 96, -4.8, 4.8);
+  FailingProbeEtaPhi    = fs->make<TH2F>("FailingProbeEtaPhi", "FailingProbe #eta #phi",    14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  FailingProbeEtaPt     = fs->make<TH2F>("FailingProbeEtaPt", "FailingProbe #eta pT",    14, eta_bins_for_2D, 10000, 0, 10000);
+  FailingProbeEtaDptPt  = fs->make<TH2F>("FailingProbeEtaDptPt", "FailingProbe #eta dpt/pT",    14, eta_bins_for_2D, 1000, 0, 2);
+  if(isAOD) {
+  FailingProbeEtaShower = fs->make<TH2F>("FailingProbeEtaShower", "FailingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
+  FailingProbePtShowerB = fs->make<TH2F>("FailingProbePtShowerB", "FailingProbe pT shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  FailingProbePtShowerE = fs->make<TH2F>("FailingProbePtShowerE", "FailingProbe pT shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  FailingProbePShowerB  = fs->make<TH2F>("FailingProbePShowerB", "FailingProbe p shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  FailingProbePShowerE  = fs->make<TH2F>("FailingProbePShowerE", "FailingProbe p shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  }
 
   // TnP pair
-  PairNoPtMass = fs->make<TH1F>("PairNoPtMass", "TnP PairNoPt mass", 10000, 0, 10000);
-  PairNoPtPt = fs->make<TH1F>("PairNoPtPt", "TnP PairNoPt pT", 10000, 0, 10000);
-  PairNoPtEta = fs->make<TH1F>("PairNoPtEta", "TnP PairNoPt #eta",    96, -4.8, 4.8);
-  PairNoPtRap = fs->make<TH1F>("PairNoPtRap", "TnP PairNoPt y", 96, -4.8, 4.8);
+  PairNoPtMass    = fs->make<TH1F>("PairNoPtMass", "TnP PairNoPt mass", 10000, 0, 10000);
+  PairNoPtPt      = fs->make<TH1F>("PairNoPtPt", "TnP PairNoPt pT", 10000, 0, 10000);
+  PairNoPtEta     = fs->make<TH1F>("PairNoPtEta", "TnP PairNoPt #eta",    96, -4.8, 4.8);
+  PairNoPtRap     = fs->make<TH1F>("PairNoPtRap", "TnP PairNoPt y", 96, -4.8, 4.8);
 
-  PairMass = fs->make<TH1F>("PairMass", "TnP Pair mass", 10000, 0, 10000);
-  PairPt = fs->make<TH1F>("PairPt", "TnP Pair pT", 10000, 0, 10000);
-  PairEta = fs->make<TH1F>("PairEta", "TnP Pair #eta",    96, -4.8, 4.8);
-  PairRap = fs->make<TH1F>("PairRap", "TnP Pair y", 96, -4.8, 4.8);
+  PairMass        = fs->make<TH1F>("PairMass", "TnP Pair mass", 10000, 0, 10000);
+  PairPt          = fs->make<TH1F>("PairPt", "TnP Pair pT", 10000, 0, 10000);
+  PairEta         = fs->make<TH1F>("PairEta", "TnP Pair #eta",    96, -4.8, 4.8);
+  PairRap         = fs->make<TH1F>("PairRap", "TnP Pair y", 96, -4.8, 4.8);
 
   PassingPairMass = fs->make<TH1F>("PassingPairMass", "TnP PassingPair mass", 10000, 0, 10000);
-  PassingPairPt = fs->make<TH1F>("PassingPairPt", "TnP PassingPair pT", 10000, 0, 10000);
-  PassingPairEta = fs->make<TH1F>("PassingPairEta", "TnP PassingPair #eta",    96, -4.8, 4.8);
-  PassingPairRap = fs->make<TH1F>("PassingPairRap", "TnP PassingPair y", 96, -4.8, 4.8);
+  PassingPairPt   = fs->make<TH1F>("PassingPairPt", "TnP PassingPair pT", 10000, 0, 10000);
+  PassingPairEta  = fs->make<TH1F>("PassingPairEta", "TnP PassingPair #eta",    96, -4.8, 4.8);
+  PassingPairRap  = fs->make<TH1F>("PassingPairRap", "TnP PassingPair y", 96, -4.8, 4.8);
 
   FailingPairMass = fs->make<TH1F>("FailingPairMass", "TnP FailingPair mass", 10000, 0, 10000);
-  FailingPairPt = fs->make<TH1F>("FailingPairPt", "TnP FailingPair pT", 10000, 0, 10000);
-  FailingPairEta = fs->make<TH1F>("FailingPairEta", "TnP FailingPair #eta",    96, -4.8, 4.8);
-  FailingPairRap = fs->make<TH1F>("FailingPairRap", "TnP FailingPair y", 96, -4.8, 4.8);
+  FailingPairPt   = fs->make<TH1F>("FailingPairPt", "TnP FailingPair pT", 10000, 0, 10000);
+  FailingPairEta  = fs->make<TH1F>("FailingPairEta", "TnP FailingPair #eta",    96, -4.8, 4.8);
+  FailingPairRap  = fs->make<TH1F>("FailingPairRap", "TnP FailingPair y", 96, -4.8, 4.8);
 
   // Probe ID variable
   /*
-  ProbeAbsTkIso = fs->make<TH1F>("ProbeAbsTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
-  ProbeRelTkIso = fs->make<TH1F>("ProbeRelTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT / tk. pT", 500, 0, 5);
-  ProbeChi2dof = fs->make<TH1F>("ProbeChi2dof", "Probe #chi^{2}/dof", 500, 0, 50);
-  ProbeTrackDXYBS = fs->make<TH1F>("ProbeTrackDXYBS", "Probe |dxy wrt BS|", 10000, 0, 2);
-  ProbeTrackDZBS = fs->make<TH1F>("ProbeTrackDZBS", "Probe |dz wrt BS|", 10000, 0, 20);
-  ProbeTrackDXYPV = fs->make<TH1F>("ProbeTrackDXYPV", "Probe |dxy wrt PV|", 10000, 0, 2);
-  ProbeTrackDZPV = fs->make<TH1F>("ProbeTrackDZPV", "Probe |dz wrt PV|", 10000, 0, 20);
-  ProbeNPxHits = fs->make<TH1F>("ProbeNPxHits", "Probe # pixel hits", 10, 0,  10);
-  ProbeNStHits = fs->make<TH1F>("ProbeNStHits", "Probe # strip hits", 40, 0, 40);
-  ProbeNTkHits = fs->make<TH1F>("ProbeNTkHits", "Probe # tracker hits", 50, 0, 50);
-  ProbeNMuHits = fs->make<TH1F>("ProbeNMuHits", "Probe # muon hits", 60, 0, 60);
-  ProbeNHits = fs->make<TH1F>("ProbeNHits", "Probe # hits", 80, 0, 80);
-  ProbeNPxLayers = fs->make<TH1F>("ProbeNPxLayers", "Probe # pixel layers", 10, 0, 10);
-  ProbeNStLayers = fs->make<TH1F>("ProbeNStLayers", "Probe # strip layers", 20, 0, 20);
-  ProbeNTkLayers = fs->make<TH1F>("ProbeNTkLayers", "Probe # tracker layers", 30, 0, 30);
+    ProbeAbsTkIso = fs->make<TH1F>("ProbeAbsTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT", 1000, 0, 1000);
+    ProbeRelTkIso = fs->make<TH1F>("ProbeRelTkIso", "Probe Iso. (#Delta R < 0.3) #Sigma pT / tk. pT", 500, 0, 5);
+    ProbeChi2dof = fs->make<TH1F>("ProbeChi2dof", "Probe #chi^{2}/dof", 500, 0, 50);
+    ProbeTrackDXYBS = fs->make<TH1F>("ProbeTrackDXYBS", "Probe |dxy wrt BS|", 10000, 0, 2);
+    ProbeTrackDZBS = fs->make<TH1F>("ProbeTrackDZBS", "Probe |dz wrt BS|", 10000, 0, 20);
+    ProbeTrackDXYPV = fs->make<TH1F>("ProbeTrackDXYPV", "Probe |dxy wrt PV|", 10000, 0, 2);
+    ProbeTrackDZPV = fs->make<TH1F>("ProbeTrackDZPV", "Probe |dz wrt PV|", 10000, 0, 20);
+    ProbeNPxHits = fs->make<TH1F>("ProbeNPxHits", "Probe # pixel hits", 10, 0,  10);
+    ProbeNStHits = fs->make<TH1F>("ProbeNStHits", "Probe # strip hits", 40, 0, 40);
+    ProbeNTkHits = fs->make<TH1F>("ProbeNTkHits", "Probe # tracker hits", 50, 0, 50);
+    ProbeNMuHits = fs->make<TH1F>("ProbeNMuHits", "Probe # muon hits", 60, 0, 60);
+    ProbeNHits = fs->make<TH1F>("ProbeNHits", "Probe # hits", 80, 0, 80);
+    ProbeNPxLayers = fs->make<TH1F>("ProbeNPxLayers", "Probe # pixel layers", 10, 0, 10);
+    ProbeNStLayers = fs->make<TH1F>("ProbeNStLayers", "Probe # strip layers", 20, 0, 20);
+    ProbeNTkLayers = fs->make<TH1F>("ProbeNTkLayers", "Probe # tracker layers", 30, 0, 30);
   */
 
   // Bin histograms
-  Pt = make_bin_histos("Pt", vec_PtBins);
-  PtB = make_bin_histos("PtB", vec_PtBins);
-  PtO = make_bin_histos("PtO", vec_PtBins);
-  PtE = make_bin_histos("PtE", vec_PtBins);
-  PtF = make_bin_histos("PtF", vec_PtBins);
+  if(useBinHistos2D) {
+    Pt2D      = make_bin_histos_2D("Pt",  vec_PtBins);
+    PtB2D     = make_bin_histos_2D("PtB", vec_PtBins);
+    PtO2D     = make_bin_histos_2D("PtO", vec_PtBins);
+    PtE2D     = make_bin_histos_2D("PtE", vec_PtBins);
+    PtF2D     = make_bin_histos_2D("PtF", vec_PtBins);
 
-  AbsP = make_bin_histos("AbsP", vec_AbsPBins);
-  AbsPB = make_bin_histos("AbsPB", vec_AbsPBins);
-  AbsPO = make_bin_histos("AbsPO", vec_AbsPBins);
-  AbsPE = make_bin_histos("AbsPE", vec_AbsPBins);
-  AbsPF = make_bin_histos("AbsPF", vec_AbsPBins);
+    AbsP2D    = make_bin_histos_2D("AbsP",  vec_AbsPBins);
+    AbsPB2D   = make_bin_histos_2D("AbsPB", vec_AbsPBins);
+    AbsPO2D   = make_bin_histos_2D("AbsPO", vec_AbsPBins);
+    AbsPE2D   = make_bin_histos_2D("AbsPE", vec_AbsPBins);
+    AbsPF2D   = make_bin_histos_2D("AbsPF", vec_AbsPBins);
 
-  Eta = make_bin_histos("Eta", vec_EtaBins);
-  Phi = make_bin_histos("Phi", vec_PhiBins);
-  Vtx = make_bin_histos("Vtx", vec_VtxBins);
+    Eta2D     = make_bin_histos_2D("Eta", vec_EtaBins);
+    Phi2D     = make_bin_histos_2D("Phi", vec_PhiBins);
+    Vtx2D     = make_bin_histos_2D("Vtx", vec_VtxBins);
+
+    if(isAOD) {
+      ShowerB2D      = make_bin_histos_2D("ShowerB", vec_ShowerBins);
+      ShowerBPt2002D = make_bin_histos_2D("ShowerBPt200", vec_ShowerBins);
+      ShowerBPt4002D = make_bin_histos_2D("ShowerBPt400", vec_ShowerBins);
+      ShowerBP2002D  = make_bin_histos_2D("ShowerBP200", vec_ShowerBins);
+      ShowerBP4002D  = make_bin_histos_2D("ShowerBP400", vec_ShowerBins);
+      ShowerE2D      = make_bin_histos_2D("ShowerE", vec_ShowerBins);
+      ShowerEPt2002D = make_bin_histos_2D("ShowerEPt200", vec_ShowerBins);
+      ShowerEPt4002D = make_bin_histos_2D("ShowerEPt400", vec_ShowerBins);
+      ShowerEP2002D  = make_bin_histos_2D("ShowerEP200", vec_ShowerBins);
+      ShowerEP4002D  = make_bin_histos_2D("ShowerEP400", vec_ShowerBins);
+    }
+  }
+
+  else {
+    Pt      = make_bin_histos("Pt",  vec_PtBins);
+    PtB     = make_bin_histos("PtB", vec_PtBins);
+    PtO     = make_bin_histos("PtO", vec_PtBins);
+    PtE     = make_bin_histos("PtE", vec_PtBins);
+    PtF     = make_bin_histos("PtF", vec_PtBins);
+
+    AbsP    = make_bin_histos("AbsP",  vec_AbsPBins);
+    AbsPB   = make_bin_histos("AbsPB", vec_AbsPBins);
+    AbsPO   = make_bin_histos("AbsPO", vec_AbsPBins);
+    AbsPE   = make_bin_histos("AbsPE", vec_AbsPBins);
+    AbsPF   = make_bin_histos("AbsPF", vec_AbsPBins);
+
+    Eta     = make_bin_histos("Eta", vec_EtaBins);
+    Phi     = make_bin_histos("Phi", vec_PhiBins);
+    Vtx     = make_bin_histos("Vtx", vec_VtxBins);
+    if(isAOD) {
+      ShowerB      = make_bin_histos("ShowerB", vec_ShowerBins);
+      ShowerBPt200 = make_bin_histos("ShowerBPt200", vec_ShowerBins);
+      ShowerBPt400 = make_bin_histos("ShowerBPt400", vec_ShowerBins);
+      ShowerBP200  = make_bin_histos("ShowerBP200", vec_ShowerBins);
+      ShowerBP400  = make_bin_histos("ShowerBP400", vec_ShowerBins);
+      ShowerE      = make_bin_histos("ShowerE", vec_ShowerBins);
+      ShowerEPt200 = make_bin_histos("ShowerEPt200", vec_ShowerBins);
+      ShowerEPt400 = make_bin_histos("ShowerEPt400", vec_ShowerBins);
+      ShowerEP200  = make_bin_histos("ShowerEP200", vec_ShowerBins);
+      ShowerEP400  = make_bin_histos("ShowerEP400", vec_ShowerBins);
+    }
+  }
 
   // Templet histograms
   double *arr_PtBins;
@@ -415,16 +575,19 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   double *arr_EtaBins;
   double *arr_PhiBins;
   double *arr_VtxBins;
+  double *arr_ShowerBins;
   CopyVectorToArray(vec_PtBins, arr_PtBins);
   CopyVectorToArray(vec_AbsPBins, arr_AbsPBins);
   CopyVectorToArray(vec_EtaBins, arr_EtaBins);
   CopyVectorToArray(vec_PhiBins, arr_PhiBins);
   CopyVectorToArray(vec_VtxBins, arr_VtxBins);
-  hEffTemplatePt = fs->make<TH1F>("hEffTemplatePt", "", (int)vec_PtBins.size()-1, arr_PtBins);
-  hEffTemplateAbsP = fs->make<TH1F>("hEffTemplateAbsP", "", (int)vec_AbsPBins.size()-1, arr_AbsPBins);
-  hEffTemplateEta = fs->make<TH1F>("hEffTemplateEta", "", (int)vec_EtaBins.size()-1, arr_EtaBins);
-  hEffTemplatePhi = fs->make<TH1F>("hEffTemplatePhi", "", (int)vec_PhiBins.size()-1, arr_PhiBins);
-  hEffTemplateVtx = fs->make<TH1F>("hEffTemplateVtx", "", (int)vec_VtxBins.size()-1, arr_VtxBins);
+  CopyVectorToArray(vec_ShowerBins, arr_ShowerBins);
+  hEffTemplatePt     = fs->make<TH1F>("hEffTemplatePt", "", (int)vec_PtBins.size()-1, arr_PtBins);
+  hEffTemplateAbsP   = fs->make<TH1F>("hEffTemplateAbsP", "", (int)vec_AbsPBins.size()-1, arr_AbsPBins);
+  hEffTemplateEta    = fs->make<TH1F>("hEffTemplateEta", "", (int)vec_EtaBins.size()-1, arr_EtaBins);
+  hEffTemplatePhi    = fs->make<TH1F>("hEffTemplatePhi", "", (int)vec_PhiBins.size()-1, arr_PhiBins);
+  hEffTemplateVtx    = fs->make<TH1F>("hEffTemplateVtx", "", (int)vec_VtxBins.size()-1, arr_VtxBins);
+  hEffTemplateShower = fs->make<TH1F>("hEffTemplateShower", "", (int)vec_ShowerBins.size()-1, arr_ShowerBins);
 
   comparison_tree = fs->make<TTree>("t", "");
   comparison_tree->Branch("IsRealData", &IsRealData, "IsRealData/O");
@@ -460,10 +623,62 @@ void CustoTnPHistosForTnP::getBSandPV(const edm::Event& event) {
   NVertices->Fill(vertex_count, _totalWeight );
 }
 
+int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu) {
+
+  int etaCat = -1;
+  if( fabs(mu->eta()) < 0.9 )
+    etaCat = 1;
+  else if( fabs(mu->eta()) >= 1.2 )
+    etaCat = 2;
+
+  if( etaCat<0 )
+    return -999;
+
+  int nShowers = 0;
+
+  const pat::Muon* muPat = toConcretePtr<pat::Muon>(mu);
+  int st1 = muPat->userInt("nHits1");
+  int st2 = muPat->userInt("nHits2");
+  int st3 = muPat->userInt("nHits3");
+  int st4 = muPat->userInt("nHits4");
+
+  if(etaCat==1) {
+    if(st1>26)
+      nShowers +=1;
+    if(st2>26)
+      nShowers +=1;
+    if(st3>26)
+      nShowers +=1;
+    // if(st4>18)
+    //   nShowers +=1;
+  }
+
+  else if(etaCat==2) {
+    if(st1>18)
+      nShowers +=1;
+    if(st2>18)
+      nShowers +=1;
+    if(st3>18)
+      nShowers +=1;
+    if(st4>18)
+      nShowers +=1;
+  }
+
+  // std::cout << "\netaCat: " << etaCat << std::endl;
+  // std::cout << "\tst1= " << st1 << std::endl;
+  // std::cout << "\tst2= " << st2 << std::endl;
+  // std::cout << "\tst3= " << st3 << std::endl;
+  // std::cout << "\tst4= " << st4 << std::endl;
+  // std::cout << "\t--> nShowers= " << nShowers << std::endl;
+
+  return nShowers;
+}
+
 void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& dil,
                                                  const reco::CandidateBaseRef& TagMu,
                                                  const reco::CandidateBaseRef& ProbeMu,
                                                  float probe_dpt_over_pt,
+                                                 int   probe_nshowers,
                                                  bool  isPassNoPt ) {
 
   //for offline variables
@@ -529,7 +744,18 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
     ProbeNVertices->Fill( nVtx, _totalWeight );
     ProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
     ProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
-    // ProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
+    ProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
+    if(isAOD && probe_nshowers>-1) {
+      ProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
+      if(fabs(ProbeMu->eta())<0.9) {
+        ProbePtShowerB->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+        ProbePShowerB->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+      }
+      else if(fabs(ProbeMu->eta())>=1.2) {
+        ProbePtShowerE->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+        ProbePShowerE->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+      }
+    }
 
     PairMass->Fill( dil.mass(), _totalWeight );
     PairPt->Fill( dil.pt(), _totalWeight );
@@ -542,7 +768,18 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       PassingProbeNVertices->Fill( nVtx, _totalWeight );
       PassingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
       PassingProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
-      // PassingProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
+      PassingProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
+      if(isAOD && probe_nshowers>-1) {
+        PassingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
+        if(fabs(ProbeMu->eta())<0.9) {
+          PassingProbePtShowerB->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+          PassingProbePShowerB->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
+        else if(fabs(ProbeMu->eta())>=1.2) {
+          PassingProbePtShowerE->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+          PassingProbePShowerE->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
+      }
 
       PassingPairMass->Fill( dil.mass(), _totalWeight );
       PassingPairPt->Fill( dil.pt(), _totalWeight );
@@ -555,7 +792,18 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       FailingProbeNVertices->Fill( nVtx, _totalWeight );
       FailingProbeEtaPhi->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
       FailingProbeEtaPt->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
-      // FailingProbeDptPtEta->Fill( probe_dpt_over_pt, ProbeMu->eta(), _totalWeight );
+      FailingProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
+      if(isAOD && probe_nshowers>-1) {
+        FailingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
+        if(fabs(ProbeMu->eta())<0.9) {
+          FailingProbePtShowerB->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+          FailingProbePShowerB->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
+        else if(fabs(ProbeMu->eta())>=1.2) {
+          FailingProbePtShowerE->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+          FailingProbePShowerE->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
+      }
 
       FailingPairMass->Fill( dil.mass(), _totalWeight );
       FailingPairPt->Fill( dil.pt(), _totalWeight );
@@ -603,7 +851,7 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
   }
 }
 
-void CustoTnPHistosForTnP::fillTnPBinHistos( double               dil_mass,
+void CustoTnPHistosForTnP::fillTnPBinHistos(  double               dil_mass,
                                               double               probe_pt,
                                               bool                 isPassNoPt,
                                               double               binValue,
@@ -634,6 +882,33 @@ void CustoTnPHistosForTnP::fillTnPBinHistos( double               dil_mass,
       break;
     }
   }
+
+}
+
+void CustoTnPHistosForTnP::fillTnPBinHistos2D(  double               dil_mass,
+                                                double               probe_pt,
+                                                bool                 isPassNoPt,
+                                                double               binValue,
+                                                BinHistos2D&         Histos,
+                                                bool hasPtCut = true ) {
+
+  if( hasPtCut && (probe_pt < probe_pt_min) )
+    return;
+
+  bool isPass = false;
+
+  if( hasPtCut )
+    isPass = ( isPassNoPt && (probe_pt > probe_pt_min) );
+  else
+    isPass = isPassNoPt;
+
+  if(isPass)
+    Histos[0]->Fill( dil_mass, binValue, _totalWeight );
+  else
+    Histos[1]->Fill( dil_mass, binValue, _totalWeight );
+
+  Histos[2]->Fill( dil_mass, binValue, binValue*_totalWeight );
+  Histos[3]->Fill( dil_mass, binValue, binValue*binValue*_totalWeight );
 
 }
 
@@ -752,6 +1027,10 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           const reco::CandidateBaseRef& TagMu = lep0;
           const reco::CandidateBaseRef& ProbeMu = lep1;
 
+          int probe_nshowers = -999;
+          if(isAOD)
+            probe_nshowers = calcNShowers(ProbeMu);
+
           if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : Tag0 and Probe1" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
           if(!ShutUp)  std::cout << "                                             eta=" << ProbeMu->eta() << std::endl;
@@ -761,31 +1040,108 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           bool isPassingProbe = ( passing_probe_selector(*mu1) && (lep1_dpt_over_pt < passing_probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( vertex->position() )) < passing_probe_dz_max) );
           if(!ShutUp)  std::cout << "                                  isPassingProbe = " << isPassingProbe << std::endl;
 
-          fillTnPControlHistos(*dil, TagMu, ProbeMu, lep1_dpt_over_pt, isPassingProbe);
+          fillTnPControlHistos(*dil, TagMu, ProbeMu, lep1_dpt_over_pt, probe_nshowers, isPassingProbe);
 
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, Pt, false);
-          if( fabs(ProbeMu->eta())<0.9 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtB, false);
-          else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtO, false);
-          else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtE, false);
-          else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtF, false);
+          if(useBinHistos2D) {
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), Pt2D, false);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtB2D, false);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtO2D, false);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtE2D, false);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtF2D, false);
 
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsP, true);
-          if( fabs(ProbeMu->eta())<0.9 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPB, true);
-          else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPO, true);
-          else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPE, true);
-          else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPF, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsP2D, true);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPB2D, true);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPO2D, true);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPE2D, true);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPF2D, true);
 
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->eta(), vec_EtaBins, Eta, true);
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->phi(), vec_PhiBins, Phi, true);
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->eta(), Eta2D, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->phi(), Phi2D, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, Vtx2D, true);
+
+            if(isAOD && probe_nshowers>-1) {
+              if( fabs(ProbeMu->eta())<0.9 ) {
+                fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerB2D, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBPt2002D, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBPt4002D, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBP2002D, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBP4002D, true);
+              }
+              else if( fabs(ProbeMu->eta())>=1.2 ) {
+                fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerE2D, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEPt2002D, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEPt4002D, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEP2002D, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEP4002D, true);
+              }
+            }
+          }
+          else {
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, Pt, false);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtB, false);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtO, false);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtE, false);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtF, false);
+
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsP, true);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPB, true);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPO, true);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPE, true);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPF, true);
+
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->eta(), vec_EtaBins, Eta, true);
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->phi(), vec_PhiBins, Phi, true);
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
+
+            if(isAOD && probe_nshowers>-1) {
+              if( fabs(ProbeMu->eta())<0.9 ) {
+                fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerB, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBPt200, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBPt400, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBP200, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBP400, true);
+              }
+              else if( fabs(ProbeMu->eta())>=1.2 ) {
+                fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerE, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEPt200, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEPt400, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEP200, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEP400, true);
+              }
+            }
+          }
 
           if( ProbeMu->pt() > probe_pt_min ) {
             bool isComparisonProbe = ( comparison_probe_selector(*mu1) && (lep1_dpt_over_pt < comparison_probe_dpt_over_pt_max) && (fabs(mu1->innerTrack()->dz( vertex->position() )) < comparison_probe_dz_max) );
@@ -810,6 +1166,10 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           const reco::CandidateBaseRef& TagMu = lep1;
           const reco::CandidateBaseRef& ProbeMu = lep0;
 
+          int probe_nshowers = -999;
+          if(isAOD)
+            probe_nshowers = calcNShowers(ProbeMu);
+
           if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : Tag1 and Probe0" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
           if(!ShutUp)  std::cout << "                                             eta=" << ProbeMu->eta() << std::endl;
@@ -819,31 +1179,108 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           bool isPassingProbe = ( passing_probe_selector(*mu0) && (lep0_dpt_over_pt < passing_probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( vertex->position() )) < passing_probe_dz_max) );
           if(!ShutUp)  std::cout << "                                  isPassingProbe = " << isPassingProbe << std::endl;
 
-          fillTnPControlHistos(*dil, TagMu, ProbeMu, lep0_dpt_over_pt, isPassingProbe);
+          fillTnPControlHistos(*dil, TagMu, ProbeMu, lep0_dpt_over_pt, probe_nshowers, isPassingProbe);
 
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, Pt, false);
-          if( fabs(ProbeMu->eta())<0.9 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtB, false);
-          else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtO, false);
-          else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtE, false);
-          else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtF, false);
+          if(useBinHistos2D) {
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), Pt2D, false);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtB2D, false);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtO2D, false);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtE2D, false);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), PtF2D, false);
 
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsP, true);
-          if( fabs(ProbeMu->eta())<0.9 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPB, true);
-          else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPO, true);
-          else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPE, true);
-          else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
-            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPF, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsP2D, true);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPB2D, true);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPO2D, true);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPE2D, true);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), AbsPF2D, true);
 
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->eta(), vec_EtaBins, Eta, true);
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->phi(), vec_PhiBins, Phi, true);
-          fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->eta(), Eta2D, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->phi(), Phi2D, true);
+            fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, Vtx2D, true);
+
+            if(isAOD && probe_nshowers>-1) {
+              if( fabs(ProbeMu->eta())<0.9 ) {
+                fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerB2D, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBPt2002D, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBPt4002D, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBP2002D, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerBP4002D, true);
+              }
+              else if( fabs(ProbeMu->eta())>=1.2 ) {
+                fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerE2D, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEPt2002D, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEPt4002D, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEP2002D, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos2D(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, ShowerEP4002D, true);
+              }
+            }
+          }
+          else {
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, Pt, false);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtB, false);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtO, false);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtE, false);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->pt(), vec_PtBins, PtF, false);
+
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsP, true);
+            if( fabs(ProbeMu->eta())<0.9 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPB, true);
+            else if( fabs(ProbeMu->eta())>=0.9 && fabs(ProbeMu->eta())<1.2 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPO, true);
+            else if( fabs(ProbeMu->eta())>=1.2 && fabs(ProbeMu->eta())<2.1 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPE, true);
+            else if( fabs(ProbeMu->eta())>=2.1 && fabs(ProbeMu->eta())<2.4 )
+              fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->p(), vec_AbsPBins, AbsPF, true);
+
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->eta(), vec_EtaBins, Eta, true);
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, ProbeMu->phi(), vec_PhiBins, Phi, true);
+            fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, nVtx, vec_VtxBins, Vtx, true);
+
+            if(isAOD && probe_nshowers>-1) {
+              if( fabs(ProbeMu->eta())<0.9 ) {
+                fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerB, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBPt200, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBPt400, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBP200, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerBP400, true);
+              }
+              else if( fabs(ProbeMu->eta())>=1.2 ) {
+                fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerE, true);
+                if(ProbeMu->pt()>=200 && ProbeMu->pt()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEPt200, true);
+                if(ProbeMu->pt()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEPt400, true);
+                if(ProbeMu->p()>=200 && ProbeMu->p()<400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEP200, true);
+                if(ProbeMu->p()>=400)
+                  fillTnPBinHistos(dil_mass, ProbeMu->pt(), isPassingProbe, probe_nshowers, vec_ShowerBins, ShowerEP400, true);
+              }
+            }
+          }
 
           if( ProbeMu->pt() > probe_pt_min ) {
             bool isComparisonProbe = ( comparison_probe_selector(*mu0) && (lep0_dpt_over_pt < comparison_probe_dpt_over_pt_max) && (fabs(mu0->innerTrack()->dz( vertex->position() )) < comparison_probe_dz_max) );

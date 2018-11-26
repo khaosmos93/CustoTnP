@@ -17,6 +17,9 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
+
 class CustoTnPPairSelector : public edm::EDProducer {
 public:
   explicit CustoTnPPairSelector(const edm::ParameterSet&);
@@ -109,6 +112,8 @@ private:
 
   bool                               is_multi_pair_with_Z(pat::CompositeCandidateCollection&) const;
 
+  float                              veto_others_dphi(edm::Event&, const reco::CandidateBaseRef&);
+
   // If the variable to embed in the methods above is a simple int or
   // float or is going to be embedded wholesale with the generic
   // userData mechanism, we'll do those explicitly in the loop in
@@ -117,6 +122,8 @@ private:
   void embed_vertex_constrained_fit(pat::CompositeCandidate&, const CachingVertex<5>& vtx) const;
 
   const edm::InputTag src;
+  const edm::InputTag muon_src;
+
   edm::InputTag vertex_src;
   const reco::Vertex*   PV;
   StringCutObjectSelector<pat::CompositeCandidate> selector;
@@ -154,6 +161,9 @@ private:
 
   const bool veto_multi_pair_with_Z;
 
+  const bool cut_on_veto_others_dphi;
+  const double veto_others_dphi_min;
+
   const bool samePV;
 
   edm::ESHandle<TransientTrackBuilder> ttkb;
@@ -163,6 +173,7 @@ private:
 
 CustoTnPPairSelector::CustoTnPPairSelector(const edm::ParameterSet& cfg)
   : src(cfg.getParameter<edm::InputTag>("src")),
+    muon_src(cfg.getParameter<edm::InputTag>("muon_src")),
     vertex_src(cfg.getParameter<edm::InputTag>("vertex_src")),
     PV(0),
     selector(cfg.getParameter<std::string>("cut")),
@@ -197,11 +208,15 @@ CustoTnPPairSelector::CustoTnPPairSelector(const edm::ParameterSet& cfg)
 
     veto_multi_pair_with_Z(cfg.getParameter<bool>("veto_multi_pair_with_Z")),
 
+    cut_on_veto_others_dphi(cfg.existsAs<double>("veto_others_dphi_min")),
+    veto_others_dphi_min(cut_on_veto_others_dphi ? cfg.getParameter<double>("veto_others_dphi_min") : -2.),
+
     samePV(cfg.getParameter<bool>("samePV")),
 
     ShutUp(cfg.getParameter<bool>("ShutUp"))
 {
  consumes<pat::CompositeCandidateCollection>(src);
+ consumes<pat::MuonCollection>(muon_src);
  consumes<reco::VertexCollection>(vertex_src);
  produces<pat::CompositeCandidateCollection>();
 
@@ -370,6 +385,55 @@ bool CustoTnPPairSelector::is_multi_pair_with_Z(pat::CompositeCandidateCollectio
   return is;
 }
 
+float CustoTnPPairSelector::veto_others_dphi(edm::Event& event, const reco::CandidateBaseRef& lep) {
+
+  edm::Handle< std::vector< pat::Muon > > muons;
+  event.getByLabel(muon_src, muons);
+
+  float the_dphi = 999.;
+
+  if (lep.isNonnull()) {
+    const pat::Muon* mu = toConcretePtr<pat::Muon>(lep);
+
+    for (std::vector<pat::Muon>::const_iterator imu = muons->begin(); imu != muons->end(); imu++) {
+
+      if( imu->pt() < 8 || !( imu->isGlobalMuon() || imu->isStandAloneMuon() || imu->isTrackerMuon() ) )
+        continue;
+
+      if( !muon::isLooseMuon(*imu) )
+        continue;
+
+      if( imu->globalTrack().isNonnull() ) {
+        if(
+            imu->globalTrack()->pt()  == mu->globalTrack()->pt() &&
+            imu->globalTrack()->eta() == mu->globalTrack()->eta() &&
+            imu->globalTrack()->phi() == mu->globalTrack()->phi()
+          )  continue;
+      }
+      if( imu->standAloneMuon().isNonnull() ) {
+        if(
+            imu->standAloneMuon()->pt()  == mu->standAloneMuon()->pt() &&
+            imu->standAloneMuon()->eta() == mu->standAloneMuon()->eta() &&
+            imu->standAloneMuon()->phi() == mu->standAloneMuon()->phi()
+          )  continue;
+      }
+      if( imu->innerTrack().isNonnull() ) {
+        if(
+            imu->innerTrack()->pt()  == mu->innerTrack()->pt() &&
+            imu->innerTrack()->eta() == mu->innerTrack()->eta() &&
+            imu->innerTrack()->phi() == mu->innerTrack()->phi()
+           )  continue;
+      }
+
+      float temp_dphi = fabs( reco::deltaPhi(imu->phi(), mu->phi()) );
+      if( temp_dphi < the_dphi )
+        the_dphi = temp_dphi;
+    }
+  }
+
+  return the_dphi;
+}
+
 bool CustoTnPPairSelector::TagAndProbeSelector(const pat::CompositeCandidate& dil,
                                                float lep0_dpt_over_pt, float lep1_dpt_over_pt) {
   // bool isTag0Probe1 = false;
@@ -452,6 +516,8 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
     const reco::CandidateBaseRef& lep1 = dileptonDaughter(*c, 1);
     float lep0_dpt_over_pt = dpt_over_pt(lep0);
     float lep1_dpt_over_pt = dpt_over_pt(lep1);
+    float lep0_veto_others_dphi = veto_others_dphi(event, lep0);
+    float lep1_veto_others_dphi = veto_others_dphi(event, lep1);
 
     //if(!ShutUp)  std::cout << "CustoTnPPairSelector::produce dpt_over_pt : lep0 dpt_over_pt=" << lep0_dpt_over_pt << ", " << "lep1 dpt_over_pt=" << lep1_dpt_over_pt << std::endl;
 
@@ -482,6 +548,12 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
     if( cut_on_dil_deltaR && !the_deltaR.first)
       continue;
 
+    //---- Veto other muons around
+    if( cut_on_veto_others_dphi &&
+        ( (isTag1Probe0 && (lep0_veto_others_dphi < veto_others_dphi_min) ) ||
+          (isTag0Probe1 && (lep1_veto_others_dphi < veto_others_dphi_min) ) )
+      ) continue;
+
     // Save the dilepton since it passed the cuts, and store the cut
     // variables and other stuff for use later.
     new_cands->push_back(*c);
@@ -491,6 +563,10 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
 
     new_cands->back().addUserFloat("lep0_dpt_over_pt",   lep0_dpt_over_pt);
     new_cands->back().addUserFloat("lep1_dpt_over_pt",   lep1_dpt_over_pt);
+
+    new_cands->back().addUserFloat("lep0_veto_others_dphi", lep0_veto_others_dphi);
+    new_cands->back().addUserFloat("lep1_veto_others_dphi", lep1_veto_others_dphi);
+
     new_cands->back().addUserFloat("cos_angle",   cos_angle.second);
     embed_vertex_constrained_fit(new_cands->back(), vertex.second);
 
