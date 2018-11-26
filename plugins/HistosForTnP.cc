@@ -131,6 +131,8 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH2F *ProbeEtaShower;
   TH2F *ProbePtShowerB;
   TH2F *ProbePtShowerE;
+  TH2F *ProbePShowerB;
+  TH2F *ProbePShowerE;
 
   TH1F *PassingProbePt;
   TH1F *PassingProbeEta;
@@ -142,6 +144,8 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH2F *PassingProbeEtaShower;
   TH2F *PassingProbePtShowerB;
   TH2F *PassingProbePtShowerE;
+  TH2F *PassingProbePShowerB;
+  TH2F *PassingProbePShowerE;
 
   TH1F *FailingProbePt;
   TH1F *FailingProbeEta;
@@ -153,6 +157,8 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   TH2F *FailingProbeEtaShower;
   TH2F *FailingProbePtShowerB;
   TH2F *FailingProbePtShowerE;
+  TH2F *FailingProbePShowerB;
+  TH2F *FailingProbePShowerE;
 
   TH1F *PairNoPtMass;
   TH1F *PairNoPtPt;
@@ -427,6 +433,8 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaShower        = fs->make<TH2F>("ProbeEtaShower", "Probe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
   ProbePtShowerB        = fs->make<TH2F>("ProbePtShowerB", "Probe pT shower B",    100, 0, 10000, 7, -1.5, 5.5);
   ProbePtShowerE        = fs->make<TH2F>("ProbePtShowerE", "Probe pT shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  ProbePShowerB         = fs->make<TH2F>("ProbePShowerB", "Probe p shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  ProbePShowerE         = fs->make<TH2F>("ProbePShowerE", "Probe p shower E",    100, 0, 10000, 7, -1.5, 5.5);
   }
 
   PassingProbePt        = fs->make<TH1F>("PassingProbePt", "PassingProbe pT", 10000, 0, 10000);
@@ -440,6 +448,8 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   PassingProbeEtaShower = fs->make<TH2F>("PassingProbeEtaShower", "PassingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
   PassingProbePtShowerB = fs->make<TH2F>("PassingProbePtShowerB", "PassingProbe pT shower B",    100, 0, 10000, 7, -1.5, 5.5);
   PassingProbePtShowerE = fs->make<TH2F>("PassingProbePtShowerE", "PassingProbe pT shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  PassingProbePShowerB  = fs->make<TH2F>("PassingProbePShowerB", "PassingProbe p shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  PassingProbePShowerE  = fs->make<TH2F>("PassingProbePShowerE", "PassingProbe p shower E",    100, 0, 10000, 7, -1.5, 5.5);
   }
 
   FailingProbePt        = fs->make<TH1F>("FailingProbePt", "FailingProbe pT", 10000, 0, 10000);
@@ -453,6 +463,8 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   FailingProbeEtaShower = fs->make<TH2F>("FailingProbeEtaShower", "FailingProbe #eta shower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
   FailingProbePtShowerB = fs->make<TH2F>("FailingProbePtShowerB", "FailingProbe pT shower B",    100, 0, 10000, 7, -1.5, 5.5);
   FailingProbePtShowerE = fs->make<TH2F>("FailingProbePtShowerE", "FailingProbe pT shower E",    100, 0, 10000, 7, -1.5, 5.5);
+  FailingProbePShowerB  = fs->make<TH2F>("FailingProbePShowerB", "FailingProbe p shower B",    100, 0, 10000, 7, -1.5, 5.5);
+  FailingProbePShowerE  = fs->make<TH2F>("FailingProbePShowerE", "FailingProbe p shower E",    100, 0, 10000, 7, -1.5, 5.5);
   }
 
   // TnP pair
@@ -652,12 +664,12 @@ int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu) {
       nShowers +=1;
   }
 
-  std::cout << "\netaCat: " << etaCat << std::endl;
-  std::cout << "\tst1= " << st1 << std::endl;
-  std::cout << "\tst2= " << st2 << std::endl;
-  std::cout << "\tst3= " << st3 << std::endl;
-  std::cout << "\tst4= " << st4 << std::endl;
-  std::cout << "\t--> nShowers= " << nShowers << std::endl;
+  // std::cout << "\netaCat: " << etaCat << std::endl;
+  // std::cout << "\tst1= " << st1 << std::endl;
+  // std::cout << "\tst2= " << st2 << std::endl;
+  // std::cout << "\tst3= " << st3 << std::endl;
+  // std::cout << "\tst4= " << st4 << std::endl;
+  // std::cout << "\t--> nShowers= " << nShowers << std::endl;
 
   return nShowers;
 }
@@ -735,10 +747,14 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
     ProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
     if(isAOD && probe_nshowers>-1) {
       ProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
-      if(fabs(ProbeMu->eta())<0.9)
+      if(fabs(ProbeMu->eta())<0.9) {
         ProbePtShowerB->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
-      else if(fabs(ProbeMu->eta())>=1.2)
+        ProbePShowerB->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+      }
+      else if(fabs(ProbeMu->eta())>=1.2) {
         ProbePtShowerE->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+        ProbePShowerE->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+      }
     }
 
     PairMass->Fill( dil.mass(), _totalWeight );
@@ -755,10 +771,14 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       PassingProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
       if(isAOD && probe_nshowers>-1) {
         PassingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
-        if(fabs(ProbeMu->eta())<0.9)
+        if(fabs(ProbeMu->eta())<0.9) {
           PassingProbePtShowerB->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
-        else if(fabs(ProbeMu->eta())>=1.2)
+          PassingProbePShowerB->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
+        else if(fabs(ProbeMu->eta())>=1.2) {
           PassingProbePtShowerE->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+          PassingProbePShowerE->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
       }
 
       PassingPairMass->Fill( dil.mass(), _totalWeight );
@@ -775,10 +795,14 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       FailingProbeEtaDptPt->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
       if(isAOD && probe_nshowers>-1) {
         FailingProbeEtaShower->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
-        if(fabs(ProbeMu->eta())<0.9)
+        if(fabs(ProbeMu->eta())<0.9) {
           FailingProbePtShowerB->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
-        else if(fabs(ProbeMu->eta())>=1.2)
+          FailingProbePShowerB->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
+        else if(fabs(ProbeMu->eta())>=1.2) {
           FailingProbePtShowerE->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
+          FailingProbePShowerE->Fill( ProbeMu->p(), probe_nshowers, _totalWeight );
+        }
       }
 
       FailingPairMass->Fill( dil.mass(), _totalWeight );
