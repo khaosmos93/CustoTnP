@@ -528,11 +528,6 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
 
     // -- Selection for Tag and Probe pair -- //
 
-
-    if( cut_on_veto_others_dphi && 
-        ( (lep0_veto_others_dphi > veto_others_dphi_min) || (lep1_veto_others_dphi > veto_others_dphi_min) ) )
-      continue;
-
     //---- Back-to-back cut to kill cosmics.
     std::pair<bool, float> cos_angle = back_to_back_cos_angle(*c);
     if (cut_on_back_to_back_cos_angle && !cos_angle.first)
@@ -552,6 +547,12 @@ void CustoTnPPairSelector::produce(edm::Event& event, const edm::EventSetup& set
     std::pair<bool, float> the_deltaR = dil_deltaR(*c);
     if( cut_on_dil_deltaR && !the_deltaR.first)
       continue;
+
+    //---- Veto other muons around
+    if( cut_on_veto_others_dphi &&
+        ( (isTag1Probe0 && (lep0_veto_others_dphi < veto_others_dphi_min) ) ||
+          (isTag0Probe1 && (lep1_veto_others_dphi < veto_others_dphi_min) ) )
+      ) continue;
 
     // Save the dilepton since it passed the cuts, and store the cut
     // variables and other stuff for use later.
