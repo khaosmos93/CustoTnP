@@ -79,12 +79,13 @@ private:
 
   //@
   bool isAOD;
-  const edm::InputTag reco_muon_src;
-  const edm::InputTag muonshower_src;
-  // const edm::InputTag dtseg_src;
-  // const edm::InputTag cscseg_src;
+  edm::InputTag reco_muon_src;
+  edm::InputTag muonshower_src;
+  // edm::InputTag dtseg_src;
+  // edm::InputTag cscseg_src;
 
-  void embedShowerInfo(pat::Muon*, reco::MuonRef muon);
+  std::pair<bool, reco::MuonRef> getMuonRef(edm::Event&, pat::Muon*);
+  void embedShowerInfo(pat::Muon*, reco::MuonRef);
 };
 
 CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
