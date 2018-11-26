@@ -84,8 +84,8 @@ private:
   // edm::InputTag dtseg_src;
   // edm::InputTag cscseg_src;
 
-  std::pair<bool, reco::MuonRef> getMuonRef(edm::Event&, pat::Muon*);
-  void embedShowerInfo(edm::Event&, pat::Muon*, reco::MuonRef);
+  std::pair<bool, reco::MuonRef> getMuonRef(const edm::Event&, pat::Muon*);
+  void embedShowerInfo(const edm::Event&, pat::Muon*, reco::MuonRef);
 };
 
 CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
@@ -284,7 +284,7 @@ void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu, flo
 }
 
 //@
-std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(edm::Event& event, pat::Muon* new_mu) {
+std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(const edm::Event& event, pat::Muon* new_mu) {
 
   edm::Handle< std::vector< reco::Muon > > recoMuons;
   event.getByLabel(reco_muon_src, recoMuons);
