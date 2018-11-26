@@ -316,7 +316,7 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
   for(int i=0; i<4; ++i) {
     int nhits_temp = (muonShowerInformation.nStationHits).at(i);
 
-    std::string var_temp = "nHits"+std::to_string( int(i) );
+    std::string var_temp = "nHits"+std::to_string( int(i+1) );
     new_mu->addUserInt(var_temp, nhits_temp);
   }
 }

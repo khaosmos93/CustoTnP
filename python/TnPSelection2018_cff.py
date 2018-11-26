@@ -107,6 +107,7 @@ allDimuons = cms.EDProducer('CustoTnPCombiner',
 
 dimuons = cms.EDProducer('CustoTnPPairSelector',
                          src = cms.InputTag('allDimuons'),
+                         muon_src = cms.InputTag('slimmedMuons'),
                          vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
                          cut = cms.string(Pair_Cut),                                  # simple cuts for dilepton pair, Pair_Cut
                          tag_cut = cms.string(Tag_cut),                               # Tag lepton selection, Tag_cut
@@ -120,6 +121,8 @@ dimuons = cms.EDProducer('CustoTnPPairSelector',
                          vertex_chi2_max = cms.double(20),
                          pt_ratio_max = cms.double(3.0),
                          dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
+
+                         veto_others_dphi_min = cms.double(Probe_veto_other_dphi_min),  #0.6
 
                          veto_multi_pair_with_Z = cms.bool(True),
 
@@ -168,37 +171,15 @@ HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
 )
 
 
-# Modules for AOD should be updated
-dimuonsAOD = cms.EDProducer('CustoTnPPairSelector_AOD',
-                         src = cms.InputTag('allDimuons'),
-                         reco_muon_src = cms.InputTag('muons'),
-                         muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
-                         dtseg_src = cms.InputTag('dt4DSegments'),
-                         cscseg_src = cms.InputTag('cscSegments'),
 
-                         vertex_src = cms.InputTag('offlinePrimaryVertices'),
-                         cut = cms.string(Pair_Cut),                                  # simple cuts for dilepton pair, Pair_Cut
-                         tag_cut = cms.string(Tag_cut),                               # Tag lepton selection, Tag_cut
-                         tag_dpt_over_pt_max = cms.double(Tag_dpt_over_pt_max),       # Tag dpT/pT
-                         tag_dz_max = cms.double(Tag_dz_max),                         # Tag dz
-                         probe_cut = cms.string(Probe_cut),                           # Probe lepton selection, Probe_cut
-                         probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
-                         probe_dz_max = cms.double(Probe_dz_max),                     # Probe dz
 
-                         back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
-                         vertex_chi2_max = cms.double(20),
-                         pt_ratio_max = cms.double(3.0),
-                         dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
+#--- tags for AOD
+  # reco_muon_src = cms.InputTag('muons'),
+  # muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
+  # dtseg_src = cms.InputTag('dt4DSegments'),
+  # cscseg_src = cms.InputTag('cscSegments'),
 
-                         veto_others_dphi_min = cms.double(Probe_veto_other_dphi_min),  #0.6
-
-                         samePV = cms.bool( False ),
-
-                         max_candidates = cms.uint32(1),
-                         sort_by_pt = cms.bool(True),
-                         do_remove_overlap = cms.bool(True),
-                         ShutUp = cms.bool(True)  #True
-)
+  # vertex_src = cms.InputTag('offlinePrimaryVertices'),
 
 HistosForTnPAOD = cms.EDAnalyzer('CustoTnPHistosForTnP_AOD',
                                dilepton_src = cms.InputTag('dimuonsAOD'),
