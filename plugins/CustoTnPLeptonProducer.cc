@@ -307,7 +307,7 @@ std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(const edm::Eve
   return make_pair(isMatched, matchedMuRef);
 }
 
-void CustoTnPLeptonProducer::embedShowerInfo(edm::Event& event, pat::Muon* new_mu, reco::MuonRef MuRef) {
+void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon* new_mu, reco::MuonRef MuRef) {
   edm::Handle<edm::ValueMap<reco::MuonShower> > muonShowerInformationValueMap;
   event.getByLabel(muonshower_src, muonShowerInformationValueMap);
 
