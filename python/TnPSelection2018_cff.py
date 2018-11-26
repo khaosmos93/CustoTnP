@@ -169,6 +169,9 @@ HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
                                vec_VtxBins = cms.vdouble( vtx_bins ),
                                vec_ShowerBins = cms.vdouble( shower_bins ),
 
+                               isAOD = cms.bool(False),
+                               useBinHistos2D = cms.bool(True),
+
                                ShutUp = cms.bool(True)  #True
 )
 
