@@ -33,12 +33,12 @@ tag_custo_cut =   'isGlobalMuon && ' \
 custo_cut_nopt =  'isGlobalMuon && ' \
                   'abs(eta) < 2.4 && ' \
                   'abs(dB) < 0.2 && ' \
+                  'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
+                  'isolationR03.sumPt < 30 && ' \
                   'innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && ' \
                   'innerTrack.hitPattern.numberOfValidPixelHits >= 1 && ' \
                   '( (globalTrack.hitPattern.numberOfValidMuonHits > 0) || (tunePMuonBestTrack.hitPattern.numberOfValidMuonHits > 0) ) && ' \
                   '( ( numberOfMatchedStations>1 ) || ( isTrackerMuon && numberOfMatchedStations==1 && ( userInt("expectedNnumberOfMatchedStations10")<2 || !(stationMask==1 || stationMask==16) || numberOfMatchedRPCLayers>2 ) ) )'
-                  # 'isolationR03.sumPt / innerTrack.pt < 0.05 && ' \
-                  # 'isolationR03.sumPt < 30 && ' \
 
 Pair_Cut = ''
 
