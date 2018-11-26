@@ -31,6 +31,12 @@
 #include "DataFormats/CSCRecHit/interface/CSCRecHit2D.h"
 #include "DataFormats/CSCRecHit/interface/CSCRangeMapAccessor.h"
 
+#include "DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h"
+#include "DataFormats/DTRecHit/interface/DTRecHitCollection.h"
+#include "DataFormats/CSCRecHit/interface/CSCSegmentCollection.h"
+#include "DataFormats/MuonReco/interface/MuonShower.h"
+
+
 class CustoTnPLeptonProducer : public edm::EDProducer {
 public:
   explicit CustoTnPLeptonProducer(const edm::ParameterSet&);
@@ -70,6 +76,15 @@ private:
   std::vector<std::vector<int>> vec_L3_muons_matched;
 
   edm::EDGetTokenT<l1t::MuonBxCollection> l1_src_;
+
+  //@
+  bool isAOD;
+  const edm::InputTag reco_muon_src;
+  const edm::InputTag muonshower_src;
+  const edm::InputTag dtseg_src;
+  const edm::InputTag cscseg_src;
+
+  void embedShowerInfo(pat::Muon*, reco::MuonRef muon);
 };
 
 CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
@@ -87,7 +102,9 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
     triggerBits_(consumes<edm::TriggerResults>(cfg.getParameter<edm::InputTag>("bits"))),
     trigger_summary_src_(consumes<pat::TriggerObjectStandAloneCollection>(cfg.getParameter<edm::InputTag>("trigger_summary"))),
     triggerPrescales_(consumes<pat::PackedTriggerPrescales>(cfg.getParameter<edm::InputTag>("prescales"))),
-    l1_src_(consumes<l1t::MuonBxCollection>(cfg.getParameter<edm::InputTag>("l1")))
+    l1_src_(consumes<l1t::MuonBxCollection>(cfg.getParameter<edm::InputTag>("l1"))),
+
+    isAOD(cfg.getParameter<bool>("isAOD"))
 {
   consumes<edm::View<reco::Candidate>>(muon_view_src);
   consumes<pat::MuonCollection>(muon_src);
@@ -100,20 +117,28 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
     for (size_t i = 0; i < muon_tracks_for_momentum.size(); ++i)
       produces<pat::MuonCollection>(muon_tracks_for_momentum[i]);
 
+  if(isAOD) {
+    reco_muon_src(cfg.getParameter<edm::InputTag>("reco_muon_src")),
+    muonshower_src(cfg.getParameter<edm::InputTag>("muonshower_src")),
+    dtseg_src(cfg.getParameter<edm::InputTag>("dtseg_src")),
+    cscseg_src(cfg.getParameter<edm::InputTag>("cscseg_src")),
+
+    consumes<std::vector< reco::Muon >>(reco_muon_src);
+    consumes<edm::ValueMap<reco::MuonShower>>(muonshower_src);
+    consumes<DTRecSegment4DCollection>(dtseg_src);
+    consumes<CSCSegmentCollection>(cscseg_src);
+  }
+
   produces<pat::MuonCollection>("muons");
 }
 
 
 pat::Muon* CustoTnPLeptonProducer::cloneAndSwitchMuonTrack(const pat::Muon& muon, const edm::Event& event) const {
-  
+
   // Muon mass to make a four-vector out of the new track.
-  
-  
-  
+
   pat::Muon* mu = muon.clone();
-  
-  
-  
+
   // Start with null track/invalid type before we find the right one.
   reco::TrackRef newTrack;
   newTrack = muon.tunePMuonBestTrack();
@@ -122,7 +147,6 @@ pat::Muon* CustoTnPLeptonProducer::cloneAndSwitchMuonTrack(const pat::Muon& muon
   // If the muon has the track embedded using the UserData mechanism,
   // take it from there first. Otherwise, try to get the track the
   // standard way.
-
 
   if (muon.pt() > 100.) {
 	mu->addUserInt("hasTeVMuons", 1);
@@ -156,27 +180,26 @@ pat::Muon* CustoTnPLeptonProducer::cloneAndSwitchMuonTrack(const pat::Muon& muon
   reco::Particle::LorentzVector p4;
 
   //////////   Comment following lines to apply pt bias correction /////
-   const double p = newTrack->p();  
-   p4.SetXYZT(newTrack->px(), newTrack->py(), newTrack->pz(), sqrt(p*p + mass*mass));  
+    const double p = newTrack->p();  
+    p4.SetXYZT(newTrack->px(), newTrack->py(), newTrack->pz(), sqrt(p*p + mass*mass));  
   //////////   Comment previous lines to apply pt bias correction ----->  Uncomment following lines /////
 
 
-  
-	///////// uncomment following lines to apply pt bias correction -----> comment previous lines /////////
-//  float phi = newTrack->phi()*TMath::RadToDeg();
+  ///////// uncomment following lines to apply pt bias correction -----> comment previous lines /////////
+    //  float phi = newTrack->phi()*TMath::RadToDeg();
 
-//  float mupt = GeneralizedEndpoint().GeneralizedEndpointPt(newTrack->pt(),newTrack->charge(),newTrack->eta(),phi,-1,1); //for DATA
-//  float mupt = GeneralizedEndpoint().GeneralizedEndpointPt(newTrack->pt(),newTrack->charge(),newTrack->eta(),phi,0,1);  // for MC
+    //  float mupt = GeneralizedEndpoint().GeneralizedEndpointPt(newTrack->pt(),newTrack->charge(),newTrack->eta(),phi,-1,1); //for DATA
+    //  float mupt = GeneralizedEndpoint().GeneralizedEndpointPt(newTrack->pt(),newTrack->charge(),newTrack->eta(),phi,0,1);  // for MC
 
 
-//	float px = mupt*TMath::Cos(newTrack->phi());
-//	float py = mupt*TMath::Sin(newTrack->phi());
-//	float pz = mupt*TMath::SinH(newTrack->eta());
-//	float p = mupt*TMath::CosH(newTrack->eta());
-//	p4.SetXYZT(px, py, pz, sqrt(p*p + mass*mass));
+    //	float px = mupt*TMath::Cos(newTrack->phi());
+    //	float py = mupt*TMath::Sin(newTrack->phi());
+    //	float pz = mupt*TMath::SinH(newTrack->eta());
+    //	float p = mupt*TMath::CosH(newTrack->eta());
+    //	p4.SetXYZT(px, py, pz, sqrt(p*p + mass*mass));
 
-// 	std::cout<<"my definition = "<<mupt<<std::endl;
-	/////// uncomment previous lines to apply pt bias correction /////////
+    // 	std::cout<<"my definition = "<<mupt<<std::endl;
+  /////// uncomment previous lines to apply pt bias correction /////////
 
 
   mu->setP4(p4);  
@@ -259,6 +282,43 @@ void CustoTnPLeptonProducer::embedExpectedMatchedStations(pat::Muon* new_mu, flo
   new_mu->addUserInt(var_temp, n);
 }
 
+//@
+std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(edm::Event& event, pat::Muon* new_mu) {
+
+  edm::Handle< std::vector< reco::Muon > > recoMuons;
+  event.getByLabel(reco_muon_src, recoMuons);
+
+  bool isMatched = false;
+  reco::MuonRef matchedMuRef = nullptr; // reco::MuonRef(recoMuons, 0);
+
+  int imucount = 0;
+  for (std::vector<reco::Muon>::const_iterator imu = recoMuons->begin(); imu != recoMuons->end(); imu++) {
+    if(imu->globalTrack()->pt() == new_mu->globalTrack()->pt() &&
+       imu->globalTrack()->eta() == new_mu->globalTrack()->eta() &&
+       imu->globalTrack()->phi() == new_mu->globalTrack()->phi() ) {
+      isMatched = true;
+      matchedMuRef = reco::MuonRef(recoMuons, imucount);
+      break;
+    }
+    imucount++;
+  }
+
+  return make_pair(isMatched, matchedMuRef);
+}
+
+void CustoTnPLeptonProducer::embedShowerInfo(pat::Muon* new_mu, reco::MuonRef MuRef) {
+  edm::Handle<edm::ValueMap<reco::MuonShower> > muonShowerInformationValueMap;
+  event.getByLabel(muonshower_src, muonShowerInformationValueMap);
+
+  // std::vector<int> nhits = {0,0,0,0};
+  reco::MuonShower muonShowerInformation = (*muonShowerInformationValueMap)[MuRef];
+  for(int i=0; i<4; ++i) {
+    int nhits_temp = (muonShowerInformation.nStationHits).at(i);
+
+    std::string var_temp = "nHits"+std::to_string( int(i) );
+    new_mu->addUserInt(var_temp, nhits_temp);
+  }
+}
 
 std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand) {
   // Failure is indicated by a null pointer as the first member of the
@@ -331,11 +391,26 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
 
   //~
   // std::cout << "Muon pT= " << new_mu->pt() << "\teta= " << new_mu->eta() << "\tphi= " << new_mu->phi() << std::endl;
-  embedExpectedMatchedStations(new_mu, 5.);
+  // embedExpectedMatchedStations(new_mu, 5.);
   embedExpectedMatchedStations(new_mu, 10.);
-  embedExpectedMatchedStations(new_mu, 15.);
-  embedExpectedMatchedStations(new_mu, 20.);
+  // embedExpectedMatchedStations(new_mu, 15.);
+  // embedExpectedMatchedStations(new_mu, 20.);
   // std::cout << "\texpectedNnumberOfMatchedStations: " << new_mu->userInt("expectedNnumberOfMatchedStations") << std::endl;
+
+  //@
+  if(isAOD) {
+    std::pair<bool, reco::MuonRef> pair_muRef = getMuonRef(event, new_mu);
+    if( pair_muRef.first ) {
+      embedShowerInfo(new_mu, pair_muRef.second);
+      std::cout << "\tembedShowerInfo: " << new_mu->userInt("nHits1") << std::endl;
+      std::cout << "\tembedShowerInfo: " << new_mu->userInt("nHits2") << std::endl;
+      std::cout << "\tembedShowerInfo: " << new_mu->userInt("nHits3") << std::endl;
+      std::cout << "\tembedShowerInfo: " << new_mu->userInt("nHits4") << std::endl;
+    }
+    else {
+      std::cout << "Reco muon ref not found..." << "  Event ID = " << event.id() << endl;
+    }
+  }
 
   // Evaluate cuts here with string object selector, and any code that
   // cannot be done in the string object selector (none so far).
@@ -375,7 +450,6 @@ edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer::doLeptons(edm::Event&
 
   return event.put(std::move(new_leptons), instance_label);
 }
-
 
 void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& setup) {
   // Grab the match map between PAT photons and PAT muons so we can
