@@ -591,7 +591,7 @@ void CustoTnPHistosForTnP::getBSandPV(const edm::Event& event) {
   NVertices->Fill(vertex_count, _totalWeight );
 }
 
-int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu, int min_barrel = 26, int min_endcap = 18, bool verbos = false ) {
+int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu, int min_barrel = 26, int min_endcap = 18, bool verbos = true ) {
 
   int etaCat = -1;
   if( fabs(mu->eta()) < 0.9 )

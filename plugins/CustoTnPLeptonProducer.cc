@@ -403,9 +403,9 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
     std::pair<bool, reco::MuonRef> pair_muRef = getMuonRef(event, new_mu);
     if( pair_muRef.first ) {
       embedShowerInfo(event, new_mu, pair_muRef.second);
-      std::cout << "\n[  EvID  " << event.id() << "  ]" << std::endl;
-      std::cout << "\tpt = " << new_mu->pt() << ", eta = " << new_mu->eta() << std::endl;
-      std::cout << "\t\t" << new_mu->userInt("nHits1") << "\t" << new_mu->userInt("nHits2") << "\t" << new_mu->userInt("nHits3") << "\t" << new_mu->userInt("nHits4");
+      // std::cout << "\n[  EvID  " << event.id() << "  ]" << std::endl;
+      // std::cout << "\tpt = " << new_mu->pt() << ", eta = " << new_mu->eta() << std::endl;
+      // std::cout << "\t\t" << new_mu->userInt("nHits1") << "\t" << new_mu->userInt("nHits2") << "\t" << new_mu->userInt("nHits3") << "\t" << new_mu->userInt("nHits4");
     }
     else {
       std::cout << "Reco muon ref not found..." << "  Event ID = " << event.id() << endl;
