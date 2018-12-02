@@ -55,7 +55,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   typedef std::vector< TH2F* > BinHistos2D;
   void fillTnPBinHistos2D( double, double, bool, double, BinHistos2D&, bool );
 
-  int calcNShowers(const reco::CandidateBaseRef&, int, int);
+  int calcNShowers(const reco::CandidateBaseRef&, int, int, bool);
 
   edm::InputTag dilepton_src;
   edm::InputTag beamspot_src;
@@ -402,7 +402,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   TagEta = fs->make<TH1F>("TagEta", "Tag #eta",    96, -4.8, 4.8);
   TagPhi = fs->make<TH1F>("TagPhi", "Tag #phi", 41, -TMath::Pi(), TMath::Pi());
 
-  Double_t eta_bins_for_2D[15] = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
+  std::vector<double> eta_bins_for_2D = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
 
   // Probe
   ProbePt        = make_probe_histos("Pt",             10000, 0, 10000);
