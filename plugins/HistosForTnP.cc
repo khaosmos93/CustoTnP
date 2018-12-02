@@ -596,10 +596,10 @@ int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu,
                                        int min_barrel_st2 = 50,
                                        int min_barrel_st3 = 50,
                                        int min_barrel_st4 = 35,
-                                       int min_endcap_st1 = 25,
-                                       int min_endcap_st2 = 15,
-                                       int min_endcap_st3 = 15,
-                                       int min_endcap_st4 = 15,
+                                       int min_endcap_st1 = 35,
+                                       int min_endcap_st2 = 20,
+                                       int min_endcap_st3 = 20,
+                                       int min_endcap_st4 = 20,
                                        bool verbos = false ) {
 
   int etaCat = -1;
