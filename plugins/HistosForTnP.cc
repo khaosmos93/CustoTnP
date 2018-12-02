@@ -600,7 +600,7 @@ int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu,
                                        int min_endcap_st2 = 15,
                                        int min_endcap_st3 = 15,
                                        int min_endcap_st4 = 15,
-                                       bool verbos = true ) {
+                                       bool verbos = false ) {
 
   int etaCat = -1;
   if( fabs(mu->eta()) < 0.9 )
