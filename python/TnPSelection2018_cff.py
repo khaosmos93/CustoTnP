@@ -78,7 +78,7 @@ Comparison_probe_dz_max = 1e9
 
 # -- Binnings (for ID effificney) -- #
 width = PI / 20.0
-pt_bins   = [0, 20, 25, 30, 40, 50, 60, 120, 200, 400, 1e6]
+pt_bins   = [0, 20, 25, 30, 40, 50, 60, 120, 200, 450, 1e6]
 absp_bins = [0, 1e6]
 eta_bins  = [-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4]
 phi_bins  = [ -20*width, -19*width, -18*width, -17*width, -16*width,
