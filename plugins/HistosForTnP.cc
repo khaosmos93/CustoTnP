@@ -443,29 +443,29 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbePShowerB  = make_probe_histos_2D("PShowerB",     100, 0, 10000, 7, -1.5, 5.5);
   ProbePShowerE  = make_probe_histos_2D("PShowerE",     100, 0, 10000, 7, -1.5, 5.5);
 
-  ProbeEtaHitsSt1 = make_probe_histos_2D("EtaHitsSt1",    eta_bins_for_2D, 200, 0, 200);
-  ProbePtHitsSt1B = make_probe_histos_2D("PtHitsSt1B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt1E = make_probe_histos_2D("PtHitsSt1E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt1B  = make_probe_histos_2D("PHitsSt1B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt1E  = make_probe_histos_2D("PHitsSt1E",     100, 0, 10000, 200, 0, 200);
+  ProbeEtaHitsSt1 = make_probe_histos_2D("EtaHitsSt1",    eta_bins_for_2D, 100, 0, 200);
+  ProbePtHitsSt1B = make_probe_histos_2D("PtHitsSt1B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt1E = make_probe_histos_2D("PtHitsSt1E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt1B  = make_probe_histos_2D("PHitsSt1B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt1E  = make_probe_histos_2D("PHitsSt1E",     100, 0, 10000, 100, 0, 200);
 
-  ProbeEtaHitsSt2 = make_probe_histos_2D("EtaHitsSt2",    eta_bins_for_2D, 200, 0, 200);
-  ProbePtHitsSt2B = make_probe_histos_2D("PtHitsSt2B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt2E = make_probe_histos_2D("PtHitsSt2E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt2B  = make_probe_histos_2D("PHitsSt2B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt2E  = make_probe_histos_2D("PHitsSt2E",     100, 0, 10000, 200, 0, 200);
+  ProbeEtaHitsSt2 = make_probe_histos_2D("EtaHitsSt2",    eta_bins_for_2D, 100, 0, 200);
+  ProbePtHitsSt2B = make_probe_histos_2D("PtHitsSt2B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt2E = make_probe_histos_2D("PtHitsSt2E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt2B  = make_probe_histos_2D("PHitsSt2B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt2E  = make_probe_histos_2D("PHitsSt2E",     100, 0, 10000, 100, 0, 200);
 
-  ProbeEtaHitsSt3 = make_probe_histos_2D("EtaHitsSt3",    eta_bins_for_2D, 200, 0, 200);
-  ProbePtHitsSt3B = make_probe_histos_2D("PtHitsSt3B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt3E = make_probe_histos_2D("PtHitsSt3E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt3B  = make_probe_histos_2D("PHitsSt3B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt3E  = make_probe_histos_2D("PHitsSt3E",     100, 0, 10000, 200, 0, 200);
+  ProbeEtaHitsSt3 = make_probe_histos_2D("EtaHitsSt3",    eta_bins_for_2D, 100, 0, 200);
+  ProbePtHitsSt3B = make_probe_histos_2D("PtHitsSt3B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt3E = make_probe_histos_2D("PtHitsSt3E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt3B  = make_probe_histos_2D("PHitsSt3B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt3E  = make_probe_histos_2D("PHitsSt3E",     100, 0, 10000, 100, 0, 200);
 
-  ProbeEtaHitsSt4 = make_probe_histos_2D("EtaHitsSt4",    eta_bins_for_2D, 200, 0, 200);
-  ProbePtHitsSt4B = make_probe_histos_2D("PtHitsSt4B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt4E = make_probe_histos_2D("PtHitsSt4E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt4B  = make_probe_histos_2D("PHitsSt4B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt4E  = make_probe_histos_2D("PHitsSt4E",     100, 0, 10000, 200, 0, 200);
+  ProbeEtaHitsSt4 = make_probe_histos_2D("EtaHitsSt4",    eta_bins_for_2D, 100, 0, 200);
+  ProbePtHitsSt4B = make_probe_histos_2D("PtHitsSt4B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt4E = make_probe_histos_2D("PtHitsSt4E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt4B  = make_probe_histos_2D("PHitsSt4B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt4E  = make_probe_histos_2D("PHitsSt4E",     100, 0, 10000, 100, 0, 200);
   }
 
   // TnP pair
