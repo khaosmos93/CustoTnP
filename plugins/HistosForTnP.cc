@@ -405,15 +405,15 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   std::vector<double> eta_bins_for_2D = {-2.4, -2.1, -1.6, -1.2, -0.9, -0.3, -0.2, 0.0, 0.2, 0.3, 0.9, 1.2, 1.6, 2.1, 2.4};
 
   // Probe
-  ProbePt        = make_probe_histos("Pt",             10000, 0, 10000);
-  ProbeEta       = make_probe_histos("Eta",            96, -4.8, 4.8);
-  ProbePhi       = make_probe_histos("Phi",            41, -TMath::Pi(), TMath::Pi());
-  ProbeNVertices = make_probe_histos("NVertices",      200, 0, 200);
-  ProbeEtaPhi    = make_probe_histos_2D("EtaPhi",      14, eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  ProbeEtaPt     = make_probe_histos_2D("EtaPt",       14, eta_bins_for_2D, 10000, 0, 10000);
-  ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",    14, eta_bins_for_2D, 1000, 0, 2);
+  ProbePt        = make_probe_histos("Pt",              10000, 0, 10000);
+  ProbeEta       = make_probe_histos("Eta",             96, -4.8, 4.8);
+  ProbePhi       = make_probe_histos("Phi",             41, -TMath::Pi(), TMath::Pi());
+  ProbeNVertices = make_probe_histos("NVertices",       200, 0, 200);
+  ProbeEtaPhi    = make_probe_histos_2D("EtaPhi",       eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
+  ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 10000, 0, 10000);
+  ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",     eta_bins_for_2D, 1000, 0, 2);
   if(isAOD) {
-  ProbeEtaShower = make_probe_histos_2D("EtaShower",    14, eta_bins_for_2D, 7, -1.5, 5.5);
+  ProbeEtaShower = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 7, -1.5, 5.5);
   ProbePtShowerB = make_probe_histos_2D("PtShowerB",    100, 0, 10000, 7, -1.5, 5.5);
   ProbePtShowerE = make_probe_histos_2D("PtShowerE",    100, 0, 10000, 7, -1.5, 5.5);
   ProbePShowerB  = make_probe_histos_2D("PShowerB",     100, 0, 10000, 7, -1.5, 5.5);
