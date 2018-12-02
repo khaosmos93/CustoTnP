@@ -55,7 +55,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   typedef std::vector< TH2F* > BinHistos2D;
   void fillTnPBinHistos2D( double, double, bool, double, BinHistos2D&, bool );
 
-  int calcNShowers(const reco::CandidateBaseRef&, int, int, bool);
+  int calcNShowers(const reco::CandidateBaseRef&, int, int, int, int, int, int, int, int, bool);
 
   edm::InputTag dilepton_src;
   edm::InputTag beamspot_src;
@@ -591,7 +591,16 @@ void CustoTnPHistosForTnP::getBSandPV(const edm::Event& event) {
   NVertices->Fill(vertex_count, _totalWeight );
 }
 
-int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu, int min_barrel = 26, int min_endcap = 18, bool verbos = true ) {
+int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu,
+                                       int min_barrel_st1 = 50,
+                                       int min_barrel_st2 = 50,
+                                       int min_barrel_st3 = 50,
+                                       int min_barrel_st4 = 35,
+                                       int min_endcap_st1 = 25,
+                                       int min_endcap_st2 = 15,
+                                       int min_endcap_st3 = 15,
+                                       int min_endcap_st4 = 15,
+                                       bool verbos = true ) {
 
   int etaCat = -1;
   if( fabs(mu->eta()) < 0.9 )
@@ -611,24 +620,24 @@ int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu, int min
   int st4 = muPat->userInt("nHits4");
 
   if(etaCat==1) {
-    if(st1>min_barrel)
+    if(st1>min_barrel_st1)
       nShowers +=1;
-    if(st2>min_barrel)
+    if(st2>min_barrel_st2)
       nShowers +=1;
-    if(st3>min_barrel)
+    if(st3>min_barrel_st3)
       nShowers +=1;
-    // if(st4>18)
+    // if(st4>min_barrel_st4)
     //   nShowers +=1;
   }
 
   else if(etaCat==2) {
-    if(st1>min_endcap)
+    if(st1>min_endcap_st1)
       nShowers +=1;
-    if(st2>min_endcap)
+    if(st2>min_endcap_st2)
       nShowers +=1;
-    if(st3>min_endcap)
+    if(st3>min_endcap_st3)
       nShowers +=1;
-    if(st4>min_endcap)
+    if(st4>min_endcap_st4)
       nShowers +=1;
   }
 
