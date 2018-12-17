@@ -601,7 +601,7 @@ std::vector<int> CustoTnPHistosForTnP::calcNShowers(
                                       int min_endcap_st2 = 18,
                                       int min_endcap_st3 = 18,
                                       int min_endcap_st4 = 18,
-                                      bool verbos = true )
+                                      bool verbos = false )
 {
 
   int etaCat = -1;
