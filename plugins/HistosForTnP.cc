@@ -55,7 +55,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   typedef std::vector< TH2F* > BinHistos2D;
   void fillTnPBinHistos2D( double, double, bool, double, BinHistos2D&, bool );
 
-  int calcNShowers(const reco::CandidateBaseRef&, int, int, int, int, int, int, int, int, bool);
+  std::vector<int> calcNShowers(const reco::CandidateBaseRef&, int, int, int, int, int, int, int, int, bool);
 
   edm::InputTag dilepton_src;
   edm::InputTag beamspot_src;
@@ -437,11 +437,11 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 10000, 0, 10000);
   ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",     eta_bins_for_2D, 1000, 0, 2);
   if(isAOD) {
-  ProbeEtaShower = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 7, -1.5, 5.5);
-  ProbePtShowerB = make_probe_histos_2D("PtShowerB",    100, 0, 10000, 7, -1.5, 5.5);
-  ProbePtShowerE = make_probe_histos_2D("PtShowerE",    100, 0, 10000, 7, -1.5, 5.5);
-  ProbePShowerB  = make_probe_histos_2D("PShowerB",     100, 0, 10000, 7, -1.5, 5.5);
-  ProbePShowerE  = make_probe_histos_2D("PShowerE",     100, 0, 10000, 7, -1.5, 5.5);
+  ProbeEtaShower = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 18, -1.5, 16.5);
+  ProbePtShowerB = make_probe_histos_2D("PtShowerB",    100, 0, 10000, 18, -1.5, 16.5);
+  ProbePtShowerE = make_probe_histos_2D("PtShowerE",    100, 0, 10000, 18, -1.5, 16.5);
+  ProbePShowerB  = make_probe_histos_2D("PShowerB",     100, 0, 10000, 18, -1.5, 16.5);
+  ProbePShowerE  = make_probe_histos_2D("PShowerE",     100, 0, 10000, 18, -1.5, 16.5);
 
   ProbeEtaHitsSt1 = make_probe_histos_2D("EtaHitsSt1",    eta_bins_for_2D, 100, 0, 200);
   ProbePtHitsSt1B = make_probe_histos_2D("PtHitsSt1B",    100, 0, 10000, 100, 0, 200);
@@ -591,16 +591,18 @@ void CustoTnPHistosForTnP::getBSandPV(const edm::Event& event) {
   NVertices->Fill(vertex_count, _totalWeight );
 }
 
-int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu,
-                                       int min_barrel_st1 = 50,
-                                       int min_barrel_st2 = 50,
-                                       int min_barrel_st3 = 50,
-                                       int min_barrel_st4 = 35,
-                                       int min_endcap_st1 = 35,
-                                       int min_endcap_st2 = 20,
-                                       int min_endcap_st3 = 20,
-                                       int min_endcap_st4 = 20,
-                                       bool verbos = false ) {
+std::vector<int> CustoTnPHistosForTnP::calcNShowers(
+                                      const reco::CandidateBaseRef& mu,
+                                      int min_barrel_st1 = 26,
+                                      int min_barrel_st2 = 26,
+                                      int min_barrel_st3 = 26,
+                                      int min_barrel_st4 = 18,
+                                      int min_endcap_st1 = 30,
+                                      int min_endcap_st2 = 18,
+                                      int min_endcap_st3 = 18,
+                                      int min_endcap_st4 = 18,
+                                      bool verbos = false )
+{
 
   int etaCat = -1;
   if( fabs(mu->eta()) < 0.9 )
@@ -609,37 +611,59 @@ int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu,
     etaCat = 2;
 
   if( etaCat<0 )
-    return -999;
-
-  int nShowers = 0;
+    return {-999};
 
   const pat::Muon* muPat = toConcretePtr<pat::Muon>(mu);
-  int st1 = muPat->userInt("nHits1");
-  int st2 = muPat->userInt("nHits2");
-  int st3 = muPat->userInt("nHits3");
-  int st4 = muPat->userInt("nHits4");
+  int st1 = (etaCat==1) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
+  int st2 = (etaCat==1) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
+  int st3 = (etaCat==1) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
+  int st4 = (etaCat==1) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
 
-  if(etaCat==1) {
-    if(st1>min_barrel_st1)
-      nShowers +=1;
-    if(st2>min_barrel_st2)
-      nShowers +=1;
-    if(st3>min_barrel_st3)
-      nShowers +=1;
-    // if(st4>min_barrel_st4)
-    //   nShowers +=1;
+  int threshold_st1 = -999;
+  int threshold_st2 = -999;
+  int threshold_st3 = -999;
+  int threshold_st4 = -999;
+
+  if( etaCat==1 ) {
+    threshold_st1 = min_barrel_st1;
+    threshold_st2 = min_barrel_st2;
+    threshold_st3 = min_barrel_st3;
+    threshold_st4 = min_barrel_st4;
+  }
+  else if( etaCat==2 ) {
+    threshold_st1 = min_endcap_st1;
+    threshold_st2 = min_endcap_st2;
+    threshold_st3 = min_endcap_st3;
+    threshold_st4 = min_endcap_st4;
   }
 
-  else if(etaCat==2) {
-    if(st1>min_endcap_st1)
-      nShowers +=1;
-    if(st2>min_endcap_st2)
-      nShowers +=1;
-    if(st3>min_endcap_st3)
-      nShowers +=1;
-    if(st4>min_endcap_st4)
-      nShowers +=1;
-  }
+  bool is_st1 = (st1 > threshold_st1);
+  bool is_st2 = (st2 > threshold_st2);
+  bool is_st3 = (st3 > threshold_st3);
+  bool is_st4 = (st4 > threshold_st4);
+
+  std::vector<int> out_vec = {};
+
+  out_vec.push_back( (int)( !is_st1 && !is_st2 && !is_st3 && !is_st4 ) );
+
+  out_vec.push_back( (int)(  is_st1 && !is_st2 && !is_st3 && !is_st4 ) );
+  out_vec.push_back( (int)( !is_st1 &&  is_st2 && !is_st3 && !is_st4 ) );
+  out_vec.push_back( (int)( !is_st1 && !is_st2 &&  is_st3 && !is_st4 ) );
+  out_vec.push_back( (int)( !is_st1 && !is_st2 && !is_st3 &&  is_st4 ) );
+
+  out_vec.push_back( (int)(  is_st1 &&  is_st2 && !is_st3 && !is_st4 ) );
+  out_vec.push_back( (int)(  is_st1 && !is_st2 &&  is_st3 && !is_st4 ) );
+  out_vec.push_back( (int)(  is_st1 && !is_st2 && !is_st3 &&  is_st4 ) );
+  out_vec.push_back( (int)( !is_st1 &&  is_st2 &&  is_st3 && !is_st4 ) );
+  out_vec.push_back( (int)( !is_st1 &&  is_st2 && !is_st3 &&  is_st4 ) );
+  out_vec.push_back( (int)( !is_st1 && !is_st2 &&  is_st3 &&  is_st4 ) );
+
+  out_vec.push_back( (int)(  is_st1 &&  is_st2 &&  is_st3 && !is_st4 ) );
+  out_vec.push_back( (int)(  is_st1 &&  is_st2 && !is_st3 &&  is_st4 ) );
+  out_vec.push_back( (int)(  is_st1 && !is_st2 &&  is_st3 &&  is_st4 ) );
+  out_vec.push_back( (int)( !is_st1 &&  is_st2 &&  is_st3 &&  is_st4 ) );
+
+  out_vec.push_back( (int)(  is_st1 &&  is_st2 &&  is_st3 &&  is_st4 ) );
 
   if(verbos) {
     std::cout << "\neta = " << mu->eta() << "  => etaCat: " << etaCat << std::endl;
@@ -647,10 +671,14 @@ int CustoTnPHistosForTnP::calcNShowers(const reco::CandidateBaseRef& mu,
     std::cout << "\tst2= " << st2 << std::endl;
     std::cout << "\tst3= " << st3 << std::endl;
     std::cout << "\tst4= " << st4 << std::endl;
-    std::cout << "\t--> nShowers= " << nShowers << std::endl;
+    std::cout << "\t--> nShowers= ";
+    for(int is=0; is<16; ++is) {
+      std::cout << out_vec[is] << ", ";
+    }
+    std::cout << std::endl;
   }
 
-  return nShowers;
+  return out_vec;
 }
 
 void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& dil,
@@ -688,10 +716,11 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
         if(isAOD && probe_nshowers>-1) {
 
           const pat::Muon* muPat = toConcretePtr<pat::Muon>(ProbeMu);
-          int nSt1 = muPat->userInt("nHits1");
-          int nSt2 = muPat->userInt("nHits2");
-          int nSt3 = muPat->userInt("nHits3");
-          int nSt4 = muPat->userInt("nHits4");
+
+          int nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
+          int nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
+          int nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
+          int nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
 
           ProbeEtaShower[i]->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
           ProbeEtaHitsSt1[i]->Fill( ProbeMu->eta(), nSt1, _totalWeight );
@@ -915,8 +944,19 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           const reco::CandidateBaseRef& ProbeMu = lep1;
 
           int probe_nshowers = -999;
-          if(isAOD)
-            probe_nshowers = calcNShowers(ProbeMu);
+          if(isAOD) {
+            std::vector<int> vec_showers = calcNShowers(ProbeMu);
+
+            if(vec_showers.size()!=16) {
+              for(int is=0; is<(int)vec_showers.size(); ++is) {
+                if(vec_showers[is]) {
+                  probe_nshowers = is;
+                  break;
+                }
+              }
+            }
+
+          }
 
           if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : Tag0 and Probe1" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
@@ -1054,8 +1094,19 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           const reco::CandidateBaseRef& ProbeMu = lep0;
 
           int probe_nshowers = -999;
-          if(isAOD)
-            probe_nshowers = calcNShowers(ProbeMu);
+          if(isAOD) {
+            std::vector<int> vec_showers = calcNShowers(ProbeMu);
+
+            if(vec_showers.size()!=16) {
+              for(int is=0; is<(int)vec_showers.size(); ++is) {
+                if(vec_showers[is]) {
+                  probe_nshowers = is;
+                  break;
+                }
+              }
+            }
+
+          }
 
           if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : Tag1 and Probe0" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
