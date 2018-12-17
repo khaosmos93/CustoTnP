@@ -947,7 +947,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           if(isAOD) {
             std::vector<int> vec_showers = calcNShowers(ProbeMu);
 
-            if(vec_showers.size()!=16) {
+            if(vec_showers.size()==16) {
               for(int is=0; is<(int)vec_showers.size(); ++is) {
                 if(vec_showers[is]) {
                   probe_nshowers = is;
@@ -1097,7 +1097,7 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
           if(isAOD) {
             std::vector<int> vec_showers = calcNShowers(ProbeMu);
 
-            if(vec_showers.size()!=16) {
+            if(vec_showers.size()==16) {
               for(int is=0; is<(int)vec_showers.size(); ++is) {
                 if(vec_showers[is]) {
                   probe_nshowers = is;
