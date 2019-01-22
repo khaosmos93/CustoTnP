@@ -662,13 +662,13 @@ std::vector<int> CustoTnPHistosForTnP::calcNShowers(
   int threshold_st3 = -999;
   int threshold_st4 = -999;
 
-  if( etaCat==0 ) {
+  if( etaCat==1 ) {
     threshold_st1 = threshold_b[0];
     threshold_st2 = threshold_b[1];
     threshold_st3 = threshold_b[2];
     threshold_st4 = threshold_b[3];
   }
-  else if( etaCat==1 ) {
+  else if( etaCat==2 ) {
     threshold_st1 = threshold_e[0];
     threshold_st2 = threshold_e[1];
     threshold_st3 = threshold_e[2];
