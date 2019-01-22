@@ -756,7 +756,7 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
 
           const pat::Muon* muPat = toConcretePtr<pat::Muon>(ProbeMu);
 
-          int nSt1, nSt1, nSt1, nSt1;
+          int nSt1, nSt2, nSt3, nSt4;
           if(shower_tag == 1) {  // Hits
             nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
             nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");

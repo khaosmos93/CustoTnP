@@ -309,7 +309,7 @@ std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(const edm::Eve
   return make_pair(isMatched, matchedMuRef);
 }
 
-std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, reco::MuonRef muon, bool verbose) {
+std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, reco::MuonRef muon, bool verbose = false) {
   double DTCut = 30.;
 
   std::vector<int> stations={0,0,0,0};
@@ -403,7 +403,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
   return stations;
 }
 
-std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, reco::MuonRef muon, bool verbose) {
+std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, reco::MuonRef muon, bool verbose = false) {
   double CSCCut = 30.;
 
   std::vector<int> stations={0,0,0,0};
