@@ -484,7 +484,7 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
 
   reco::MuonShower muonShowerInformation = (*muonShowerInformationValueMap)[MuRef];
   std::vector<int> vec_DTsegs = countDTsegs(event, MuRef);
-  std::vector<int> vec_CSCsegs = countDTsegs(event, MuRef);
+  std::vector<int> vec_CSCsegs = countCSCsegs(event, MuRef);
 
   for(int i=0; i<4; ++i) {
     int nsegs_DT_temp  = vec_DTsegs[i];
