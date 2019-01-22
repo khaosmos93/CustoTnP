@@ -55,7 +55,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   typedef std::vector< TH2F* > BinHistos2D;
   void fillTnPBinHistos2D( double, double, bool, double, BinHistos2D&, bool );
 
-  std::vector<int> calcNShowers(const reco::CandidateBaseRef&, int, int, int, int, int, int, int, int, bool);
+  std::vector<int> calcNShowers(const reco::CandidateBaseRef&, bool);
 
   edm::InputTag dilepton_src;
   edm::InputTag beamspot_src;
@@ -64,6 +64,10 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   const reco::BeamSpot* beamspot;
   const reco::Vertex*   vertex;
   int                   nVtx;
+
+  bool shower_tag;    // 1: Hits, 2: Segments
+  std::vector<int>  threshold_b;
+  std::vector<int>  threshold_e;
 
   StringCutObjectSelector<pat::Muon> passing_probe_selector;
   StringCutObjectSelector<pat::Muon> comparison_probe_selector;
@@ -187,31 +191,42 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   ProbeHistos2D ProbeEtaPhi;
   ProbeHistos2D ProbeEtaPt;
   ProbeHistos2D ProbeEtaDptPt;
+
   ProbeHistos2D ProbeEtaShower;
+  ProbeHistos2D ProbePhiShowerB;
+  ProbeHistos2D ProbePhiShowerE;
   ProbeHistos2D ProbePtShowerB;
   ProbeHistos2D ProbePtShowerE;
   ProbeHistos2D ProbePShowerB;
   ProbeHistos2D ProbePShowerE;
 
   ProbeHistos2D ProbeEtaHitsSt1;
+  ProbeHistos2D ProbePhiHitsSt1B;
+  ProbeHistos2D ProbePhiHitsSt1E;
   ProbeHistos2D ProbePtHitsSt1B;
   ProbeHistos2D ProbePtHitsSt1E;
   ProbeHistos2D ProbePHitsSt1B;
   ProbeHistos2D ProbePHitsSt1E;
 
   ProbeHistos2D ProbeEtaHitsSt2;
+  ProbeHistos2D ProbePhiHitsSt2B;
+  ProbeHistos2D ProbePhiHitsSt2E;
   ProbeHistos2D ProbePtHitsSt2B;
   ProbeHistos2D ProbePtHitsSt2E;
   ProbeHistos2D ProbePHitsSt2B;
   ProbeHistos2D ProbePHitsSt2E;
 
   ProbeHistos2D ProbeEtaHitsSt3;
+  ProbeHistos2D ProbePhiHitsSt3B;
+  ProbeHistos2D ProbePhiHitsSt3E;
   ProbeHistos2D ProbePtHitsSt3B;
   ProbeHistos2D ProbePtHitsSt3E;
   ProbeHistos2D ProbePHitsSt3B;
   ProbeHistos2D ProbePHitsSt3E;
 
   ProbeHistos2D ProbeEtaHitsSt4;
+  ProbeHistos2D ProbePhiHitsSt4B;
+  ProbeHistos2D ProbePhiHitsSt4E;
   ProbeHistos2D ProbePtHitsSt4B;
   ProbeHistos2D ProbePtHitsSt4E;
   ProbeHistos2D ProbePHitsSt4B;
@@ -279,15 +294,19 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
 
     TString histNameBase = TString::Format("h2d%s", name.Data());
 
-    TH2F* h2d_pass = fs->make<TH2F>(histNameBase + "Pass", "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_pass->Sumw2();
-    TH2F* h2d_fail = fs->make<TH2F>(histNameBase + "Fail", "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_fail->Sumw2();
-    TH2F* h2d_sum  = fs->make<TH2F>(histNameBase + "Sum",  "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sum->Sumw2();
-    TH2F* h2d_sqs  = fs->make<TH2F>(histNameBase + "Sqs",  "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sqs->Sumw2();
+    TH2F* h2d_pass     = fs->make<TH2F>(histNameBase + "Pass",     "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_pass->Sumw2();
+    TH2F* h2d_fail     = fs->make<TH2F>(histNameBase + "Fail",     "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_fail->Sumw2();
+    TH2F* h2d_sum      = fs->make<TH2F>(histNameBase + "Sum",      "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sum->Sumw2();
+    TH2F* h2d_sum_pass = fs->make<TH2F>(histNameBase + "SumPass",  "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sum_pass->Sumw2();
+    TH2F* h2d_sqs      = fs->make<TH2F>(histNameBase + "Sqs",      "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sqs->Sumw2();
+    TH2F* h2d_sqs_pass = fs->make<TH2F>(histNameBase + "SqsPass",  "", nMassBin, mass_bins_for_2D, nbins, arr_bins );  h2d_sqs_pass->Sumw2();
 
     vec_h2d.push_back( h2d_pass );
     vec_h2d.push_back( h2d_fail );
     vec_h2d.push_back( h2d_sum );
+    vec_h2d.push_back( h2d_sum_pass );
     vec_h2d.push_back( h2d_sqs );
+    vec_h2d.push_back( h2d_sqs_pass );
 
     return vec_h2d;
   }
@@ -367,6 +386,10 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
     vertex(0),
     nVtx(0),
 
+    shower_tag(cfg.getParameter<int>("shower_tag")),
+    threshold_b(cfg.getParameter<std::vector<int>>("threshold_b")),
+    threshold_e(cfg.getParameter<std::vector<int>>("threshold_e")),
+
     passing_probe_selector(cfg.getParameter<std::string>("passing_probe_cut")),
     comparison_probe_selector(cfg.getParameter<std::string>("comparison_probe_cut")),
 
@@ -437,35 +460,45 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 10000, 0, 10000);
   ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",     eta_bins_for_2D, 1000, 0, 2);
   if(isAOD) {
-  ProbeEtaShower = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 18, -1.5, 16.5);
-  ProbePtShowerB = make_probe_histos_2D("PtShowerB",    100, 0, 10000, 18, -1.5, 16.5);
-  ProbePtShowerE = make_probe_histos_2D("PtShowerE",    100, 0, 10000, 18, -1.5, 16.5);
-  ProbePShowerB  = make_probe_histos_2D("PShowerB",     100, 0, 10000, 18, -1.5, 16.5);
-  ProbePShowerE  = make_probe_histos_2D("PShowerE",     100, 0, 10000, 18, -1.5, 16.5);
+  ProbeEtaShower   = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 18, -1.5, 16.5);
+  ProbePhiShowerB  = make_probe_histos_2D("PhiShowerB",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
+  ProbePhiShowerE  = make_probe_histos_2D("PhiShowerE",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
+  ProbePtShowerB   = make_probe_histos_2D("PtShowerB",    100, 0, 10000, 18, -1.5, 16.5);
+  ProbePtShowerE   = make_probe_histos_2D("PtShowerE",    100, 0, 10000, 18, -1.5, 16.5);
+  ProbePShowerB    = make_probe_histos_2D("PShowerB",     100, 0, 10000, 18, -1.5, 16.5);
+  ProbePShowerE    = make_probe_histos_2D("PShowerE",     100, 0, 10000, 18, -1.5, 16.5);
 
-  ProbeEtaHitsSt1 = make_probe_histos_2D("EtaHitsSt1",    eta_bins_for_2D, 100, 0, 200);
-  ProbePtHitsSt1B = make_probe_histos_2D("PtHitsSt1B",    100, 0, 10000, 100, 0, 200);
-  ProbePtHitsSt1E = make_probe_histos_2D("PtHitsSt1E",    100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt1B  = make_probe_histos_2D("PHitsSt1B",     100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt1E  = make_probe_histos_2D("PHitsSt1E",     100, 0, 10000, 100, 0, 200);
+  ProbeEtaHitsSt1  = make_probe_histos_2D("EtaHitsSt1",    eta_bins_for_2D, 100, 0, 200);
+  ProbePhiHitsSt1B = make_probe_histos_2D("PhiHitsSt1B",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePhiHitsSt1E = make_probe_histos_2D("PhiHitsSt1E",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePtHitsSt1B  = make_probe_histos_2D("PtHitsSt1B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt1E  = make_probe_histos_2D("PtHitsSt1E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt1B   = make_probe_histos_2D("PHitsSt1B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt1E   = make_probe_histos_2D("PHitsSt1E",     100, 0, 10000, 100, 0, 200);
 
-  ProbeEtaHitsSt2 = make_probe_histos_2D("EtaHitsSt2",    eta_bins_for_2D, 100, 0, 200);
-  ProbePtHitsSt2B = make_probe_histos_2D("PtHitsSt2B",    100, 0, 10000, 100, 0, 200);
-  ProbePtHitsSt2E = make_probe_histos_2D("PtHitsSt2E",    100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt2B  = make_probe_histos_2D("PHitsSt2B",     100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt2E  = make_probe_histos_2D("PHitsSt2E",     100, 0, 10000, 100, 0, 200);
+  ProbeEtaHitsSt2  = make_probe_histos_2D("EtaHitsSt2",    eta_bins_for_2D, 100, 0, 200);
+  ProbePhiHitsSt2B = make_probe_histos_2D("PhiHitsSt2B",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePhiHitsSt2E = make_probe_histos_2D("PhiHitsSt2E",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePtHitsSt2B  = make_probe_histos_2D("PtHitsSt2B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt2E  = make_probe_histos_2D("PtHitsSt2E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt2B   = make_probe_histos_2D("PHitsSt2B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt2E   = make_probe_histos_2D("PHitsSt2E",     100, 0, 10000, 100, 0, 200);
 
-  ProbeEtaHitsSt3 = make_probe_histos_2D("EtaHitsSt3",    eta_bins_for_2D, 100, 0, 200);
-  ProbePtHitsSt3B = make_probe_histos_2D("PtHitsSt3B",    100, 0, 10000, 100, 0, 200);
-  ProbePtHitsSt3E = make_probe_histos_2D("PtHitsSt3E",    100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt3B  = make_probe_histos_2D("PHitsSt3B",     100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt3E  = make_probe_histos_2D("PHitsSt3E",     100, 0, 10000, 100, 0, 200);
+  ProbeEtaHitsSt3  = make_probe_histos_2D("EtaHitsSt3",    eta_bins_for_2D, 100, 0, 200);
+  ProbePhiHitsSt3B = make_probe_histos_2D("PhiHitsSt3B",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePhiHitsSt3E = make_probe_histos_2D("PhiHitsSt3E",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePtHitsSt3B  = make_probe_histos_2D("PtHitsSt3B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt3E  = make_probe_histos_2D("PtHitsSt3E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt3B   = make_probe_histos_2D("PHitsSt3B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt3E   = make_probe_histos_2D("PHitsSt3E",     100, 0, 10000, 100, 0, 200);
 
-  ProbeEtaHitsSt4 = make_probe_histos_2D("EtaHitsSt4",    eta_bins_for_2D, 100, 0, 200);
-  ProbePtHitsSt4B = make_probe_histos_2D("PtHitsSt4B",    100, 0, 10000, 100, 0, 200);
-  ProbePtHitsSt4E = make_probe_histos_2D("PtHitsSt4E",    100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt4B  = make_probe_histos_2D("PHitsSt4B",     100, 0, 10000, 100, 0, 200);
-  ProbePHitsSt4E  = make_probe_histos_2D("PHitsSt4E",     100, 0, 10000, 100, 0, 200);
+  ProbeEtaHitsSt4  = make_probe_histos_2D("EtaHitsSt4",    eta_bins_for_2D, 100, 0, 200);
+  ProbePhiHitsSt4B = make_probe_histos_2D("PhiHitsSt4B",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePhiHitsSt4E = make_probe_histos_2D("PhiHitsSt4E",   41, -TMath::Pi(), TMath::Pi(), 100, 0, 200);
+  ProbePtHitsSt4B  = make_probe_histos_2D("PtHitsSt4B",    100, 0, 10000, 100, 0, 200);
+  ProbePtHitsSt4E  = make_probe_histos_2D("PtHitsSt4E",    100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt4B   = make_probe_histos_2D("PHitsSt4B",     100, 0, 10000, 100, 0, 200);
+  ProbePHitsSt4E   = make_probe_histos_2D("PHitsSt4E",     100, 0, 10000, 100, 0, 200);
   }
 
   // TnP pair
@@ -593,14 +626,6 @@ void CustoTnPHistosForTnP::getBSandPV(const edm::Event& event) {
 
 std::vector<int> CustoTnPHistosForTnP::calcNShowers(
                                       const reco::CandidateBaseRef& mu,
-                                      int min_barrel_st1 = 26,
-                                      int min_barrel_st2 = 26,
-                                      int min_barrel_st3 = 26,
-                                      int min_barrel_st4 = 18,
-                                      int min_endcap_st1 = 30,
-                                      int min_endcap_st2 = 18,
-                                      int min_endcap_st3 = 18,
-                                      int min_endcap_st4 = 18,
                                       bool verbos = false )
 {
 
@@ -614,27 +639,40 @@ std::vector<int> CustoTnPHistosForTnP::calcNShowers(
     return {-999};
 
   const pat::Muon* muPat = toConcretePtr<pat::Muon>(mu);
-  int st1 = (etaCat==1) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
-  int st2 = (etaCat==1) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
-  int st3 = (etaCat==1) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
-  int st4 = (etaCat==1) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+  int st1, st2, st3, st4;
+  if(shower_tag == 1) {  // Hits
+    st1 = (etaCat==1) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
+    st2 = (etaCat==1) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
+    st3 = (etaCat==1) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
+    st4 = (etaCat==1) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+  }
+  else if( shower_tag == 2) {  // Segments
+    st1 = (etaCat==1) ? muPat->userInt("nSegsDT1") : muPat->userInt("nSegsCSC1");
+    st2 = (etaCat==1) ? muPat->userInt("nSegsDT2") : muPat->userInt("nSegsCSC2");
+    st3 = (etaCat==1) ? muPat->userInt("nSegsDT3") : muPat->userInt("nSegsCSC3");
+    st4 = (etaCat==1) ? muPat->userInt("nSegsDT4") : muPat->userInt("nSegsCSC4");
+  }
+  else {
+    std::cout << "WARNING: CustoTnPHistosForTnP::calcNShowers: wrong shower_tag" << std::endl;
+    return {-999};
+  }
 
   int threshold_st1 = -999;
   int threshold_st2 = -999;
   int threshold_st3 = -999;
   int threshold_st4 = -999;
 
-  if( etaCat==1 ) {
-    threshold_st1 = min_barrel_st1;
-    threshold_st2 = min_barrel_st2;
-    threshold_st3 = min_barrel_st3;
-    threshold_st4 = min_barrel_st4;
+  if( etaCat==0 ) {
+    threshold_st1 = threshold_b[0];
+    threshold_st2 = threshold_b[1];
+    threshold_st3 = threshold_b[2];
+    threshold_st4 = threshold_b[3];
   }
-  else if( etaCat==2 ) {
-    threshold_st1 = min_endcap_st1;
-    threshold_st2 = min_endcap_st2;
-    threshold_st3 = min_endcap_st3;
-    threshold_st4 = min_endcap_st4;
+  else if( etaCat==1 ) {
+    threshold_st1 = threshold_e[0];
+    threshold_st2 = threshold_e[1];
+    threshold_st3 = threshold_e[2];
+    threshold_st4 = threshold_e[3];
   }
 
   bool is_st1 = (st1 > threshold_st1);
@@ -686,7 +724,8 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
                                                  const reco::CandidateBaseRef& ProbeMu,
                                                  float probe_dpt_over_pt,
                                                  int   probe_nshowers,
-                                                 bool  isPassNoPt ) {
+                                                 bool  isPassNoPt )
+{
 
   TagPt->Fill( TagMu->pt(), _totalWeight );
   TagEta->Fill( TagMu->eta(), _totalWeight );
@@ -717,10 +756,23 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
 
           const pat::Muon* muPat = toConcretePtr<pat::Muon>(ProbeMu);
 
-          int nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
-          int nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
-          int nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
-          int nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+          int nSt1, nSt1, nSt1, nSt1;
+          if(shower_tag == 1) {  // Hits
+            nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
+            nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
+            nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
+            nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+          }
+          else if( shower_tag == 2) {  // Segments
+            nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nSegsDT1") : muPat->userInt("nSegsCSC1");
+            nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nSegsDT2") : muPat->userInt("nSegsCSC2");
+            nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nSegsDT3") : muPat->userInt("nSegsCSC3");
+            nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nSegsDT4") : muPat->userInt("nSegsCSC4");
+          }
+          else {
+            std::cout << "WARNING: CustoTnPHistosForTnP::fillTnPControlHistos: wrong shower_tag" << std::endl;
+            return;
+          }
 
           ProbeEtaShower[i]->Fill( ProbeMu->eta(), probe_nshowers, _totalWeight );
           ProbeEtaHitsSt1[i]->Fill( ProbeMu->eta(), nSt1, _totalWeight );
@@ -729,6 +781,12 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
           ProbeEtaHitsSt4[i]->Fill( ProbeMu->eta(), nSt4, _totalWeight );
 
           if(fabs(ProbeMu->eta())<0.9) {
+            ProbePhiShowerB[i]->Fill( ProbeMu->phi(), probe_nshowers, _totalWeight );
+            ProbePhiHitsSt1B[i]->Fill( ProbeMu->phi(), nSt1, _totalWeight );
+            ProbePhiHitsSt2B[i]->Fill( ProbeMu->phi(), nSt2, _totalWeight );
+            ProbePhiHitsSt3B[i]->Fill( ProbeMu->phi(), nSt3, _totalWeight );
+            ProbePhiHitsSt4B[i]->Fill( ProbeMu->phi(), nSt4, _totalWeight );
+
             ProbePtShowerB[i]->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
             ProbePtHitsSt1B[i]->Fill( ProbeMu->pt(), nSt1, _totalWeight );
             ProbePtHitsSt2B[i]->Fill( ProbeMu->pt(), nSt2, _totalWeight );
@@ -742,6 +800,12 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
             ProbePHitsSt4B[i]->Fill( ProbeMu->p(), nSt4, _totalWeight );
           }
           else if(fabs(ProbeMu->eta())>=1.2) {
+            ProbePhiShowerE[i]->Fill( ProbeMu->phi(), probe_nshowers, _totalWeight );
+            ProbePhiHitsSt1E[i]->Fill( ProbeMu->phi(), nSt1, _totalWeight );
+            ProbePhiHitsSt2E[i]->Fill( ProbeMu->phi(), nSt2, _totalWeight );
+            ProbePhiHitsSt3E[i]->Fill( ProbeMu->phi(), nSt3, _totalWeight );
+            ProbePhiHitsSt4E[i]->Fill( ProbeMu->phi(), nSt4, _totalWeight );
+
             ProbePtShowerE[i]->Fill( ProbeMu->pt(), probe_nshowers, _totalWeight );
             ProbePtHitsSt1E[i]->Fill( ProbeMu->pt(), nSt1, _totalWeight );
             ProbePtHitsSt2E[i]->Fill( ProbeMu->pt(), nSt2, _totalWeight );
@@ -764,7 +828,6 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       }
     }
   }
-
 }
 
 void CustoTnPHistosForTnP::fillTnPBinHistos(  double               dil_mass,
@@ -773,7 +836,8 @@ void CustoTnPHistosForTnP::fillTnPBinHistos(  double               dil_mass,
                                               double               binValue,
                                               std::vector<double>& vec_bins,
                                               BinHistos&           Histos,
-                                              bool hasPtCut = true ) {
+                                              bool hasPtCut = true )
+{
 
   if( hasPtCut && (probe_pt < probe_pt_min) )
     return;
@@ -798,7 +862,6 @@ void CustoTnPHistosForTnP::fillTnPBinHistos(  double               dil_mass,
       break;
     }
   }
-
 }
 
 void CustoTnPHistosForTnP::fillTnPBinHistos2D(  double               dil_mass,
@@ -806,7 +869,14 @@ void CustoTnPHistosForTnP::fillTnPBinHistos2D(  double               dil_mass,
                                                 bool                 isPassNoPt,
                                                 double               binValue,
                                                 BinHistos2D&         Histos,
-                                                bool hasPtCut = true ) {
+                                                bool hasPtCut = true )
+{
+  // TH2F* h2d_pass      : 0
+  // TH2F* h2d_fail      : 1
+  // TH2F* h2d_sum       : 2
+  // TH2F* h2d_sum_pass  : 3
+  // TH2F* h2d_sqs       : 4
+  // TH2F* h2d_sqs_pass  : 5
 
   if( hasPtCut && (probe_pt < probe_pt_min) )
     return;
@@ -818,14 +888,16 @@ void CustoTnPHistosForTnP::fillTnPBinHistos2D(  double               dil_mass,
   else
     isPass = isPassNoPt;
 
-  if(isPass)
+  if(isPass) {
     Histos[0]->Fill( dil_mass, binValue, _totalWeight );
+    Histos[3]->Fill( dil_mass, binValue, binValue*_totalWeight );
+    Histos[5]->Fill( dil_mass, binValue, binValue*binValue*_totalWeight );
+  }
   else
     Histos[1]->Fill( dil_mass, binValue, _totalWeight );
 
   Histos[2]->Fill( dil_mass, binValue, binValue*_totalWeight );
   Histos[3]->Fill( dil_mass, binValue, binValue*binValue*_totalWeight );
-
 }
 
 

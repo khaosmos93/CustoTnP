@@ -39,6 +39,8 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               isAOD = cms.bool(False),
                               reco_muon_src = cms.InputTag(''),            # only for AOD
                               muonshower_src = cms.InputTag('', '', ''),   # only for AOD
+                              dtseg_src = cms.InputTag(''),    # only for AOD
+                              cscseg_src = cms.InputTag(''),    # only for AOD
 )
 
 leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
@@ -57,5 +59,7 @@ leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
                               isAOD = cms.bool(True),
                               reco_muon_src = cms.InputTag('muons'),
                               muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
+                              dtseg_src = cms.InputTag('dt4DSegments'),
+                              cscseg_src = cms.InputTag('cscSegments'),
 )
 

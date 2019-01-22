@@ -81,10 +81,12 @@ private:
   bool isAOD;
   edm::InputTag reco_muon_src;
   edm::InputTag muonshower_src;
-  // edm::InputTag dtseg_src;
-  // edm::InputTag cscseg_src;
+  edm::InputTag dtseg_src;
+  edm::InputTag cscseg_src;
 
   std::pair<bool, reco::MuonRef> getMuonRef(const edm::Event&, pat::Muon*);
+  std::vector<int> countDTsegs(const edm::Event&, reco::MuonRef);
+  std::vector<int> countCSCsegs(const edm::Event&, reco::MuonRef);
   void embedShowerInfo(const edm::Event&, pat::Muon*, reco::MuonRef);
 };
 
@@ -119,15 +121,15 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
       produces<pat::MuonCollection>(muon_tracks_for_momentum[i]);
 
   if(isAOD) {
-    reco_muon_src = (cfg.getParameter<edm::InputTag>("reco_muon_src"));
+    reco_muon_src  = (cfg.getParameter<edm::InputTag>("reco_muon_src"));
     muonshower_src = (cfg.getParameter<edm::InputTag>("muonshower_src"));
-    // dtseg_src(cfg.getParameter<edm::InputTag>("dtseg_src"));
-    // cscseg_src(cfg.getParameter<edm::InputTag>("cscseg_src"));
+    dtseg_src      = (cfg.getParameter<edm::InputTag>("dtseg_src"));
+    cscseg_src     = (cfg.getParameter<edm::InputTag>("cscseg_src"));
 
     consumes<std::vector< reco::Muon >>(reco_muon_src);
     consumes<edm::ValueMap<reco::MuonShower>>(muonshower_src);
-    // consumes<DTRecSegment4DCollection>(dtseg_src);
-    // consumes<CSCSegmentCollection>(cscseg_src);
+    consumes<DTRecSegment4DCollection>(dtseg_src);
+    consumes<CSCSegmentCollection>(cscseg_src);
   }
 
   produces<pat::MuonCollection>("muons");
@@ -307,18 +309,197 @@ std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(const edm::Eve
   return make_pair(isMatched, matchedMuRef);
 }
 
+std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, reco::MuonRef muon) {
+  double DTCut = 30.;
+
+  std::vector<int> stations={0,0,0,0};
+  std::vector<int> removed={0,0,0,0};
+
+  edm::Handle<DTRecSegment4DCollection> dtSegments;
+  event.getByLabel(dtseg_src, dtSegments);
+
+  if (!ShutUp) std::cout << std::endl << " *** DT Segment search" << std::endl;
+  for (const auto &ch : muon->matches()) {
+    if( ch.detector() != MuonSubdetId::DT )  continue;
+    DTChamberId DTid( ch.id.rawId() );
+    if (!ShutUp) std::cout << "   DT chamber in station " << ch.station() << "  DTChamberId:" << DTid << "  local position: (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
+
+    int nsegs_temp = 0;
+    std::vector<float> nsegs_x_temp, nsegs_y_temp;
+
+    for (auto seg = dtSegments->begin(); seg!=dtSegments->end(); ++seg) {
+      DTChamberId myChamber((*seg).geographicalId().rawId());
+      if (!(DTid==myChamber))  continue;
+      LocalPoint posLocalSeg = seg->localPosition();
+      if (!ShutUp) std::cout << "     Found segment in station " << ch.station() << "  DTChamberId:" << myChamber << "  local position: " << posLocalSeg << std::endl;
+
+      /*if( ( (posLocalSeg.x()==0 && posLocalSeg.y()!=0) && (fabs(posLocalSeg.y()-ch.y)<DTCut) ) ||
+          ( (posLocalSeg.x()!=0 && posLocalSeg.y()==0) && (fabs(posLocalSeg.x()-ch.x)<DTCut) ) ||
+          ( (posLocalSeg.x()!=0 && posLocalSeg.y()!=0) && (sqrt( (posLocalSeg.x()-ch.x)*(posLocalSeg.x()-ch.x) + (posLocalSeg.y()-ch.y)*(posLocalSeg.y()-ch.y) )<DTCut) )
+        ) {
+        nsegs_temp++;
+      }*/
+
+      if( ( posLocalSeg.x()!=0 && ch.x!=0 ) && (fabs(posLocalSeg.x()-ch.x)<DTCut) ) {
+        bool found = false;
+        for( auto prev_x : nsegs_x_temp) {
+          if( fabs(prev_x-posLocalSeg.x()) < 0.1 ) {
+            found = true;
+            break;
+          }
+        }
+        if( !found )  nsegs_x_temp.push_back(posLocalSeg.x());
+      }
+
+      if( ( posLocalSeg.y()!=0 && ch.y!=0 ) && (fabs(posLocalSeg.y()-ch.y)<DTCut) ) {
+        bool found = false;
+        for( auto prev_y : nsegs_y_temp) {
+          if( fabs(prev_y-posLocalSeg.y()) < 0.1 ) {
+            found = true;
+            break;
+          }
+        }
+        if( !found )  nsegs_y_temp.push_back(posLocalSeg.y());
+      }
+
+    }
+
+    nsegs_temp = (int)std::max(nsegs_x_temp.size(), nsegs_y_temp.size());
+
+    //--- subtract best matched segment from given muon
+    bool isBestMatched = false;
+    for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
+      if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) ) {
+        if (!ShutUp) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  DTChamberId:" << DTid << "  local position: (" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
+        removed[ch.station()-1]++;
+        isBestMatched = true;
+        break;
+      }
+    }
+    if (!ShutUp) std::cout << std::endl;
+
+    if(isBestMatched) nsegs_temp = nsegs_temp-1;
+    if(nsegs_temp>0)  stations[ch.station()-1] += nsegs_temp;
+
+  }
+
+  if (!ShutUp) {
+    std::cout << " DT Shower pattern: ";
+    int DTSum = 0;
+    for (int i=0;i<4;i++) {
+      std::cout << stations[i] << " ";
+      DTSum += stations[i];
+    }
+    std::cout << std::endl;
+    std::cout << " DTSum = " << DTSum << std::endl;
+
+    std::cout << " DT removed pattern: ";
+    for (int i=0;i<4;i++) {
+      std::cout << removed[i] << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  return stations;
+}
+
+std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, reco::MuonRef muon) {
+  double CSCCut = 30.;
+
+  std::vector<int> stations={0,0,0,0};
+  std::vector<int> removed={0,0,0,0};
+
+  edm::Handle<CSCSegmentCollection> cscSegments;
+  event.getByLabel(cscseg_src, cscSegments);
+
+  if (!ShutUp) std::cout << std::endl << " *** CSC Segment search" << std::endl;
+  for (const auto &ch : muon->matches()) {
+    if( ch.detector() != MuonSubdetId::CSC )  continue;
+    CSCDetId CSCid( ch.id.rawId() );
+    if (!ShutUp) std::cout << "   CSC chamber in station " << ch.station() << "  CSCDetId:" << CSCid << "  local position: (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
+
+    int nsegs_temp = 0;
+
+    for (auto seg = cscSegments->begin(); seg!=cscSegments->end(); ++seg) {
+      CSCDetId myChamber((*seg).geographicalId().rawId());
+      if (!(CSCid==myChamber))  continue;
+      LocalPoint posLocalSeg = seg->localPosition();
+      if (!ShutUp) std::cout << "     Found segment in station " << ch.station() << "  CSCDetId:" << myChamber << "  local position: " << posLocalSeg << std::endl;
+
+      if( (posLocalSeg.x()!=0 && posLocalSeg.y()!=0) && (sqrt( (posLocalSeg.x()-ch.x)*(posLocalSeg.x()-ch.x) + (posLocalSeg.y()-ch.y)*(posLocalSeg.y()-ch.y) )<CSCCut) )  { 
+        nsegs_temp++;
+      }
+    }
+
+    //--- subtract best matched segment from given muon
+    bool isBestMatched = false;
+    for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
+      if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) ) {
+        if (!ShutUp) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  CSCDetId:" << CSCid << "  local position: (" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
+        removed[ch.station()-1]++;
+        isBestMatched = true;
+        break;
+      }
+    }
+    if (!ShutUp) std::cout << std::endl;
+
+    if(isBestMatched) nsegs_temp = nsegs_temp-1;
+    if(nsegs_temp>0)  stations[ch.station()-1] += nsegs_temp;
+
+    /*for(std::vector<reco::MuonSegmentMatch>::const_iterator seg = ch.segmentMatches.begin(); seg != ch.segmentMatches.end(); seg++) {
+      if( seg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) ) {
+        if (!ShutUp) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  local position: (" << seg->x << ", " << seg->y << ", 0)" << std::endl;
+        removed[ch.station()-1]++;
+      }
+      else {
+        if (!ShutUp) std::cout << "     Found segment in station " << ch.station() << "  local position: (" << seg->x << ", " << seg->y << ", 0)" << std::endl;
+        if( (seg->x!=0 && seg->y!=0) && (sqrt( (seg->x-ch.x)*(seg->x-ch.x) + (seg->y-ch.y)*(seg->y-ch.y) )<CSCCut) )  { stations[ch.station()-1]++; }
+      }
+    }*/
+  }
+
+  if (!ShutUp) {
+    std::cout << " CSC Shower pattern: ";
+    int CSCSum = 0;
+    for (int i=0;i<4;i++) {
+      std::cout << stations[i] << " ";
+      CSCSum += stations[i];
+    }
+    std::cout << std::endl;
+    std::cout << " CSCSum = " << CSCSum << std::endl;
+
+    std::cout << " CSC removed pattern: ";
+    for (int i=0;i<4;i++) {
+      std::cout << removed[i] << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  return stations;
+}
+
 void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon* new_mu, reco::MuonRef MuRef) {
   edm::Handle<edm::ValueMap<reco::MuonShower> > muonShowerInformationValueMap;
   event.getByLabel(muonshower_src, muonShowerInformationValueMap);
 
-  // std::vector<int> nhits = {0,0,0,0};
   reco::MuonShower muonShowerInformation = (*muonShowerInformationValueMap)[MuRef];
+  std::vector<int> vec_DTsegs = countDTsegs(event, MuRef);
+  std::vector<int> vec_CSCsegs = countDTsegs(event, MuRef);
+
   for(int i=0; i<4; ++i) {
+    int nsegs_DT_temp  = vec_DTsegs[i];
+    int nsegs_CSC_temp = vec_CSCsegs[i];
     int nhits_temp = (muonShowerInformation.nStationHits).at(i);
 
-    std::string var_temp = "nHits"+std::to_string( int(i+1) );
-    new_mu->addUserInt(var_temp, nhits_temp);
+    std::string var_segs_DT_temp  = "nSegsDT"+std::to_string( int(i+1) );
+    std::string var_segs_CSC_temp = "nSegsCSC"+std::to_string( int(i+1) );
+    std::string var_hits_temp     = "nHits"+std::to_string( int(i+1) );
+
+    new_mu->addUserInt(var_segs_DT_temp,  nsegs_DT_temp);
+    new_mu->addUserInt(var_segs_CSC_temp, nsegs_CSC_temp);
+    new_mu->addUserInt(var_hits_temp,     nhits_temp);
   }
+
 }
 
 std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand) {

@@ -100,79 +100,82 @@ vtx_bins  = [ 2.5, 4.5, 6.5, 8.5, 10.5, 12.5, 14.5, 16.5, 18.5, 20.5,
 shower_bins = [ -0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5 ]
 
 allDimuons = cms.EDProducer('CustoTnPCombiner',
-                            decay = cms.string('leptons:muons@+ leptons:muons@-'),
-                            cut = cms.string(''),
-                            loose_cut = cms.string(default_cut),
-                            tight_cut = cms.string(tight_cut)
+    decay = cms.string('leptons:muons@+ leptons:muons@-'),
+    cut = cms.string(''),
+    loose_cut = cms.string(default_cut),
+    tight_cut = cms.string(tight_cut)
 )
 
 dimuons = cms.EDProducer('CustoTnPPairSelector',
-                         src = cms.InputTag('allDimuons'),
-                         muon_src = cms.InputTag('slimmedMuons'),
-                         vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
-                         cut = cms.string(Pair_Cut),                                  # simple cuts for dilepton pair, Pair_Cut
-                         tag_cut = cms.string(Tag_cut),                               # Tag lepton selection, Tag_cut
-                         tag_dpt_over_pt_max = cms.double(Tag_dpt_over_pt_max),       # Tag dpT/pT
-                         tag_dz_max = cms.double(Tag_dz_max),                         # Tag dz
-                         probe_cut = cms.string(Probe_cut),                           # Probe lepton selection, Probe_cut
-                         probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
-                         probe_dz_max = cms.double(Probe_dz_max),                     # Probe dz
+    src = cms.InputTag('allDimuons'),
+    muon_src = cms.InputTag('slimmedMuons'),
+    vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    cut = cms.string(Pair_Cut),                                  # simple cuts for dilepton pair, Pair_Cut
+    tag_cut = cms.string(Tag_cut),                               # Tag lepton selection, Tag_cut
+    tag_dpt_over_pt_max = cms.double(Tag_dpt_over_pt_max),       # Tag dpT/pT
+    tag_dz_max = cms.double(Tag_dz_max),                         # Tag dz
+    probe_cut = cms.string(Probe_cut),                           # Probe lepton selection, Probe_cut
+    probe_dpt_over_pt_max = cms.double(Probe_dpt_over_pt_max),   # Probe dpT/pT
+    probe_dz_max = cms.double(Probe_dz_max),                     # Probe dz
 
-                         back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
-                         vertex_chi2_max = cms.double(20),
-                         pt_ratio_max = cms.double(3.0),
-                         dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
+    back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
+    vertex_chi2_max = cms.double(20),
+    pt_ratio_max = cms.double(3.0),
+    dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
 
-                         veto_others_dphi_min = cms.double(Probe_veto_other_dphi_min),  #0.6
+    veto_others_dphi_min = cms.double(Probe_veto_other_dphi_min),  #0.6
 
-                         veto_multi_pair_with_Z = cms.bool(True),
+    veto_multi_pair_with_Z = cms.bool(True),
 
-                         samePV = cms.bool( False ),
+    samePV = cms.bool( False ),
 
-                         max_candidates = cms.uint32(1),
-                         sort_by_pt = cms.bool(True),
-                         do_remove_overlap = cms.bool(True),
-                         ShutUp = cms.bool(True)  #True
+    max_candidates = cms.uint32(1),
+    sort_by_pt = cms.bool(True),
+    do_remove_overlap = cms.bool(True),
+    ShutUp = cms.bool(True)  #True
 )
 
 HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
-                               dilepton_src = cms.InputTag('dimuons'),
-                               beamspot_src = cms.InputTag('offlineBeamSpot'),
-                               vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
-                               use_bs_and_pv = cms.bool(True),
-                               useMadgraphWeight = cms.bool(True),
+    dilepton_src = cms.InputTag('dimuons'),
+    beamspot_src = cms.InputTag('offlineBeamSpot'),
+    vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    use_bs_and_pv = cms.bool(True),
+    useMadgraphWeight = cms.bool(True),
 
-                               # bin width = 1, starting from 0
-                               pileup_src = cms.InputTag('slimmedAddPileupInfo'),
+    # bin width = 1, starting from 0
+    pileup_src = cms.InputTag('slimmedAddPileupInfo'),
 
-                               # minBias Xsec = ??? #
-                               vec_PileUpWeight = cms.vdouble( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ),
+    # minBias Xsec = ??? #
+    vec_PileUpWeight = cms.vdouble( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ),
 
+    shower_tag            = cms.int32(2),   # 1: Hits (BUG), 2: Segs
+    threshold_b          = cms.vint32(),
+    threshold_e          = cms.vint32(),
 
-                               probe_pt_min = cms.double(Probe_pt_cut),
+    probe_pt_min = cms.double(Probe_pt_cut),
 
-                               passing_probe_cut = cms.string(Passing_probe_cut),
-                               passing_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
-                               passing_probe_dz_max = cms.double(Passing_probe_dz_max),
+    passing_probe_cut = cms.string(Passing_probe_cut),
+    passing_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
+    passing_probe_dz_max = cms.double(Passing_probe_dz_max),
 
-                               comparison_probe_cut = cms.string(Comparison_probe_cut),
-                               comparison_probe_dpt_over_pt_max = cms.double(Comparison_probe_dpt_over_pt_max),
-                               comparison_probe_dz_max = cms.double(Comparison_probe_dz_max),
+    comparison_probe_cut = cms.string(Comparison_probe_cut),
+    comparison_probe_dpt_over_pt_max = cms.double(Comparison_probe_dpt_over_pt_max),
+    comparison_probe_dz_max = cms.double(Comparison_probe_dz_max),
 
-                               minMass = cms.double(0),
-                               maxMass = cms.double(10000),
-                                                                                        #probe pT cut
-                               vec_PtBins = cms.vdouble( pt_bins ),
-                               vec_AbsPBins = cms.vdouble( absp_bins ),
-                               vec_EtaBins = cms.vdouble( eta_bins ),
-                               vec_PhiBins = cms.vdouble( phi_bins ),
-                               vec_VtxBins = cms.vdouble( vtx_bins ),
-                               vec_ShowerBins = cms.vdouble( shower_bins ),
+    minMass = cms.double(0),
+    maxMass = cms.double(10000),
 
-                               isAOD = cms.bool(False),
-                               useBinHistos2D = cms.bool(True),
+    vec_PtBins = cms.vdouble( pt_bins ),
+    vec_AbsPBins = cms.vdouble( absp_bins ),
+    vec_EtaBins = cms.vdouble( eta_bins ),
+    vec_PhiBins = cms.vdouble( phi_bins ),
+    vec_VtxBins = cms.vdouble( vtx_bins ),
+    vec_ShowerBins = cms.vdouble( shower_bins ),
 
-                               ShutUp = cms.bool(True)  #True
+    isAOD = cms.bool(False),
+    useBinHistos2D = cms.bool(True),
+
+    ShutUp = cms.bool(True)  #True
 )
 
 
