@@ -85,8 +85,8 @@ private:
   edm::InputTag cscseg_src;
 
   std::pair<bool, reco::MuonRef> getMuonRef(const edm::Event&, pat::Muon*);
-  std::vector<int> countDTsegs(const edm::Event&, reco::MuonRef);
-  std::vector<int> countCSCsegs(const edm::Event&, reco::MuonRef);
+  std::vector<int> countDTsegs(const edm::Event&, reco::MuonRef, bool);
+  std::vector<int> countCSCsegs(const edm::Event&, reco::MuonRef, bool);
   void embedShowerInfo(const edm::Event&, pat::Muon*, reco::MuonRef);
 };
 
@@ -309,7 +309,7 @@ std::pair<bool, reco::MuonRef> CustoTnPLeptonProducer::getMuonRef(const edm::Eve
   return make_pair(isMatched, matchedMuRef);
 }
 
-std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, reco::MuonRef muon) {
+std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, reco::MuonRef muon, bool verbose) {
   double DTCut = 30.;
 
   std::vector<int> stations={0,0,0,0};
@@ -318,11 +318,11 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
   edm::Handle<DTRecSegment4DCollection> dtSegments;
   event.getByLabel(dtseg_src, dtSegments);
 
-  if (!ShutUp) std::cout << std::endl << " *** DT Segment search" << std::endl;
+  if (verbose) std::cout << std::endl << " *** DT Segment search" << std::endl;
   for (const auto &ch : muon->matches()) {
     if( ch.detector() != MuonSubdetId::DT )  continue;
     DTChamberId DTid( ch.id.rawId() );
-    if (!ShutUp) std::cout << "   DT chamber in station " << ch.station() << "  DTChamberId:" << DTid << "  local position: (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
+    if (verbose) std::cout << "   DT chamber in station " << ch.station() << "  DTChamberId:" << DTid << "  local position: (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
 
     int nsegs_temp = 0;
     std::vector<float> nsegs_x_temp, nsegs_y_temp;
@@ -331,7 +331,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
       DTChamberId myChamber((*seg).geographicalId().rawId());
       if (!(DTid==myChamber))  continue;
       LocalPoint posLocalSeg = seg->localPosition();
-      if (!ShutUp) std::cout << "     Found segment in station " << ch.station() << "  DTChamberId:" << myChamber << "  local position: " << posLocalSeg << std::endl;
+      if (verbose) std::cout << "     Found segment in station " << ch.station() << "  DTChamberId:" << myChamber << "  local position: " << posLocalSeg << std::endl;
 
       /*if( ( (posLocalSeg.x()==0 && posLocalSeg.y()!=0) && (fabs(posLocalSeg.y()-ch.y)<DTCut) ) ||
           ( (posLocalSeg.x()!=0 && posLocalSeg.y()==0) && (fabs(posLocalSeg.x()-ch.x)<DTCut) ) ||
@@ -370,20 +370,20 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
     bool isBestMatched = false;
     for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
       if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) ) {
-        if (!ShutUp) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  DTChamberId:" << DTid << "  local position: (" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
+        if (verbose) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  DTChamberId:" << DTid << "  local position: (" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
         removed[ch.station()-1]++;
         isBestMatched = true;
         break;
       }
     }
-    if (!ShutUp) std::cout << std::endl;
+    if (verbose) std::cout << std::endl;
 
     if(isBestMatched) nsegs_temp = nsegs_temp-1;
     if(nsegs_temp>0)  stations[ch.station()-1] += nsegs_temp;
 
   }
 
-  if (!ShutUp) {
+  if (verbose) {
     std::cout << " DT Shower pattern: ";
     int DTSum = 0;
     for (int i=0;i<4;i++) {
@@ -403,7 +403,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
   return stations;
 }
 
-std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, reco::MuonRef muon) {
+std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, reco::MuonRef muon, bool verbose) {
   double CSCCut = 30.;
 
   std::vector<int> stations={0,0,0,0};
@@ -412,11 +412,11 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
   edm::Handle<CSCSegmentCollection> cscSegments;
   event.getByLabel(cscseg_src, cscSegments);
 
-  if (!ShutUp) std::cout << std::endl << " *** CSC Segment search" << std::endl;
+  if (verbose) std::cout << std::endl << " *** CSC Segment search" << std::endl;
   for (const auto &ch : muon->matches()) {
     if( ch.detector() != MuonSubdetId::CSC )  continue;
     CSCDetId CSCid( ch.id.rawId() );
-    if (!ShutUp) std::cout << "   CSC chamber in station " << ch.station() << "  CSCDetId:" << CSCid << "  local position: (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
+    if (verbose) std::cout << "   CSC chamber in station " << ch.station() << "  CSCDetId:" << CSCid << "  local position: (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
 
     int nsegs_temp = 0;
 
@@ -424,7 +424,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
       CSCDetId myChamber((*seg).geographicalId().rawId());
       if (!(CSCid==myChamber))  continue;
       LocalPoint posLocalSeg = seg->localPosition();
-      if (!ShutUp) std::cout << "     Found segment in station " << ch.station() << "  CSCDetId:" << myChamber << "  local position: " << posLocalSeg << std::endl;
+      if (verbose) std::cout << "     Found segment in station " << ch.station() << "  CSCDetId:" << myChamber << "  local position: " << posLocalSeg << std::endl;
 
       if( (posLocalSeg.x()!=0 && posLocalSeg.y()!=0) && (sqrt( (posLocalSeg.x()-ch.x)*(posLocalSeg.x()-ch.x) + (posLocalSeg.y()-ch.y)*(posLocalSeg.y()-ch.y) )<CSCCut) )  { 
         nsegs_temp++;
@@ -435,30 +435,30 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
     bool isBestMatched = false;
     for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
       if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) ) {
-        if (!ShutUp) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  CSCDetId:" << CSCid << "  local position: (" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
+        if (verbose) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  CSCDetId:" << CSCid << "  local position: (" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
         removed[ch.station()-1]++;
         isBestMatched = true;
         break;
       }
     }
-    if (!ShutUp) std::cout << std::endl;
+    if (verbose) std::cout << std::endl;
 
     if(isBestMatched) nsegs_temp = nsegs_temp-1;
     if(nsegs_temp>0)  stations[ch.station()-1] += nsegs_temp;
 
     /*for(std::vector<reco::MuonSegmentMatch>::const_iterator seg = ch.segmentMatches.begin(); seg != ch.segmentMatches.end(); seg++) {
       if( seg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) ) {
-        if (!ShutUp) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  local position: (" << seg->x << ", " << seg->y << ", 0)" << std::endl;
+        if (verbose) std::cout << "     Found BestInChamberByDR in station " << ch.station() << "  local position: (" << seg->x << ", " << seg->y << ", 0)" << std::endl;
         removed[ch.station()-1]++;
       }
       else {
-        if (!ShutUp) std::cout << "     Found segment in station " << ch.station() << "  local position: (" << seg->x << ", " << seg->y << ", 0)" << std::endl;
+        if (verbose) std::cout << "     Found segment in station " << ch.station() << "  local position: (" << seg->x << ", " << seg->y << ", 0)" << std::endl;
         if( (seg->x!=0 && seg->y!=0) && (sqrt( (seg->x-ch.x)*(seg->x-ch.x) + (seg->y-ch.y)*(seg->y-ch.y) )<CSCCut) )  { stations[ch.station()-1]++; }
       }
     }*/
   }
 
-  if (!ShutUp) {
+  if (verbose) {
     std::cout << " CSC Shower pattern: ";
     int CSCSum = 0;
     for (int i=0;i<4;i++) {

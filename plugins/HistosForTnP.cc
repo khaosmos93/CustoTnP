@@ -65,7 +65,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   const reco::Vertex*   vertex;
   int                   nVtx;
 
-  bool shower_tag;    // 1: Hits, 2: Segments
+  int shower_tag;    // 1: Hits, 2: Segments
   std::vector<int>  threshold_b;
   std::vector<int>  threshold_e;
 
