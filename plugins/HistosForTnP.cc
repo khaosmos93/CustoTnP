@@ -374,6 +374,9 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   double VertexMass;
   double Probe_Pt;
   double Probe_Eta;
+  double Probe_Phi;
+  std::vector<int> Probe_nHits;
+  std::vector<int> Probe_nSegs;
   TTree* comparison_tree;
 };
 
@@ -599,6 +602,11 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   comparison_tree->Branch("VertexMass",&VertexMass,"VertexMass/D");
   comparison_tree->Branch("Probe_Pt",&Probe_Pt,"Probe_Pt/D");
   comparison_tree->Branch("Probe_Eta",&Probe_Eta,"Probe_Eta/D");
+  comparison_tree->Branch("Probe_Phi",&Probe_Phi,"Probe_Phi/D");
+  if(isAOD) {
+    comparison_tree->Branch("Probe_nHits",&Probe_nHits);
+    comparison_tree->Branch("Probe_nSegs",&Probe_nSegs);
+  }
 }
 
 void CustoTnPHistosForTnP::getBSandPV(const edm::Event& event) {
@@ -903,14 +911,19 @@ void CustoTnPHistosForTnP::fillTnPBinHistos2D(  double               dil_mass,
 
 void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetup& setup) {
 
-  IsRealData = false;
-  RunNum = -999;
+  IsRealData   = false;
+  RunNum       = -999;
   LumiBlockNum = -999;
-  EventNum = 0;
-  Mass = -999.;
-  VertexMass = -999.;
-  Probe_Pt = -999.;
-  Probe_Eta = -999.;
+  EventNum     = 0;
+  Mass         = -999.;
+  VertexMass   = -999.;
+  Probe_Pt     = -999.;
+  Probe_Eta    = -999.;
+  Probe_Phi    = -999.;
+  if(isAOD) {
+    Probe_nHits  = { -999, -999, -999, -999 };
+    Probe_nSegs  = { -999, -999, -999, -999 };
+  }
 
   //---- Prescales : Not using for now...
     //  edm::Handle<int> hltPrescale;
@@ -1154,6 +1167,19 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
               VertexMass = dil_vertex_mass;
               Probe_Pt = ProbeMu->pt();
               Probe_Eta = ProbeMu->eta();
+              Probe_Phi = ProbeMu->phi();
+
+              if( isAOD && probe_nshowers > -1 ) {
+                if(fabs(ProbeMu->eta())<0.9) {
+                  Probe_nHits = { mu1->userInt("nHits1")/2, mu1->userInt("nHits2")/2, mu1->userInt("nHits3")/2, mu1->userInt("nHits4")/2 };
+                  Probe_nSegs = { mu1->userInt("nSegsDT1"), mu1->userInt("nSegsDT2"), mu1->userInt("nSegsDT3"), mu1->userInt("nSegsDT4") };
+                }
+                else if(fabs(ProbeMu->eta())>=1.2) {
+                  Probe_nHits = { mu1->userInt("nHits1"), mu1->userInt("nHits2"), mu1->userInt("nHits3"), mu1->userInt("nHits4") };
+                  Probe_nSegs = { mu1->userInt("nSegsCSC1"), mu1->userInt("nSegsCSC2"), mu1->userInt("nSegsCSC3"), mu1->userInt("nSegsCSC4") };
+                }
+              }
+
               comparison_tree->Fill();
               isAleadyFilled = true;
             }
@@ -1304,6 +1330,19 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
               VertexMass = dil_vertex_mass;
               Probe_Pt = ProbeMu->pt();
               Probe_Eta = ProbeMu->eta();
+              Probe_Phi = ProbeMu->phi();
+
+              if( isAOD && probe_nshowers > -1 ) {
+                if(fabs(ProbeMu->eta())<0.9) {
+                  Probe_nHits = { mu0->userInt("nHits1")/2, mu0->userInt("nHits2")/2, mu0->userInt("nHits3")/2, mu0->userInt("nHits4")/2 };
+                  Probe_nSegs = { mu0->userInt("nSegsDT1"), mu0->userInt("nSegsDT2"), mu0->userInt("nSegsDT3"), mu0->userInt("nSegsDT4") };
+                }
+                else if(fabs(ProbeMu->eta())>=1.2) {
+                  Probe_nHits = { mu0->userInt("nHits1"), mu0->userInt("nHits2"), mu0->userInt("nHits3"), mu0->userInt("nHits4") };
+                  Probe_nSegs = { mu0->userInt("nSegsCSC1"), mu0->userInt("nSegsCSC2"), mu0->userInt("nSegsCSC3"), mu0->userInt("nSegsCSC4") };
+                }
+              }
+
               comparison_tree->Fill();
             }
           }
