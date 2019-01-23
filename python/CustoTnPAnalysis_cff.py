@@ -30,8 +30,8 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               muon_track_for_momentum = cms.string('TunePNew'),
                               muon_photon_match_src = cms.InputTag('muonPhotonMatchMiniAOD'),
                               trigger_match_max_dR = cms.double(0.2),
-                              trigger_summary = cms.InputTag('selectedPatTrigger'),  # to run on 2016 Data
-                              bits = cms.InputTag("TriggerResults","","HLT"),#data
+                              trigger_summary = cms.InputTag('slimmedPatTrigger'), # to run on 2017 Data
+                              bits = cms.InputTag("TriggerResults","","HLT"),
                               prescales = cms.InputTag("patTrigger"),
                               trigger_filters = cms.vstring(trigger_filters),
                               trigger_path_names = cms.vstring(trigger_path_names),
@@ -39,6 +39,8 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               isAOD = cms.bool(False),
                               reco_muon_src = cms.InputTag(''),            # only for AOD
                               muonshower_src = cms.InputTag('', '', ''),   # only for AOD
+                              dtseg_src = cms.InputTag(''),    # only for AOD
+                              cscseg_src = cms.InputTag(''),    # only for AOD
 )
 
 leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
@@ -57,5 +59,7 @@ leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
                               isAOD = cms.bool(True),
                               reco_muon_src = cms.InputTag('muons'),
                               muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
+                              dtseg_src = cms.InputTag('dt4DSegments'),
+                              cscseg_src = cms.InputTag('cscSegments'),
 )
 
