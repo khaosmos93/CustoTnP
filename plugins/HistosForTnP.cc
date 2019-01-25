@@ -905,7 +905,7 @@ void CustoTnPHistosForTnP::fillTnPBinHistos2D(  double               dil_mass,
     Histos[1]->Fill( dil_mass, binValue, _totalWeight );
 
   Histos[2]->Fill( dil_mass, binValue, binValue*_totalWeight );
-  Histos[3]->Fill( dil_mass, binValue, binValue*binValue*_totalWeight );
+  Histos[4]->Fill( dil_mass, binValue, binValue*binValue*_totalWeight );
 }
 
 
