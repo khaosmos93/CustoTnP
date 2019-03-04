@@ -229,7 +229,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Weight_Zmass->Fill( Z.mass(), madgraphWeight );
     Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  madgraphWeight );
     Zeta_Zmass->Fill(   Z.mass(), Z.eta(), madgraphWeight );
-    Zy_Zmass->Fill(     Z.mass(), Z.y(),   madgraphWeight );
+    Zy_Zmass->Fill(     Z.mass(), Z.Rapidity(),   madgraphWeight );
     Zphi_Zmass->Fill(   Z.mass(), Z.phi(), madgraphWeight );
     pt_Zmass->Fill(     Z.mass(), l_pt,    madgraphWeight );
     eta_Zmass->Fill(    Z.mass(), l_eta,   madgraphWeight );
@@ -238,7 +238,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Weight_Zmass_->Fill( Z_.mass(), madgraphWeight );
     Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  madgraphWeight );
     Zeta_Zmass_->Fill(   Z_.mass(), Z_.eta(), madgraphWeight );
-    Zy_Zmass_->Fill(     Z_.mass(), Z_.y(),   madgraphWeight );
+    Zy_Zmass_->Fill(     Z_.mass(), Z_.Rapidity(),   madgraphWeight );
     Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), madgraphWeight );
     pt_Zmass_->Fill(     Z_.mass(), l_pt_,    madgraphWeight );
     eta_Zmass_->Fill(    Z_.mass(), l_eta_,   madgraphWeight );
