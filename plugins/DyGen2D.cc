@@ -53,21 +53,21 @@ DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
 
   edm::Service<TFileService> fs;
 
-  Weight_Zmass = fs->make<TH2F>("Weight_Zmass", "", 10000, 0, 10000, 4, -2, 2);
-  Zpt_Zmass    = fs->make<TH2F>("Zpt_Zmass", "",    10000, 0, 10000, 10000, 0, 10000);
-  Zeta_Zmass   = fs->make<TH2F>("Zeta_Zmass", "",   10000, 0, 10000, 96, -4.8, 4.8);
-  Zphi_Zmass   = fs->make<TH2F>("Zphi_Zmass", "",   10000, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
-  pt_Zmass     = fs->make<TH2F>("pt_Zmass", "",     10000, 0, 10000, 10000, 0, 10000);
-  eta_Zmass    = fs->make<TH2F>("eta_Zmass", "",    10000, 0, 10000, 96, -4.8, 4.8);
-  phi_Zmass    = fs->make<TH2F>("phi_Zmass", "",    10000, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  Weight_Zmass = fs->make<TH2F>("Weight_Zmass", "", 100, 0, 10000, 4, -2, 2);
+  Zpt_Zmass    = fs->make<TH2F>("Zpt_Zmass", "",    100, 0, 10000, 10000, 0, 10000);
+  Zeta_Zmass   = fs->make<TH2F>("Zeta_Zmass", "",   100, 0, 10000, 96, -4.8, 4.8);
+  Zphi_Zmass   = fs->make<TH2F>("Zphi_Zmass", "",   100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  pt_Zmass     = fs->make<TH2F>("pt_Zmass", "",     100, 0, 10000, 10000, 0, 10000);
+  eta_Zmass    = fs->make<TH2F>("eta_Zmass", "",    100, 0, 10000, 96, -4.8, 4.8);
+  phi_Zmass    = fs->make<TH2F>("phi_Zmass", "",    100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
 
-  Weight_Zmass_ = fs->make<TH2F>("Weight_Zmass_", "", 10000, 0, 10000, 4, -2, 2);
-  Zpt_Zmass_    = fs->make<TH2F>("Zpt_Zmass_", "",    10000, 0, 10000, 10000, 0, 10000);
-  Zeta_Zmass_   = fs->make<TH2F>("Zeta_Zmass_", "",   10000, 0, 10000, 96, -4.8, 4.8);
-  Zphi_Zmass_   = fs->make<TH2F>("Zphi_Zmass_", "",   10000, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
-  pt_Zmass_     = fs->make<TH2F>("pt_Zmass_", "",     10000, 0, 10000, 10000, 0, 10000);
-  eta_Zmass_    = fs->make<TH2F>("eta_Zmass_", "",    10000, 0, 10000, 96, -4.8, 4.8);
-  phi_Zmass_    = fs->make<TH2F>("phi_Zmass_", "",    10000, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  Weight_Zmass_ = fs->make<TH2F>("Weight_Zmass_", "", 100, 0, 10000, 4, -2, 2);
+  Zpt_Zmass_    = fs->make<TH2F>("Zpt_Zmass_", "",    100, 0, 10000, 10000, 0, 10000);
+  Zeta_Zmass_   = fs->make<TH2F>("Zeta_Zmass_", "",   100, 0, 10000, 96, -4.8, 4.8);
+  Zphi_Zmass_   = fs->make<TH2F>("Zphi_Zmass_", "",   100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  pt_Zmass_     = fs->make<TH2F>("pt_Zmass_", "",     100, 0, 10000, 10000, 0, 10000);
+  eta_Zmass_    = fs->make<TH2F>("eta_Zmass_", "",    100, 0, 10000, 96, -4.8, 4.8);
+  phi_Zmass_    = fs->make<TH2F>("phi_Zmass_", "",    100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
 }
 
 bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
