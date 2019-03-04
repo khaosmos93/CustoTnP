@@ -27,6 +27,7 @@ class DyGen2D : public edm::EDFilter {
   TH2F* Weight_Zmass;
   TH2F* Zpt_Zmass;
   TH2F* Zeta_Zmass;
+  TH2F* Zy_Zmass;
   TH2F* Zphi_Zmass;
   TH2F* pt_Zmass;
   TH2F* eta_Zmass;
@@ -35,6 +36,7 @@ class DyGen2D : public edm::EDFilter {
   TH2F* Weight_Zmass_;
   TH2F* Zpt_Zmass_;
   TH2F* Zeta_Zmass_;
+  TH2F* Zy_Zmass_;
   TH2F* Zphi_Zmass_;
   TH2F* pt_Zmass_;
   TH2F* eta_Zmass_;
@@ -56,7 +58,8 @@ DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
 
   Weight_Zmass = fs->make<TH2F>("Weight_Zmass", "", 100, 0, 10000, 4, -2, 2);
   Zpt_Zmass    = fs->make<TH2F>("Zpt_Zmass", "",    100, 0, 10000, 10000, 0, 10000);
-  Zeta_Zmass   = fs->make<TH2F>("Zeta_Zmass", "",   100, 0, 10000, 96, -4.8, 4.8);
+  Zeta_Zmass   = fs->make<TH2F>("Zeta_Zmass", "",   100, 0, 10000, 200, -10, 10);
+  Zy_Zmass     = fs->make<TH2F>("Zy_Zmass", "",     100, 0, 10000, 96, -4.8, 4.8);
   Zphi_Zmass   = fs->make<TH2F>("Zphi_Zmass", "",   100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
   pt_Zmass     = fs->make<TH2F>("pt_Zmass", "",     100, 0, 10000, 10000, 0, 10000);
   eta_Zmass    = fs->make<TH2F>("eta_Zmass", "",    100, 0, 10000, 96, -4.8, 4.8);
@@ -64,7 +67,8 @@ DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
 
   Weight_Zmass_ = fs->make<TH2F>("Weight_Zmass_", "", 100, 0, 10000, 4, -2, 2);
   Zpt_Zmass_    = fs->make<TH2F>("Zpt_Zmass_", "",    100, 0, 10000, 10000, 0, 10000);
-  Zeta_Zmass_   = fs->make<TH2F>("Zeta_Zmass_", "",   100, 0, 10000, 96, -4.8, 4.8);
+  Zeta_Zmass_   = fs->make<TH2F>("Zeta_Zmass_", "",   100, 0, 10000, 200, -10, 10);
+  Zy_Zmass_     = fs->make<TH2F>("Zy_Zmass_", "",     100, 0, 10000, 96, -4.8, 4.8);
   Zphi_Zmass_   = fs->make<TH2F>("Zphi_Zmass_", "",   100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
   pt_Zmass_     = fs->make<TH2F>("pt_Zmass_", "",     100, 0, 10000, 10000, 0, 10000);
   eta_Zmass_    = fs->make<TH2F>("eta_Zmass_", "",    100, 0, 10000, 96, -4.8, 4.8);
@@ -198,6 +202,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Weight_Zmass->Fill( Z.mass(), madgraphWeight );
     Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  madgraphWeight );
     Zeta_Zmass->Fill(   Z.mass(), Z.eta(), madgraphWeight );
+    Zy_Zmass->Fill(     Z.mass(), Z.y(),   madgraphWeight );
     Zphi_Zmass->Fill(   Z.mass(), Z.phi(), madgraphWeight );
     pt_Zmass->Fill(     Z.mass(), l_pt,    madgraphWeight );
     eta_Zmass->Fill(    Z.mass(), l_eta,   madgraphWeight );
@@ -206,6 +211,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Weight_Zmass_->Fill( Z_.mass(), madgraphWeight );
     Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  madgraphWeight );
     Zeta_Zmass_->Fill(   Z_.mass(), Z_.eta(), madgraphWeight );
+    Zy_Zmass_->Fill(     Z_.mass(), Z_.y(),   madgraphWeight );
     Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), madgraphWeight );
     pt_Zmass_->Fill(     Z_.mass(), l_pt_,    madgraphWeight );
     eta_Zmass_->Fill(    Z_.mass(), l_eta_,   madgraphWeight );
