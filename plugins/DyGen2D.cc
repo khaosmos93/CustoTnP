@@ -2,7 +2,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "TLorentzVector.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
@@ -104,8 +105,8 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   float phi2 =0;
   float mass1 = 0;
   float mass2 = 0;
-  TLorentzVector mu1, mu2;
-  TLorentzVector Z;
+  reco::Particle::LorentzVector mu1, mu2;
+  reco::Particle::LorentzVector Z;
 
 
   bool isFind1_ = false;
@@ -119,80 +120,84 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   float phi2_ =0;
   float mass1_ = 0;
   float mass2_ = 0;
-  TLorentzVector mu1_, mu2_;
-  TLorentzVector Z_;
+  reco::Particle::LorentzVector mu1_, mu2_;
+  reco::Particle::LorentzVector Z_;
 
 
   for (; genp != genParticles->end(); genp++) {
 
     if( (genp->pdgId() == 13) && (genp->isHardProcess()) ){
       isFind1 = true;
-      eta1    = genp->eta();
-      phi1    = genp->phi();
-      pt1     = genp->pt();
-      mass1   = genp->mass();
-      mu1.SetPtEtaPhiM(pt1, eta1, phi1, mass1);  //0.105
+      mu1 = genp->p4();
+      // eta1    = genp->eta();
+      // phi1    = genp->phi();
+      // pt1     = genp->pt();
+      // mass1   = genp->mass();
+      // mu1.SetPtEtaPhiM(pt1, eta1, phi1, mass1);  //0.105
     }
 
     if( (genp->pdgId() == -13) && (genp->isHardProcess()) ){
       isFind2 = true;
-      eta2    = genp->eta();
-      phi2    = genp->phi();
-      pt2     = genp->pt();
-      mass2   = genp->mass();
-      mu2.SetPtEtaPhiM(pt2, eta2, phi2, mass2);  //0.105
+      mu2 = genp->p4();
+      // eta2    = genp->eta();
+      // phi2    = genp->phi();
+      // pt2     = genp->pt();
+      // mass2   = genp->mass();
+      // mu2.SetPtEtaPhiM(pt2, eta2, phi2, mass2);  //0.105
     }
 
     if( (genp->pdgId() == 13) && (genp->status() == 1) ){
       isFind1_ = true;
-      eta1_    = genp->eta();
-      phi1_    = genp->phi();
-      pt1_     = genp->pt();
-      mass1_   = genp->mass();
-      mu1_.SetPtEtaPhiM(pt1_, eta1_, phi1_, mass1_);  //0.105
+      mu1_ = genp->p4();
+      // eta1_    = genp->eta();
+      // phi1_    = genp->phi();
+      // pt1_     = genp->pt();
+      // mass1_   = genp->mass();
+      // mu1_.SetPtEtaPhiM(pt1_, eta1_, phi1_, mass1_);  //0.105
     }
 
     if( (genp->pdgId() == -13) && (genp->status() == 1) ){
       isFind2_ = true;
-      eta2_    = genp->eta();
-      phi2_    = genp->phi();
-      pt2_     = genp->pt();
-      mass2_   = genp->mass();
-      mu2_.SetPtEtaPhiM(pt2_, eta2_, phi2_, mass2_);  //0.105
+      mu2_ = genp->p4();
+      // eta2_    = genp->eta();
+      // phi2_    = genp->phi();
+      // pt2_     = genp->pt();
+      // mass2_   = genp->mass();
+      // mu2_.SetPtEtaPhiM(pt2_, eta2_, phi2_, mass2_);  //0.105
     }
 
   }
 
-  Z = mu1+ mu2;
+  Z = mu1 + mu2;
 
-  Z_ = mu1_+ mu2_;
+  Z_ = mu1_ + mu2_;
 
 
   if( isFind1 && isFind2 && isFind1_ && isFind2_ ){
 
-    float l_pt   = mu1_.Pt() > mu2_.Pt() ? mu1.Pt()  : mu2.Pt();
-    float l_eta  = mu1_.Pt() > mu2_.Pt() ? mu1.Eta() : mu2.Eta();
-    float l_phi  = mu1_.Pt() > mu2_.Pt() ? mu1.Phi() : mu2.Phi();
+    float l_pt   = mu1_.pt() > mu2_.pt() ? mu1.pt()  : mu2.pt();
+    float l_eta  = mu1_.pt() > mu2_.pt() ? mu1.eta() : mu2.eta();
+    float l_phi  = mu1_.pt() > mu2_.pt() ? mu1.phi() : mu2.phi();
 
-    float l_pt_   = mu1_.Pt() > mu2_.Pt() ? mu1_.Pt()  : mu2_.Pt();
-    float l_eta_  = mu1_.Pt() > mu2_.Pt() ? mu1_.Eta() : mu2_.Eta();
-    float l_phi_  = mu1_.Pt() > mu2_.Pt() ? mu1_.Phi() : mu2_.Phi();
+    float l_pt_   = mu1_.pt() > mu2_.pt() ? mu1_.pt()  : mu2_.pt();
+    float l_eta_  = mu1_.pt() > mu2_.pt() ? mu1_.eta() : mu2_.eta();
+    float l_phi_  = mu1_.pt() > mu2_.pt() ? mu1_.phi() : mu2_.phi();
 
-    Weight_Zmass->Fill( Z.M(), madgraphWeight );
-    Zpt_Zmass->Fill(    Z.M(), Z.Pt(),  madgraphWeight );
-    Zeta_Zmass->Fill(   Z.M(), Z.Eta(), madgraphWeight );
-    Zphi_Zmass->Fill(   Z.M(), Z.Phi(), madgraphWeight );
-    pt_Zmass->Fill(     Z.M(), l_pt,    madgraphWeight );
-    eta_Zmass->Fill(    Z.M(), l_eta,   madgraphWeight );
-    phi_Zmass->Fill(    Z.M(), l_phi,   madgraphWeight );
+    Weight_Zmass->Fill( Z.mass(), madgraphWeight );
+    Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  madgraphWeight );
+    Zeta_Zmass->Fill(   Z.mass(), Z.eta(), madgraphWeight );
+    Zphi_Zmass->Fill(   Z.mass(), Z.phi(), madgraphWeight );
+    pt_Zmass->Fill(     Z.mass(), l_pt,    madgraphWeight );
+    eta_Zmass->Fill(    Z.mass(), l_eta,   madgraphWeight );
+    phi_Zmass->Fill(    Z.mass(), l_phi,   madgraphWeight );
 
-    Weight_Zmass_->Fill( Z_.M(), madgraphWeight );
-    Zpt_Zmass_->Fill(    Z_.M(), Z_.Pt(),  madgraphWeight );
-    Zeta_Zmass_->Fill(   Z_.M(), Z_.Eta(), madgraphWeight );
-    Zphi_Zmass_->Fill(   Z_.M(), Z_.Phi(), madgraphWeight );
-    pt_Zmass_->Fill(     Z_.M(), l_pt_,    madgraphWeight );
-    eta_Zmass_->Fill(    Z_.M(), l_eta_,   madgraphWeight );
-    phi_Zmass_->Fill(    Z_.M(), l_phi_,   madgraphWeight );
+    Weight_Zmass_->Fill( Z_.mass(), madgraphWeight );
+    Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  madgraphWeight );
+    Zeta_Zmass_->Fill(   Z_.mass(), Z_.eta(), madgraphWeight );
+    Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), madgraphWeight );
+    pt_Zmass_->Fill(     Z_.mass(), l_pt_,    madgraphWeight );
+    eta_Zmass_->Fill(    Z_.mass(), l_eta_,   madgraphWeight );
+    phi_Zmass_->Fill(    Z_.mass(), l_phi_,   madgraphWeight );
 
   }
 
