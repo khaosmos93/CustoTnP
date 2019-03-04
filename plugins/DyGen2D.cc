@@ -175,11 +175,16 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
   if( isFind1 && isFind2 && isFind1_ && isFind2_ ){
 
-    if(Z_.mass() < 100) {
-      std::cout << "M: " <<  << std::endl;
+    if(Z_.mass() < 200) {
+      std::cout << std::endl;
+      std::cout << "M: " << Z.mass() << std::endl;
+      std::cout << "\t M: " << Z_.mass() << std::endl;
+      std::cout << "p+: " << mu1 << std::endl;
       std::cout << "\t p+: " << mu1_ << std::endl;
+      std::cout << "p-: " << mu2 << std::endl;
       std::cout << "\t p-: " << mu2_ << std::endl;
-      std::cout << "\t\t p4: " << (mu1_+mu2_) << std::endl;
+      std::cout << "p4: " << (mu1+mu2) << std::endl;
+      std::cout << "\t p4: " << (mu1_+mu2_) << std::endl;
     }
 
     float l_pt   = mu1_.pt() > mu2_.pt() ? mu1.pt()  : mu2.pt();
