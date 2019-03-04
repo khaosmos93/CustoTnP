@@ -177,9 +177,9 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
     if(Z_.mass() < 100) {
       cout << "M: " <<  << endl;
-      cout << "\t p+: " << mu1_.p4() << endl;
-      cout << "\t p-: " << mu2_.p4() << endl;
-      cout << "\t\t p4: " << (mu1_.p4()+mu2_.p4()) << endl;
+      cout << "\t p+: " << mu1_ << endl;
+      cout << "\t p-: " << mu2_ << endl;
+      cout << "\t\t p4: " << (mu1_+mu2_) << endl;
     }
 
     float l_pt   = mu1_.pt() > mu2_.pt() ? mu1.pt()  : mu2.pt();
