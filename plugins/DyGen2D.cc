@@ -174,12 +174,11 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
   }
 
-  Z = mu1->p4() + mu2->p4();
-
-  Z_ = mu1_->p4() + mu2_->p4();
-
 
   if( isFind1 && isFind2 && isFind1_ && isFind2_ ){
+
+    Z  = mu1->p4() + mu2->p4();
+    Z_ = mu1_->p4() + mu2_->p4();
 
     if(Z_.mass() < 200) {
       std::cout << std::endl;
