@@ -97,14 +97,14 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   bool isFind1 = false;
   bool isFind2 = false;
 
-  float pt1 = 0;
-  float pt2 = 0;
-  float eta1 =0;
-  float eta2 =0;
-  float phi1 =0;
-  float phi2 =0;
-  float mass1 = 0;
-  float mass2 = 0;
+  // float pt1 = 0;
+  // float pt2 = 0;
+  // float eta1 =0;
+  // float eta2 =0;
+  // float phi1 =0;
+  // float phi2 =0;
+  // float mass1 = 0;
+  // float mass2 = 0;
   reco::Particle::LorentzVector mu1, mu2;
   reco::Particle::LorentzVector Z;
 
@@ -112,14 +112,14 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   bool isFind1_ = false;
   bool isFind2_ = false;
 
-  float pt1_ = 0;
-  float pt2_ = 0;
-  float eta1_ =0;
-  float eta2_ =0;
-  float phi1_ =0;
-  float phi2_ =0;
-  float mass1_ = 0;
-  float mass2_ = 0;
+  // float pt1_ = 0;
+  // float pt2_ = 0;
+  // float eta1_ =0;
+  // float eta2_ =0;
+  // float phi1_ =0;
+  // float phi2_ =0;
+  // float mass1_ = 0;
+  // float mass2_ = 0;
   reco::Particle::LorentzVector mu1_, mu2_;
   reco::Particle::LorentzVector Z_;
 
