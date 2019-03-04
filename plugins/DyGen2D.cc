@@ -106,7 +106,6 @@ bool DyGenMass::filter(edm::Event& event, const edm::EventSetup&) {
   float mass2 = 0;
   TLorentzVector mu1, mu2;
   TLorentzVector Z;
-  float massZ = -999.0;
 
 
   bool isFind1_ = false;
@@ -122,7 +121,6 @@ bool DyGenMass::filter(edm::Event& event, const edm::EventSetup&) {
   float mass2_ = 0;
   TLorentzVector mu1_, mu2_;
   TLorentzVector Z_;
-  float massZ_ = -999.0;
 
 
   for (; genp != genParticles->end(); genp++) {
@@ -166,10 +164,8 @@ bool DyGenMass::filter(edm::Event& event, const edm::EventSetup&) {
   }
 
   Z = mu1+ mu2;
-  massZ = Z.M();
 
   Z_ = mu1_+ mu2_;
-  massZ_ = Z_.M();
 
 
   if( isFind1 && isFind2 && isFind1_ && isFind2_ ){
