@@ -10,9 +10,9 @@
 #include "TMath.h"
 
 
-class DyGenMass : public edm::EDFilter {
+class DyGen2D : public edm::EDFilter {
  public:
-  explicit DyGenMass(const edm::ParameterSet&);
+  explicit DyGen2D(const edm::ParameterSet&);
 
  private:
  virtual bool filter(edm::Event&, const edm::EventSetup&);
@@ -42,7 +42,7 @@ class DyGenMass : public edm::EDFilter {
 };
 
 
-DyGenMass::DyGenMass(const edm::ParameterSet& cfg)
+DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
   : src(cfg.getParameter<edm::InputTag>("src")),
     eventWeight(1.0),
     useMadgraphWeight(cfg.getParameter<bool>("useMadgraphWeight")),
@@ -70,7 +70,7 @@ DyGenMass::DyGenMass(const edm::ParameterSet& cfg)
   phi_Zmass_    = fs->make<TH2F>("phi_Zmass_", "",    10000, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
 }
 
-bool DyGenMass::filter(edm::Event& event, const edm::EventSetup&) {
+bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
   eventWeight = 1.0;
   madgraphWeight = 1.0;
@@ -201,4 +201,4 @@ bool DyGenMass::filter(edm::Event& event, const edm::EventSetup&) {
 }
 
 
-DEFINE_FWK_MODULE(DyGenMass);
+DEFINE_FWK_MODULE(DyGen2D);
