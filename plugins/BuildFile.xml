@@ -68,7 +68,7 @@
   <use name="CustoTnP/Analyzer"/>
 </library> -->
 
-<library file="DibosonGenMass.cc,TauTauSelection.cc,DyGenMass.cc,DyGenPt.cc,TTbarGenMass.cc" name="CustoTnPAnalyzers">
+<library file="DibosonGenMass.cc,TauTauSelection.cc,DyGenMass.cc,DyGenPt.cc,TTbarGenMass.cc,DyGen2D.cc" name="CustoTnPAnalyzers">
   <use name="ostream"/>
   <use name="rootgraphics"/>
   <use name="CommonTools/UtilAlgos"/>
