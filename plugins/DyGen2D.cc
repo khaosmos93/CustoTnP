@@ -153,8 +153,21 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     }
 
     if( (genp->pdgId() == 13) && (genp->status() == 1) ){
-      isFind1_ = true;
-      mu1_ = &*genp;
+
+      const reco::Candidate* m = genp->mother();
+      bool ok = false;
+      while (m) {
+        if( m->pdgId() == 32 || m->pdgId() == 23 || m->pdgId() == 39 || m->pdgId() == 5000039 ) {
+          ok = true;
+          break;
+        }
+        m = m->mother();
+      }
+
+      if(ok) {
+        isFind1_ = true;
+        mu1_ = &*genp;
+      }
       // eta1_    = genp->eta();
       // phi1_    = genp->phi();
       // pt1_     = genp->pt();
@@ -163,8 +176,21 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     }
 
     if( (genp->pdgId() == -13) && (genp->status() == 1) ){
-      isFind2_ = true;
-      mu2_ = &*genp;
+
+      const reco::Candidate* m = genp->mother();
+      bool ok = false;
+      while (m) {
+        if( m->pdgId() == 32 || m->pdgId() == 23 || m->pdgId() == 39 || m->pdgId() == 5000039 ) {
+          ok = true;
+          break;
+        }
+        m = m->mother();
+      }
+
+      if(ok) {
+        isFind2_ = true;
+        mu2_ = &*genp;
+      }
       // eta2_    = genp->eta();
       // phi2_    = genp->phi();
       // pt2_     = genp->pt();
