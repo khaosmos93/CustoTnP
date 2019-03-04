@@ -174,26 +174,26 @@ bool DyGenMass::filter(edm::Event& event, const edm::EventSetup&) {
 
   if( isFind1 && isFind2 && isFind1_ && isFind2_ ){
 
-    float l_pt   = mu1_.pt() > mu2_.pt() ? mu1.pt()  : mu2.pt();
-    float l_eta  = mu1_.pt() > mu2_.pt() ? mu1.eta() : mu2.eta();
-    float l_phi  = mu1_.pt() > mu2_.pt() ? mu1.phi() : mu2.phi();
+    float l_pt   = mu1_.Pt() > mu2_.Pt() ? mu1.Pt()  : mu2.Pt();
+    float l_eta  = mu1_.Pt() > mu2_.Pt() ? mu1.Eta() : mu2.Eta();
+    float l_phi  = mu1_.Pt() > mu2_.Pt() ? mu1.Phi() : mu2.Phi();
 
-    float l_pt_   = mu1_.pt() > mu2_.pt() ? mu1_.pt()  : mu2_.pt();
-    float l_eta_  = mu1_.pt() > mu2_.pt() ? mu1_.eta() : mu2_.eta();
-    float l_phi_  = mu1_.pt() > mu2_.pt() ? mu1_.phi() : mu2_.phi();
+    float l_pt_   = mu1_.Pt() > mu2_.Pt() ? mu1_.Pt()  : mu2_.Pt();
+    float l_eta_  = mu1_.Pt() > mu2_.Pt() ? mu1_.Eta() : mu2_.Eta();
+    float l_phi_  = mu1_.Pt() > mu2_.Pt() ? mu1_.Phi() : mu2_.Phi();
 
     Weight_Zmass->Fill( Z.M(), madgraphWeight );
-    Zpt_Zmass->Fill(    Z.M(), Z.pt(),  madgraphWeight );
-    Zeta_Zmass->Fill(   Z.M(), Z.eta(), madgraphWeight );
-    Zphi_Zmass->Fill(   Z.M(), Z.phi(), madgraphWeight );
+    Zpt_Zmass->Fill(    Z.M(), Z.Pt(),  madgraphWeight );
+    Zeta_Zmass->Fill(   Z.M(), Z.Eta(), madgraphWeight );
+    Zphi_Zmass->Fill(   Z.M(), Z.Phi(), madgraphWeight );
     pt_Zmass->Fill(     Z.M(), l_pt,    madgraphWeight );
     eta_Zmass->Fill(    Z.M(), l_eta,   madgraphWeight );
     phi_Zmass->Fill(    Z.M(), l_phi,   madgraphWeight );
 
     Weight_Zmass_->Fill( Z_.M(), madgraphWeight );
-    Zpt_Zmass_->Fill(    Z_.M(), Z_.pt(),  madgraphWeight );
-    Zeta_Zmass_->Fill(   Z_.M(), Z_.eta(), madgraphWeight );
-    Zphi_Zmass_->Fill(   Z_.M(), Z_.phi(), madgraphWeight );
+    Zpt_Zmass_->Fill(    Z_.M(), Z_.Pt(),  madgraphWeight );
+    Zeta_Zmass_->Fill(   Z_.M(), Z_.Eta(), madgraphWeight );
+    Zphi_Zmass_->Fill(   Z_.M(), Z_.Phi(), madgraphWeight );
     pt_Zmass_->Fill(     Z_.M(), l_pt_,    madgraphWeight );
     eta_Zmass_->Fill(    Z_.M(), l_eta_,   madgraphWeight );
     phi_Zmass_->Fill(    Z_.M(), l_phi_,   madgraphWeight );
