@@ -109,7 +109,8 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   // float phi2 =0;
   // float mass1 = 0;
   // float mass2 = 0;
-  const reco::Candidate *mu1, *mu2;
+  const reco::Candidate *mu1 = 0;
+  const reco::Candidate *mu2 = 0;
   reco::Particle::LorentzVector Z;
 
 
@@ -124,7 +125,8 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   // float phi2_ =0;
   // float mass1_ = 0;
   // float mass2_ = 0;
-  const reco::Candidate *mu1_, *mu2_;
+  const reco::Candidate *mu1_ = 0;
+  const reco::Candidate *mu2_ = 0;
   reco::Particle::LorentzVector Z_;
 
 
