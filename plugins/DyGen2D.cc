@@ -29,18 +29,24 @@ class DyGen2D : public edm::EDFilter {
   TH2F* Zeta_Zmass;
   TH2F* Zy_Zmass;
   TH2F* Zphi_Zmass;
-  TH2F* pt_Zmass;
-  TH2F* eta_Zmass;
-  TH2F* phi_Zmass;
+  TH2F* l_pt_Zmass;
+  TH2F* l_eta_Zmass;
+  TH2F* l_phi_Zmass;
+  TH2F* s_pt_Zmass;
+  TH2F* s_eta_Zmass;
+  TH2F* s_phi_Zmass;
 
   TH2F* Weight_Zmass_;
   TH2F* Zpt_Zmass_;
   TH2F* Zeta_Zmass_;
   TH2F* Zy_Zmass_;
   TH2F* Zphi_Zmass_;
-  TH2F* pt_Zmass_;
-  TH2F* eta_Zmass_;
-  TH2F* phi_Zmass_;
+  TH2F* l_pt_Zmass_;
+  TH2F* l_eta_Zmass_;
+  TH2F* l_phi_Zmass_;
+  TH2F* s_pt_Zmass_;
+  TH2F* s_eta_Zmass_;
+  TH2F* s_phi_Zmass_;
 
 };
 
@@ -56,23 +62,29 @@ DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
 
   edm::Service<TFileService> fs;
 
-  Weight_Zmass = fs->make<TH2F>("Weight_Zmass", "", 100, 0, 10000, 4, -2, 2);
-  Zpt_Zmass    = fs->make<TH2F>("Zpt_Zmass", "",    100, 0, 10000, 10000, 0, 10000);
-  Zeta_Zmass   = fs->make<TH2F>("Zeta_Zmass", "",   100, 0, 10000, 200, -10, 10);
-  Zy_Zmass     = fs->make<TH2F>("Zy_Zmass", "",     100, 0, 10000, 96, -4.8, 4.8);
-  Zphi_Zmass   = fs->make<TH2F>("Zphi_Zmass", "",   100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
-  pt_Zmass     = fs->make<TH2F>("pt_Zmass", "",     100, 0, 10000, 10000, 0, 10000);
-  eta_Zmass    = fs->make<TH2F>("eta_Zmass", "",    100, 0, 10000, 96, -4.8, 4.8);
-  phi_Zmass    = fs->make<TH2F>("phi_Zmass", "",    100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  Weight_Zmass  = fs->make<TH2F>("Weight_Zmass", "", 100, 0, 10000, 4, -2, 2);
+  Zpt_Zmass     = fs->make<TH2F>("Zpt_Zmass", "",    100, 0, 10000, 10000, 0, 10000);
+  Zeta_Zmass    = fs->make<TH2F>("Zeta_Zmass", "",   100, 0, 10000, 200, -10, 10);
+  Zy_Zmass      = fs->make<TH2F>("Zy_Zmass", "",     100, 0, 10000, 96, -4.8, 4.8);
+  Zphi_Zmass    = fs->make<TH2F>("Zphi_Zmass", "",   100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  l_pt_Zmass    = fs->make<TH2F>("l_pt_Zmass", "",   100, 0, 10000, 10000, 0, 10000);
+  l_eta_Zmass   = fs->make<TH2F>("l_eta_Zmass", "",  100, 0, 10000, 96, -4.8, 4.8);
+  l_phi_Zmass   = fs->make<TH2F>("l_phi_Zmass", "",  100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  s_pt_Zmass    = fs->make<TH2F>("s_pt_Zmass", "",   100, 0, 10000, 10000, 0, 10000);
+  s_eta_Zmass   = fs->make<TH2F>("s_eta_Zmass", "",  100, 0, 10000, 96, -4.8, 4.8);
+  s_phi_Zmass   = fs->make<TH2F>("s_phi_Zmass", "",  100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
 
   Weight_Zmass_ = fs->make<TH2F>("Weight_Zmass_", "", 100, 0, 10000, 4, -2, 2);
   Zpt_Zmass_    = fs->make<TH2F>("Zpt_Zmass_", "",    100, 0, 10000, 10000, 0, 10000);
   Zeta_Zmass_   = fs->make<TH2F>("Zeta_Zmass_", "",   100, 0, 10000, 200, -10, 10);
   Zy_Zmass_     = fs->make<TH2F>("Zy_Zmass_", "",     100, 0, 10000, 96, -4.8, 4.8);
   Zphi_Zmass_   = fs->make<TH2F>("Zphi_Zmass_", "",   100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
-  pt_Zmass_     = fs->make<TH2F>("pt_Zmass_", "",     100, 0, 10000, 10000, 0, 10000);
-  eta_Zmass_    = fs->make<TH2F>("eta_Zmass_", "",    100, 0, 10000, 96, -4.8, 4.8);
-  phi_Zmass_    = fs->make<TH2F>("phi_Zmass_", "",    100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  l_pt_Zmass_   = fs->make<TH2F>("l_pt_Zmass_", "",   100, 0, 10000, 10000, 0, 10000);
+  l_eta_Zmass_  = fs->make<TH2F>("l_eta_Zmass_", "",  100, 0, 10000, 96, -4.8, 4.8);
+  l_phi_Zmass_  = fs->make<TH2F>("l_phi_Zmass_", "",  100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
+  s_pt_Zmass_   = fs->make<TH2F>("s_pt_Zmass_", "",   100, 0, 10000, 10000, 0, 10000);
+  s_eta_Zmass_  = fs->make<TH2F>("s_eta_Zmass_", "",  100, 0, 10000, 96, -4.8, 4.8);
+  s_phi_Zmass_  = fs->make<TH2F>("s_phi_Zmass_", "",  100, 0, 10000, 50, -TMath::Pi(), TMath::Pi());
 }
 
 bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
@@ -135,21 +147,11 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     if( (genp->pdgId() == 13) && (genp->isHardProcess()) ){
       isFind1 = true;
       mu1 = &*genp;
-      // eta1    = genp->eta();
-      // phi1    = genp->phi();
-      // pt1     = genp->pt();
-      // mass1   = genp->mass();
-      // mu1->SetPtEtaPhiM(pt1, eta1, phi1, mass1);  //0.105
     }
 
     if( (genp->pdgId() == -13) && (genp->isHardProcess()) ){
       isFind2 = true;
       mu2 = &*genp;
-      // eta2    = genp->eta();
-      // phi2    = genp->phi();
-      // pt2     = genp->pt();
-      // mass2   = genp->mass();
-      // mu2->SetPtEtaPhiM(pt2, eta2, phi2, mass2);  //0.105
     }
 
     if( (genp->pdgId() == 13) && (genp->status() == 1) ){
@@ -168,11 +170,6 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
         isFind1_ = true;
         mu1_ = &*genp;
       }
-      // eta1_    = genp->eta();
-      // phi1_    = genp->phi();
-      // pt1_     = genp->pt();
-      // mass1_   = genp->mass();
-      // mu1_->SetPtEtaPhiM(pt1_, eta1_, phi1_, mass1_);  //0.105
     }
 
     if( (genp->pdgId() == -13) && (genp->status() == 1) ){
@@ -191,11 +188,6 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
         isFind2_ = true;
         mu2_ = &*genp;
       }
-      // eta2_    = genp->eta();
-      // phi2_    = genp->phi();
-      // pt2_     = genp->pt();
-      // mass2_   = genp->mass();
-      // mu2_->SetPtEtaPhiM(pt2_, eta2_, phi2_, mass2_);  //0.105
     }
 
   }
@@ -206,43 +198,74 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Z  = mu1->p4() + mu2->p4();
     Z_ = mu1_->p4() + mu2_->p4();
 
-    // if(Z_.mass() < 200) {
-    //   std::cout << std::endl;
-    //   std::cout << "M: " << Z.mass() << std::endl;
-    //   std::cout << "\t M: " << Z_.mass() << std::endl;
-    //   std::cout << "p+: " << mu1->p4() << std::endl;
-    //   std::cout << "\t p+: " << mu1_->p4() << std::endl;
-    //   std::cout << "p-: " << mu2->p4() << std::endl;
-    //   std::cout << "\t p-: " << mu2_->p4() << std::endl;
-    //   std::cout << "p4: " << (mu1->p4()+mu2->p4()) << std::endl;
-    //   std::cout << "\t p4: " << (mu1_->p4()+mu2_->p4()) << std::endl;
-    // }
+    float l_pt   = -999;
+    float l_eta  = -999;
+    float l_phi  = -999;
+    float s_pt   = -999;
+    float s_eta  = -999;
+    float s_phi  = -999;
 
-    float l_pt   = mu1_->pt() > mu2_->pt() ? mu1->pt()  : mu2->pt();
-    float l_eta  = mu1_->pt() > mu2_->pt() ? mu1->eta() : mu2->eta();
-    float l_phi  = mu1_->pt() > mu2_->pt() ? mu1->phi() : mu2->phi();
+    float l_pt_  = -999;
+    float l_eta_ = -999;
+    float l_phi_ = -999;
+    float s_pt_  = -999;
+    float s_eta_ = -999;
+    float s_phi_ = -999;
 
-    float l_pt_   = mu1_->pt() > mu2_->pt() ? mu1_->pt()  : mu2_->pt();
-    float l_eta_  = mu1_->pt() > mu2_->pt() ? mu1_->eta() : mu2_->eta();
-    float l_phi_  = mu1_->pt() > mu2_->pt() ? mu1_->phi() : mu2_->phi();
+    if( mu1_->pt() > mu2_->pt() ) {
+      l_pt   = mu1->pt();
+      l_eta  = mu1->eta();
+      l_phi  = mu1->phi();
+      s_pt   = mu2->pt();
+      s_eta  = mu2->eta();
+      s_phi  = mu2->phi();
+
+      l_pt_  = mu1_->pt();
+      l_eta_ = mu1_->eta();
+      l_phi_ = mu1_->phi();
+      s_pt_  = mu2_->pt();
+      s_eta_ = mu2_->eta();
+      s_phi_ = mu2_->phi();
+    }
+    else {
+      l_pt   = mu2->pt();
+      l_eta  = mu2->eta();
+      l_phi  = mu2->phi();
+      s_pt   = mu1->pt();
+      s_eta  = mu1->eta();
+      s_phi  = mu1->phi();
+
+      l_pt_  = mu2_->pt();
+      l_eta_ = mu2_->eta();
+      l_phi_ = mu2_->phi();
+      s_pt_  = mu1_->pt();
+      s_eta_ = mu1_->eta();
+      s_phi_ = mu1_->phi();
+    }
 
     Weight_Zmass->Fill( Z.mass(), madgraphWeight );
     Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  madgraphWeight );
     Zeta_Zmass->Fill(   Z.mass(), Z.eta(), madgraphWeight );
-    Zy_Zmass->Fill(     Z.mass(), Z.Rapidity(),   madgraphWeight );
+    Zy_Zmass->Fill(     Z.mass(), Z.Rapidity(), madgraphWeight );
     Zphi_Zmass->Fill(   Z.mass(), Z.phi(), madgraphWeight );
-    pt_Zmass->Fill(     Z.mass(), l_pt,    madgraphWeight );
-    eta_Zmass->Fill(    Z.mass(), l_eta,   madgraphWeight );
-    phi_Zmass->Fill(    Z.mass(), l_phi,   madgraphWeight );
+    l_pt_Zmass->Fill(   Z.mass(), l_pt,    madgraphWeight );
+    l_eta_Zmass->Fill(  Z.mass(), l_eta,   madgraphWeight );
+    l_phi_Zmass->Fill(  Z.mass(), l_phi,   madgraphWeight );
+    s_pt_Zmass->Fill(   Z.mass(), s_pt,    madgraphWeight );
+    s_eta_Zmass->Fill(  Z.mass(), s_eta,   madgraphWeight );
+    s_phi_Zmass->Fill(  Z.mass(), s_phi,   madgraphWeight );
 
     Weight_Zmass_->Fill( Z_.mass(), madgraphWeight );
     Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  madgraphWeight );
     Zeta_Zmass_->Fill(   Z_.mass(), Z_.eta(), madgraphWeight );
-    Zy_Zmass_->Fill(     Z_.mass(), Z_.Rapidity(),   madgraphWeight );
+    Zy_Zmass_->Fill(     Z_.mass(), Z_.Rapidity(), madgraphWeight );
     Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), madgraphWeight );
-    pt_Zmass_->Fill(     Z_.mass(), l_pt_,    madgraphWeight );
-    eta_Zmass_->Fill(    Z_.mass(), l_eta_,   madgraphWeight );
-    phi_Zmass_->Fill(    Z_.mass(), l_phi_,   madgraphWeight );
+    l_pt_Zmass_->Fill(   Z_.mass(), l_pt_,    madgraphWeight );
+    l_eta_Zmass_->Fill(  Z_.mass(), l_eta_,   madgraphWeight );
+    l_phi_Zmass_->Fill(  Z_.mass(), l_phi_,   madgraphWeight );
+    s_pt_Zmass_->Fill(   Z_.mass(), s_pt_,    madgraphWeight );
+    s_eta_Zmass_->Fill(  Z_.mass(), s_eta_,   madgraphWeight );
+    s_phi_Zmass_->Fill(  Z_.mass(), s_phi_,   madgraphWeight );
 
   }
 
