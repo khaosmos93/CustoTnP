@@ -251,7 +251,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
     bool fill_histo = false;
     if( fabs(Z.Rapidity()) >= min_Y && fabs(Z.Rapidity()) < max_Y ) {
-      std::cout << min_Y << " < " << fabs(Z.Rapidity()) << " < " << max_Y << std::endl;
+      // std::cout << min_Y << " < " << fabs(Z.Rapidity()) << " < " << max_Y << std::endl;
       fill_histo = true;
     }
 
