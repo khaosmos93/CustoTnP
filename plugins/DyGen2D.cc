@@ -135,8 +135,8 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
       nleptons++;
   }
 
-  std::cout << "njets:    " << njets << std::endl;
-  std::cout << "nleptons: " << nleptons << std::endl;
+  // std::cout << "njets:    " << njets << std::endl;
+  // std::cout << "nleptons: " << nleptons << std::endl;
 
   if( nleptons != 2 ) {
     edm::LogError("DyGen2D") << "nleptons != 2 in LHE level -> return false";
