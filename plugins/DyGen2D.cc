@@ -253,8 +253,8 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Z  = mu1->p4() + mu2->p4();
     Z_ = mu1_->p4() + mu2_->p4();
 
-    std::cout << min_Y << " < " << fabs(Z.Rapidity()) << " < " << max_Y << std::endl;
     if( !(fabs(Z.Rapidity()) => min_Y && fabs(Z.Rapidity()) < max_Y) ) {
+      std::cout << min_Y << " < " << fabs(Z.Rapidity()) << " < " << max_Y << std::endl;
       return false;
     }
 
