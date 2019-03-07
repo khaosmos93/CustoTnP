@@ -248,14 +248,15 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   }
 
 
-  if( isFind1 && isFind2 && isFind1_ && isFind2_ ){
+  if( isFind1 && isFind2 && isFind1_ && isFind2_ ) {
 
     Z  = mu1->p4() + mu2->p4();
     Z_ = mu1_->p4() + mu2_->p4();
 
-    if( !(fabs(Z.Rapidity()) >= min_Y && fabs(Z.Rapidity()) < max_Y) ) {
+    bool fill_histo = false;
+    if( fabs(Z.Rapidity()) >= min_Y && fabs(Z.Rapidity()) < max_Y ) {
       std::cout << min_Y << " < " << fabs(Z.Rapidity()) << " < " << max_Y << std::endl;
-      return false;
+      fill_histo = true;
     }
 
     float l_pt   = -999;
@@ -348,42 +349,43 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
       m_phi_ = mu1_->phi();
     }
 
-    Weight_Zmass->Fill( Z.mass(), madgraphWeight );
-    Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  madgraphWeight );
-    Zeta_Zmass->Fill(   Z.mass(), Z.eta(), madgraphWeight );
-    Zy_Zmass->Fill(     Z.mass(), Z.Rapidity(), madgraphWeight );
-    Zphi_Zmass->Fill(   Z.mass(), Z.phi(), madgraphWeight );
-    l_pt_Zmass->Fill(   Z.mass(), l_pt,    madgraphWeight );
-    l_eta_Zmass->Fill(  Z.mass(), l_eta,   madgraphWeight );
-    l_phi_Zmass->Fill(  Z.mass(), l_phi,   madgraphWeight );
-    s_pt_Zmass->Fill(   Z.mass(), s_pt,    madgraphWeight );
-    s_eta_Zmass->Fill(  Z.mass(), s_eta,   madgraphWeight );
-    s_phi_Zmass->Fill(  Z.mass(), s_phi,   madgraphWeight );
-    p_pt_Zmass->Fill(   Z.mass(), p_pt,    madgraphWeight );
-    p_eta_Zmass->Fill(  Z.mass(), p_eta,   madgraphWeight );
-    p_phi_Zmass->Fill(  Z.mass(), p_phi,   madgraphWeight );
-    m_pt_Zmass->Fill(   Z.mass(), m_pt,    madgraphWeight );
-    m_eta_Zmass->Fill(  Z.mass(), m_eta,   madgraphWeight );
-    m_phi_Zmass->Fill(  Z.mass(), m_phi,   madgraphWeight );
+    if( fill_histo ) {
+      Weight_Zmass->Fill( Z.mass(), madgraphWeight );
+      Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  madgraphWeight );
+      Zeta_Zmass->Fill(   Z.mass(), Z.eta(), madgraphWeight );
+      Zy_Zmass->Fill(     Z.mass(), Z.Rapidity(), madgraphWeight );
+      Zphi_Zmass->Fill(   Z.mass(), Z.phi(), madgraphWeight );
+      l_pt_Zmass->Fill(   Z.mass(), l_pt,    madgraphWeight );
+      l_eta_Zmass->Fill(  Z.mass(), l_eta,   madgraphWeight );
+      l_phi_Zmass->Fill(  Z.mass(), l_phi,   madgraphWeight );
+      s_pt_Zmass->Fill(   Z.mass(), s_pt,    madgraphWeight );
+      s_eta_Zmass->Fill(  Z.mass(), s_eta,   madgraphWeight );
+      s_phi_Zmass->Fill(  Z.mass(), s_phi,   madgraphWeight );
+      p_pt_Zmass->Fill(   Z.mass(), p_pt,    madgraphWeight );
+      p_eta_Zmass->Fill(  Z.mass(), p_eta,   madgraphWeight );
+      p_phi_Zmass->Fill(  Z.mass(), p_phi,   madgraphWeight );
+      m_pt_Zmass->Fill(   Z.mass(), m_pt,    madgraphWeight );
+      m_eta_Zmass->Fill(  Z.mass(), m_eta,   madgraphWeight );
+      m_phi_Zmass->Fill(  Z.mass(), m_phi,   madgraphWeight );
 
-    Weight_Zmass_->Fill( Z_.mass(), madgraphWeight );
-    Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  madgraphWeight );
-    Zeta_Zmass_->Fill(   Z_.mass(), Z_.eta(), madgraphWeight );
-    Zy_Zmass_->Fill(     Z_.mass(), Z_.Rapidity(), madgraphWeight );
-    Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), madgraphWeight );
-    l_pt_Zmass_->Fill(   Z_.mass(), l_pt_,    madgraphWeight );
-    l_eta_Zmass_->Fill(  Z_.mass(), l_eta_,   madgraphWeight );
-    l_phi_Zmass_->Fill(  Z_.mass(), l_phi_,   madgraphWeight );
-    s_pt_Zmass_->Fill(   Z_.mass(), s_pt_,    madgraphWeight );
-    s_eta_Zmass_->Fill(  Z_.mass(), s_eta_,   madgraphWeight );
-    s_phi_Zmass_->Fill(  Z_.mass(), s_phi_,   madgraphWeight );
-    p_pt_Zmass_->Fill(   Z_.mass(), p_pt_,    madgraphWeight );
-    p_eta_Zmass_->Fill(  Z_.mass(), p_eta_,   madgraphWeight );
-    p_phi_Zmass_->Fill(  Z_.mass(), p_phi_,   madgraphWeight );
-    m_pt_Zmass_->Fill(   Z_.mass(), m_pt_,    madgraphWeight );
-    m_eta_Zmass_->Fill(  Z_.mass(), m_eta_,   madgraphWeight );
-    m_phi_Zmass_->Fill(  Z_.mass(), m_phi_,   madgraphWeight );
-
+      Weight_Zmass_->Fill( Z_.mass(), madgraphWeight );
+      Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  madgraphWeight );
+      Zeta_Zmass_->Fill(   Z_.mass(), Z_.eta(), madgraphWeight );
+      Zy_Zmass_->Fill(     Z_.mass(), Z_.Rapidity(), madgraphWeight );
+      Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), madgraphWeight );
+      l_pt_Zmass_->Fill(   Z_.mass(), l_pt_,    madgraphWeight );
+      l_eta_Zmass_->Fill(  Z_.mass(), l_eta_,   madgraphWeight );
+      l_phi_Zmass_->Fill(  Z_.mass(), l_phi_,   madgraphWeight );
+      s_pt_Zmass_->Fill(   Z_.mass(), s_pt_,    madgraphWeight );
+      s_eta_Zmass_->Fill(  Z_.mass(), s_eta_,   madgraphWeight );
+      s_phi_Zmass_->Fill(  Z_.mass(), s_phi_,   madgraphWeight );
+      p_pt_Zmass_->Fill(   Z_.mass(), p_pt_,    madgraphWeight );
+      p_eta_Zmass_->Fill(  Z_.mass(), p_eta_,   madgraphWeight );
+      p_phi_Zmass_->Fill(  Z_.mass(), p_phi_,   madgraphWeight );
+      m_pt_Zmass_->Fill(   Z_.mass(), m_pt_,    madgraphWeight );
+      m_eta_Zmass_->Fill(  Z_.mass(), m_eta_,   madgraphWeight );
+      m_phi_Zmass_->Fill(  Z_.mass(), m_phi_,   madgraphWeight );
+    }
   }
 
   return
