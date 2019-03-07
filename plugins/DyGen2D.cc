@@ -22,6 +22,7 @@ class DyGen2D : public edm::EDFilter {
   edm::InputTag src;
 
   int min_njets;
+  int max_njets;
   double min_Y;
   double max_Y;
 
@@ -69,6 +70,7 @@ class DyGen2D : public edm::EDFilter {
 DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
   : src(cfg.getParameter<edm::InputTag>("src")),
     min_njets(cfg.getParameter<int>("min_njets")),
+    max_njets(cfg.getParameter<int>("max_njets")),
     min_Y(cfg.getParameter<double>("min_Y")),
     max_Y(cfg.getParameter<double>("max_Y")),
     eventWeight(1.0),
@@ -167,8 +169,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     return false;
   }
 
-  if( njets < min_njets )
-    return false;
+  bool is_njets = njets >= min_njets && njets < max_njets;
 
 
 
@@ -249,11 +250,14 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Z  = mu1->p4() + mu2->p4();
     Z_ = mu1_->p4() + mu2_->p4();
 
-    bool fill_histo = false;
+    bool is_rapidity = false;
     if( fabs(Z.Rapidity()) >= min_Y && fabs(Z.Rapidity()) < max_Y ) {
       // std::cout << min_Y << " < " << fabs(Z.Rapidity()) << " < " << max_Y << std::endl;
-      fill_histo = true;
+      is_rapidity = true;
     }
+
+
+    bool fill_histo = is_njets && is_rapidity;
 
     float l_pt   = -999;
     float l_eta  = -999;
