@@ -7,6 +7,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "TH2F.h"
 #include "TMath.h"
 
@@ -19,6 +20,8 @@ class DyGen2D : public edm::EDFilter {
  virtual bool filter(edm::Event&, const edm::EventSetup&);
 
   edm::InputTag src;
+
+  int min_njets;
 
   double eventWeight;
   bool useMadgraphWeight;
@@ -53,14 +56,18 @@ class DyGen2D : public edm::EDFilter {
 
 DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
   : src(cfg.getParameter<edm::InputTag>("src")),
+    min_njets(cfg.getParameter<int>("min_njets")),
     eventWeight(1.0),
     useMadgraphWeight(cfg.getParameter<bool>("useMadgraphWeight")),
     madgraphWeight(1.0)
 {
   consumes<reco::GenParticleCollection>(src);
   mayConsume<GenEventInfoProduct>(edm::InputTag("generator"));
+  mayConsume<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
 
   edm::Service<TFileService> fs;
+  TH1::SetDefaultSumw2(true);
+  TH2::SetDefaultSumw2(true);
 
   Weight_Zmass  = fs->make<TH2F>("Weight_Zmass", "", 100, 0, 10000, 4, -2, 2);
   Zpt_Zmass     = fs->make<TH2F>("Zpt_Zmass", "",    100, 0, 10000, 10000, 0, 10000);
@@ -105,6 +112,40 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     madgraphWeight = 1.0;
   }
 
+  //-- Get # jets using LHE info
+  Handle<LHEEventProduct> LHEInfo;
+  iEvent.getByLabel(edm::InputTag("externalLHEProducer"), LHEInfo);
+
+  int njets    = 0;
+  int nleptons = 0;
+  for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle )
+  {
+    int id     = lheEvent.IDUP[idxParticle];
+    int status = lheEvent.ISTUP[idxParticle];
+
+    if( status != 1)
+      continue;
+
+    if( 0 < fabs(id) && fabs(id) < 7 )
+      njets++
+
+    if( 10 < fabs(id) && fabs(id) < 17 )
+      nleptons++
+  }
+
+  std::cout << "njets:    " << njets << std::endl;
+  std::cout << "nleptons: " << nleptons << std::endl;
+
+  if( nleptons != 2 ) {
+    edm::LogError("DyGen2D") << "nleptons != 2 in LHE level -> return false";
+    return false;
+  }
+
+  if( njets < min_njets )
+    return false;
+
+
+
   edm::Handle<reco::GenParticleCollection> genParticles;
   event.getByLabel(src, genParticles);
 
@@ -113,14 +154,6 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   bool isFind1 = false;
   bool isFind2 = false;
 
-  // float pt1 = 0;
-  // float pt2 = 0;
-  // float eta1 =0;
-  // float eta2 =0;
-  // float phi1 =0;
-  // float phi2 =0;
-  // float mass1 = 0;
-  // float mass2 = 0;
   const reco::Candidate *mu1 = 0;
   const reco::Candidate *mu2 = 0;
   reco::Particle::LorentzVector Z;
@@ -129,14 +162,6 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   bool isFind1_ = false;
   bool isFind2_ = false;
 
-  // float pt1_ = 0;
-  // float pt2_ = 0;
-  // float eta1_ =0;
-  // float eta2_ =0;
-  // float phi1_ =0;
-  // float phi2_ =0;
-  // float mass1_ = 0;
-  // float mass2_ = 0;
   const reco::Candidate *mu1_ = 0;
   const reco::Candidate *mu2_ = 0;
   reco::Particle::LorentzVector Z_;
