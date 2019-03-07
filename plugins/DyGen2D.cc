@@ -114,7 +114,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
   //-- Get # jets using LHE info
   edm::Handle<LHEEventProduct> LHEInfo;
-  iEvent.getByLabel(edm::InputTag("externalLHEProducer"), LHEInfo);
+  event.getByLabel(edm::InputTag("externalLHEProducer"), LHEInfo);
 
   int njets    = 0;
   int nleptons = 0;
