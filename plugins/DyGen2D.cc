@@ -116,6 +116,9 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   edm::Handle<LHEEventProduct> LHEInfo;
   event.getByLabel(edm::InputTag("externalLHEProducer"), LHEInfo);
 
+  const lhef::HEPEUP& lheEvent = LHEInfo->hepeup();
+  std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
+
   int njets    = 0;
   int nleptons = 0;
   for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle ) {
