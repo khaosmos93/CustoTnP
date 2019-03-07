@@ -113,13 +113,12 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
   }
 
   //-- Get # jets using LHE info
-  Handle<LHEEventProduct> LHEInfo;
+  edm::Handle<LHEEventProduct> LHEInfo;
   iEvent.getByLabel(edm::InputTag("externalLHEProducer"), LHEInfo);
 
   int njets    = 0;
   int nleptons = 0;
-  for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle )
-  {
+  for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle ) {
     int id     = lheEvent.IDUP[idxParticle];
     int status = lheEvent.ISTUP[idxParticle];
 
@@ -127,10 +126,10 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
       continue;
 
     if( 0 < fabs(id) && fabs(id) < 7 )
-      njets++
+      njets++;
 
     if( 10 < fabs(id) && fabs(id) < 17 )
-      nleptons++
+      nleptons++;
   }
 
   std::cout << "njets:    " << njets << std::endl;
