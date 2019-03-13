@@ -38,6 +38,9 @@ class DyGen2D : public edm::EDFilter {
   double min_Y;
   double max_Y;
 
+  double min_pt;
+  double max_eta;
+
   double eventWeight;
   bool useMadgraphWeight;
   double madgraphWeight;
@@ -97,6 +100,8 @@ DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
     max_njets(cfg.getParameter<int>("max_njets")),
     min_Y(cfg.getParameter<double>("min_Y")),
     max_Y(cfg.getParameter<double>("max_Y")),
+    min_pt(cfg.getParameter<double>("min_pt")),
+    max_eta(cfg.getParameter<double>("max_eta")),
     eventWeight(1.0),
     useMadgraphWeight(cfg.getParameter<bool>("useMadgraphWeight")),
     madgraphWeight(1.0),
@@ -286,15 +291,6 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     Z  = mu1->p4() + mu2->p4();
     Z_ = mu1_->p4() + mu2_->p4();
 
-    bool is_rapidity = false;
-    if( fabs(Z.Rapidity()) >= min_Y && fabs(Z.Rapidity()) < max_Y ) {
-      // std::cout << min_Y << " < " << fabs(Z.Rapidity()) << " < " << max_Y << std::endl;
-      is_rapidity = true;
-    }
-
-
-    bool fill_histo = is_njets && is_rapidity;
-
     float l_pt   = -999;
     float l_eta  = -999;
     float l_phi  = -999;
@@ -385,6 +381,11 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
       m_phi_ = mu1_->phi();
     }
 
+    bool is_rapidity = ( fabs(Z.Rapidity()) >= min_Y && fabs(Z.Rapidity()) < max_Y );
+    bool is_acc      = ( l_pt_ > min_pt && s_pt_ > min_pt && l_eta_ < max_eta && s_eta_ < max_eta );
+
+    bool fill_histo = is_njets && is_rapidity && is_acc;
+
     //-- Total weight!!!
     double scaleWeight = 1.0;
     if( rescaleWeights.size() == 6 ) {
@@ -393,9 +394,9 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
     double totalWeight = madgraphWeight * scaleWeight;
 
-    std::cout << std::endl;
-    std::cout << "scaleWeight: " << scaleWeight << std::endl;
-    std::cout << "totalWeight: " << totalWeight << std::endl;
+    // std::cout << std::endl;
+    // std::cout << "scaleWeight: " << scaleWeight << std::endl;
+    // std::cout << "totalWeight: " << totalWeight << std::endl;
 
     if( fill_histo ) {
       Weight_Zmass->Fill( Z.mass(), totalWeight );
