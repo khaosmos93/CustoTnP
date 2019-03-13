@@ -382,7 +382,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     }
 
     bool is_rapidity = ( fabs(Z.Rapidity()) >= min_Y && fabs(Z.Rapidity()) < max_Y );
-    bool is_acc      = ( l_pt_ > min_pt && s_pt_ > min_pt && l_eta_ < max_eta && s_eta_ < max_eta );
+    bool is_acc      = ( l_pt_ > min_pt && s_pt_ > min_pt && fabs(l_eta_) < max_eta && fabs(s_eta_) < max_eta );
 
     bool fill_histo = is_njets && is_rapidity && is_acc;
 
