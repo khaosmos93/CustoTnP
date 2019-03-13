@@ -12,6 +12,18 @@
 #include "TMath.h"
 
 
+double Get_Rescale_Weight( double m, std::vector<double> par )
+{
+  double weight =   par[0]
+                  + par[1]*m
+                  + par[2]*m*m
+                  + par[3]*m*m*m
+                  + par[4]*m*m*m*m
+                  + par[5]*m*m*m*m*m;
+
+  return weight;
+}
+
 class DyGen2D : public edm::EDFilter {
  public:
   explicit DyGen2D(const edm::ParameterSet&);
@@ -29,6 +41,7 @@ class DyGen2D : public edm::EDFilter {
   double eventWeight;
   bool useMadgraphWeight;
   double madgraphWeight;
+  std::vector<double> rescaleWeights;
 
   TH2F* Weight_Zmass;
   TH2F* Zpt_Zmass;
@@ -86,7 +99,8 @@ DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
     max_Y(cfg.getParameter<double>("max_Y")),
     eventWeight(1.0),
     useMadgraphWeight(cfg.getParameter<bool>("useMadgraphWeight")),
-    madgraphWeight(1.0)
+    madgraphWeight(1.0),
+    rescaleWeights(cfg.getParameter<std::vector<double>>("rescaleWeights")),
 {
   consumes<reco::GenParticleCollection>(src);
   mayConsume<GenEventInfoProduct>(edm::InputTag("generator"));
@@ -158,6 +172,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
     eventWeight = 1.0;
     madgraphWeight = 1.0;
   }
+
 
   //-- Get # jets using LHE info
   edm::Handle<LHEEventProduct> LHEInfo;
@@ -370,50 +385,62 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
       m_phi_ = mu1_->phi();
     }
 
-    if( fill_histo ) {
-      Weight_Zmass->Fill( Z.mass(), madgraphWeight );
-      Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  madgraphWeight );
-      Zpz_Zmass->Fill(    Z.mass(), Z.pz(),  madgraphWeight );
-      Zy_Zmass->Fill(     Z.mass(), Z.Rapidity(), madgraphWeight );
-      Zphi_Zmass->Fill(   Z.mass(), Z.phi(), madgraphWeight );
-      l_pt_Zmass->Fill(   Z.mass(), l_pt,    madgraphWeight );
-      l_eta_Zmass->Fill(  Z.mass(), l_eta,   madgraphWeight );
-      l_phi_Zmass->Fill(  Z.mass(), l_phi,   madgraphWeight );
-      s_pt_Zmass->Fill(   Z.mass(), s_pt,    madgraphWeight );
-      s_eta_Zmass->Fill(  Z.mass(), s_eta,   madgraphWeight );
-      s_phi_Zmass->Fill(  Z.mass(), s_phi,   madgraphWeight );
-      p_pt_Zmass->Fill(   Z.mass(), p_pt,    madgraphWeight );
-      p_eta_Zmass->Fill(  Z.mass(), p_eta,   madgraphWeight );
-      p_phi_Zmass->Fill(  Z.mass(), p_phi,   madgraphWeight );
-      m_pt_Zmass->Fill(   Z.mass(), m_pt,    madgraphWeight );
-      m_eta_Zmass->Fill(  Z.mass(), m_eta,   madgraphWeight );
-      m_phi_Zmass->Fill(  Z.mass(), m_phi,   madgraphWeight );
-      l_eta_Zy->Fill(     Z.Rapidity(), l_eta, madgraphWeight );
-      s_eta_Zy->Fill(     Z.Rapidity(), s_eta, madgraphWeight );
-      p_eta_Zy->Fill(     Z.Rapidity(), p_eta, madgraphWeight );
-      m_eta_Zy->Fill(     Z.Rapidity(), m_eta, madgraphWeight );
+    //-- Total weight!!!
+    double scaleWeight = 1.0;
+    if( rescaleWeights.size() == 5 ) {
+      scaleWeight = Get_Rescale_Weight( (double)Z_.mass(), rescaleWeights );
+    }
 
-      Weight_Zmass_->Fill( Z_.mass(), madgraphWeight );
-      Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  madgraphWeight );
-      Zpz_Zmass_->Fill(    Z_.mass(), Z_.pz(),  madgraphWeight );
-      Zy_Zmass_->Fill(     Z_.mass(), Z_.Rapidity(), madgraphWeight );
-      Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), madgraphWeight );
-      l_pt_Zmass_->Fill(   Z_.mass(), l_pt_,    madgraphWeight );
-      l_eta_Zmass_->Fill(  Z_.mass(), l_eta_,   madgraphWeight );
-      l_phi_Zmass_->Fill(  Z_.mass(), l_phi_,   madgraphWeight );
-      s_pt_Zmass_->Fill(   Z_.mass(), s_pt_,    madgraphWeight );
-      s_eta_Zmass_->Fill(  Z_.mass(), s_eta_,   madgraphWeight );
-      s_phi_Zmass_->Fill(  Z_.mass(), s_phi_,   madgraphWeight );
-      p_pt_Zmass_->Fill(   Z_.mass(), p_pt_,    madgraphWeight );
-      p_eta_Zmass_->Fill(  Z_.mass(), p_eta_,   madgraphWeight );
-      p_phi_Zmass_->Fill(  Z_.mass(), p_phi_,   madgraphWeight );
-      m_pt_Zmass_->Fill(   Z_.mass(), m_pt_,    madgraphWeight );
-      m_eta_Zmass_->Fill(  Z_.mass(), m_eta_,   madgraphWeight );
-      m_phi_Zmass_->Fill(  Z_.mass(), m_phi_,   madgraphWeight );
-      l_eta_Zy_->Fill(     Z_.Rapidity(), l_eta_, madgraphWeight );
-      s_eta_Zy_->Fill(     Z_.Rapidity(), s_eta_, madgraphWeight );
-      p_eta_Zy_->Fill(     Z_.Rapidity(), p_eta_, madgraphWeight );
-      m_eta_Zy_->Fill(     Z_.Rapidity(), m_eta_, madgraphWeight );
+    double totalWeight = madgraphWeight * scaleWeight;
+
+    std::cout << std::endl;
+    std::cout << "scaleWeight: " << scaleWeight << std::endl;
+    std::cout << "totalWeight: " << totalWeight << std::endl;
+
+    if( fill_histo ) {
+      Weight_Zmass->Fill( Z.mass(), totalWeight );
+      Zpt_Zmass->Fill(    Z.mass(), Z.pt(),  totalWeight );
+      Zpz_Zmass->Fill(    Z.mass(), Z.pz(),  totalWeight );
+      Zy_Zmass->Fill(     Z.mass(), Z.Rapidity(), totalWeight );
+      Zphi_Zmass->Fill(   Z.mass(), Z.phi(), totalWeight );
+      l_pt_Zmass->Fill(   Z.mass(), l_pt,    totalWeight );
+      l_eta_Zmass->Fill(  Z.mass(), l_eta,   totalWeight );
+      l_phi_Zmass->Fill(  Z.mass(), l_phi,   totalWeight );
+      s_pt_Zmass->Fill(   Z.mass(), s_pt,    totalWeight );
+      s_eta_Zmass->Fill(  Z.mass(), s_eta,   totalWeight );
+      s_phi_Zmass->Fill(  Z.mass(), s_phi,   totalWeight );
+      p_pt_Zmass->Fill(   Z.mass(), p_pt,    totalWeight );
+      p_eta_Zmass->Fill(  Z.mass(), p_eta,   totalWeight );
+      p_phi_Zmass->Fill(  Z.mass(), p_phi,   totalWeight );
+      m_pt_Zmass->Fill(   Z.mass(), m_pt,    totalWeight );
+      m_eta_Zmass->Fill(  Z.mass(), m_eta,   totalWeight );
+      m_phi_Zmass->Fill(  Z.mass(), m_phi,   totalWeight );
+      l_eta_Zy->Fill(     Z.Rapidity(), l_eta, totalWeight );
+      s_eta_Zy->Fill(     Z.Rapidity(), s_eta, totalWeight );
+      p_eta_Zy->Fill(     Z.Rapidity(), p_eta, totalWeight );
+      m_eta_Zy->Fill(     Z.Rapidity(), m_eta, totalWeight );
+
+      Weight_Zmass_->Fill( Z_.mass(), totalWeight );
+      Zpt_Zmass_->Fill(    Z_.mass(), Z_.pt(),  totalWeight );
+      Zpz_Zmass_->Fill(    Z_.mass(), Z_.pz(),  totalWeight );
+      Zy_Zmass_->Fill(     Z_.mass(), Z_.Rapidity(), totalWeight );
+      Zphi_Zmass_->Fill(   Z_.mass(), Z_.phi(), totalWeight );
+      l_pt_Zmass_->Fill(   Z_.mass(), l_pt_,    totalWeight );
+      l_eta_Zmass_->Fill(  Z_.mass(), l_eta_,   totalWeight );
+      l_phi_Zmass_->Fill(  Z_.mass(), l_phi_,   totalWeight );
+      s_pt_Zmass_->Fill(   Z_.mass(), s_pt_,    totalWeight );
+      s_eta_Zmass_->Fill(  Z_.mass(), s_eta_,   totalWeight );
+      s_phi_Zmass_->Fill(  Z_.mass(), s_phi_,   totalWeight );
+      p_pt_Zmass_->Fill(   Z_.mass(), p_pt_,    totalWeight );
+      p_eta_Zmass_->Fill(  Z_.mass(), p_eta_,   totalWeight );
+      p_phi_Zmass_->Fill(  Z_.mass(), p_phi_,   totalWeight );
+      m_pt_Zmass_->Fill(   Z_.mass(), m_pt_,    totalWeight );
+      m_eta_Zmass_->Fill(  Z_.mass(), m_eta_,   totalWeight );
+      m_phi_Zmass_->Fill(  Z_.mass(), m_phi_,   totalWeight );
+      l_eta_Zy_->Fill(     Z_.Rapidity(), l_eta_, totalWeight );
+      s_eta_Zy_->Fill(     Z_.Rapidity(), s_eta_, totalWeight );
+      p_eta_Zy_->Fill(     Z_.Rapidity(), p_eta_, totalWeight );
+      m_eta_Zy_->Fill(     Z_.Rapidity(), m_eta_, totalWeight );
     }
   }
 
