@@ -100,7 +100,7 @@ DyGen2D::DyGen2D(const edm::ParameterSet& cfg)
     eventWeight(1.0),
     useMadgraphWeight(cfg.getParameter<bool>("useMadgraphWeight")),
     madgraphWeight(1.0),
-    rescaleWeights(cfg.getParameter<std::vector<double>>("rescaleWeights")),
+    rescaleWeights(cfg.getParameter<std::vector<double>>("rescaleWeights"))
 {
   consumes<reco::GenParticleCollection>(src);
   mayConsume<GenEventInfoProduct>(edm::InputTag("generator"));
