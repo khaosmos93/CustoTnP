@@ -387,7 +387,7 @@ bool DyGen2D::filter(edm::Event& event, const edm::EventSetup&) {
 
     //-- Total weight!!!
     double scaleWeight = 1.0;
-    if( rescaleWeights.size() == 5 ) {
+    if( rescaleWeights.size() == 6 ) {
       scaleWeight = Get_Rescale_Weight( (double)Z_.mass(), rescaleWeights );
     }
 
