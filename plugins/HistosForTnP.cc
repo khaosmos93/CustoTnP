@@ -65,7 +65,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   const reco::Vertex*   vertex;
   int                   nVtx;
 
-  int shower_tag;    // 1: Hits, 2: Segments
+  int shower_tag;    // 1: Digis, 2: Segments
   std::vector<int>  threshold_b;
   std::vector<int>  threshold_e;
 
@@ -463,6 +463,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 10000, 0, 10000);
   ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",     eta_bins_for_2D, 1000, 0, 2);
   if(isAOD) {
+
   ProbeEtaShower   = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 18, -1.5, 16.5);
   ProbePhiShowerB  = make_probe_histos_2D("PhiShowerB",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
   ProbePhiShowerE  = make_probe_histos_2D("PhiShowerE",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
@@ -648,11 +649,11 @@ std::vector<int> CustoTnPHistosForTnP::calcNShowers(
 
   const pat::Muon* muPat = toConcretePtr<pat::Muon>(mu);
   int st1, st2, st3, st4;
-  if(shower_tag == 1) {  // Hits
-    st1 = (etaCat==1) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
-    st2 = (etaCat==1) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
-    st3 = (etaCat==1) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
-    st4 = (etaCat==1) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+  if(shower_tag == 1) {  // Digis
+    st1 = (etaCat==1) ? muPat->userInt("nDigisDT1") : muPat->userInt("nDigisCSC1");
+    st2 = (etaCat==1) ? muPat->userInt("nDigisDT2") : muPat->userInt("nDigisCSC2");
+    st3 = (etaCat==1) ? muPat->userInt("nDigisDT3") : muPat->userInt("nDigisCSC3");
+    st4 = (etaCat==1) ? muPat->userInt("nDigisDT4") : muPat->userInt("nDigisCSC4");
   }
   else if( shower_tag == 2) {  // Segments
     st1 = (etaCat==1) ? muPat->userInt("nSegsDT1") : muPat->userInt("nSegsCSC1");
@@ -683,10 +684,10 @@ std::vector<int> CustoTnPHistosForTnP::calcNShowers(
     threshold_st4 = threshold_e[3];
   }
 
-  bool is_st1 = (st1 > threshold_st1);
-  bool is_st2 = (st2 > threshold_st2);
-  bool is_st3 = (st3 > threshold_st3);
-  bool is_st4 = (st4 > threshold_st4);
+  bool is_st1 = (st1 >= threshold_st1);
+  bool is_st2 = (st2 >= threshold_st2);
+  bool is_st3 = (st3 >= threshold_st3);
+  bool is_st4 = (st4 >= threshold_st4);
 
   std::vector<int> out_vec = {};
 
@@ -765,11 +766,11 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
           const pat::Muon* muPat = toConcretePtr<pat::Muon>(ProbeMu);
 
           int nSt1, nSt2, nSt3, nSt4;
-          if(shower_tag == 1) {  // Hits
-            nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
-            nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
-            nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
-            nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+          if(shower_tag == 1) {  // Digis
+            nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT1") : muPat->userInt("nDigisCSC1");
+            nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT2") : muPat->userInt("nDigisCSC2");
+            nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT3") : muPat->userInt("nDigisCSC3");
+            nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT4") : muPat->userInt("nDigisCSC4");
           }
           else if( shower_tag == 2) {  // Segments
             nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nSegsDT1") : muPat->userInt("nSegsCSC1");
@@ -1169,16 +1170,16 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
               Probe_Eta = ProbeMu->eta();
               Probe_Phi = ProbeMu->phi();
 
-              if( isAOD && probe_nshowers > -1 ) {
-                if(fabs(ProbeMu->eta())<0.9) {
-                  Probe_nHits = { mu1->userInt("nHits1")/2, mu1->userInt("nHits2")/2, mu1->userInt("nHits3")/2, mu1->userInt("nHits4")/2 };
-                  Probe_nSegs = { mu1->userInt("nSegsDT1"), mu1->userInt("nSegsDT2"), mu1->userInt("nSegsDT3"), mu1->userInt("nSegsDT4") };
-                }
-                else if(fabs(ProbeMu->eta())>=1.2) {
-                  Probe_nHits = { mu1->userInt("nHits1"), mu1->userInt("nHits2"), mu1->userInt("nHits3"), mu1->userInt("nHits4") };
-                  Probe_nSegs = { mu1->userInt("nSegsCSC1"), mu1->userInt("nSegsCSC2"), mu1->userInt("nSegsCSC3"), mu1->userInt("nSegsCSC4") };
-                }
-              }
+              // if( isAOD && probe_nshowers > -1 ) {
+              //   if(fabs(ProbeMu->eta())<0.9) {
+              //     Probe_nHits = { mu1->userInt("nHits1"), mu1->userInt("nHits2"), mu1->userInt("nHits3"), mu1->userInt("nHits4") };
+              //     Probe_nSegs = { mu1->userInt("nSegsDT1"), mu1->userInt("nSegsDT2"), mu1->userInt("nSegsDT3"), mu1->userInt("nSegsDT4") };
+              //   }
+              //   else if(fabs(ProbeMu->eta())>=1.2) {
+              //     Probe_nHits = { mu1->userInt("nHits1"), mu1->userInt("nHits2"), mu1->userInt("nHits3"), mu1->userInt("nHits4") };
+              //     Probe_nSegs = { mu1->userInt("nSegsCSC1"), mu1->userInt("nSegsCSC2"), mu1->userInt("nSegsCSC3"), mu1->userInt("nSegsCSC4") };
+              //   }
+              // }
 
               comparison_tree->Fill();
               isAleadyFilled = true;
@@ -1332,16 +1333,16 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
               Probe_Eta = ProbeMu->eta();
               Probe_Phi = ProbeMu->phi();
 
-              if( isAOD && probe_nshowers > -1 ) {
-                if(fabs(ProbeMu->eta())<0.9) {
-                  Probe_nHits = { mu0->userInt("nHits1")/2, mu0->userInt("nHits2")/2, mu0->userInt("nHits3")/2, mu0->userInt("nHits4")/2 };
-                  Probe_nSegs = { mu0->userInt("nSegsDT1"), mu0->userInt("nSegsDT2"), mu0->userInt("nSegsDT3"), mu0->userInt("nSegsDT4") };
-                }
-                else if(fabs(ProbeMu->eta())>=1.2) {
-                  Probe_nHits = { mu0->userInt("nHits1"), mu0->userInt("nHits2"), mu0->userInt("nHits3"), mu0->userInt("nHits4") };
-                  Probe_nSegs = { mu0->userInt("nSegsCSC1"), mu0->userInt("nSegsCSC2"), mu0->userInt("nSegsCSC3"), mu0->userInt("nSegsCSC4") };
-                }
-              }
+              // if( isAOD && probe_nshowers > -1 ) {
+              //   if(fabs(ProbeMu->eta())<0.9) {
+              //     Probe_nHits = { mu0->userInt("nHits1"), mu0->userInt("nHits2"), mu0->userInt("nHits3"), mu0->userInt("nHits4") };
+              //     Probe_nSegs = { mu0->userInt("nSegsDT1"), mu0->userInt("nSegsDT2"), mu0->userInt("nSegsDT3"), mu0->userInt("nSegsDT4") };
+              //   }
+              //   else if(fabs(ProbeMu->eta())>=1.2) {
+              //     Probe_nHits = { mu0->userInt("nHits1"), mu0->userInt("nHits2"), mu0->userInt("nHits3"), mu0->userInt("nHits4") };
+              //     Probe_nSegs = { mu0->userInt("nSegsCSC1"), mu0->userInt("nSegsCSC2"), mu0->userInt("nSegsCSC3"), mu0->userInt("nSegsCSC4") };
+              //   }
+              // }
 
               comparison_tree->Fill();
             }
