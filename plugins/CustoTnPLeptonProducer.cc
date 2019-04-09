@@ -101,6 +101,8 @@ private:
   edm::InputTag cscwiredigis_src;
   edm::InputTag cscStripdigis_src;
 
+  bool verboseShower;
+
   std::pair<bool, reco::MuonRef> getMuonRef(const edm::Event&, pat::Muon*);
   std::vector<int> countDTdigis(const edm::Event&, reco::MuonRef, const edm::ESHandle<DTGeometry>&, bool);
   std::vector<int> countCSCdigis(const edm::Event&, reco::MuonRef, const edm::ESHandle<CSCGeometry>&, bool);
@@ -127,7 +129,8 @@ CustoTnPLeptonProducer::CustoTnPLeptonProducer(const edm::ParameterSet& cfg)
     l1_src_(consumes<l1t::MuonBxCollection>(cfg.getParameter<edm::InputTag>("l1"))),
 
     isAOD(cfg.getParameter<bool>("isAOD")),
-    hasRAW(cfg.getParameter<bool>("hasRAW"))
+    hasRAW(cfg.getParameter<bool>("hasRAW")),
+    verboseShower(cfg.getParameter<bool>("verboseShower"))
 {
   consumes<edm::View<reco::Candidate>>(muon_view_src);
   consumes<pat::MuonCollection>(muon_src);
@@ -670,6 +673,14 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
       new_mu->addUserInt(var_digis_CSC, vec_CSCdigis[i]);
       new_mu->addUserInt(var_segs_DT,   vec_DTsegs[i]);
       new_mu->addUserInt(var_segs_CSC,  vec_CSCsegs[i]);
+
+      if(verbose) {
+        std::cout << "\n Stored shower variables:" << endl;
+        std::cout << "\t" << var_digis_DT << ":  " << vec_DTdigis[i] << endl;
+        std::cout << "\t" << var_digis_CSC << ": " << vec_CSCdigis[i] << endl;
+        std::cout << "\t" << var_segs_DT << ":   " << vec_DTsegs[i] << endl;
+        std::cout << "\t" << var_segs_CSC << ":  " << vec_CSCsegs[i] << endl;
+      }
     }
   }
 }
@@ -753,7 +764,7 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& ev
   if(isAOD && hasRAW) {
     std::pair<bool, reco::MuonRef> pair_muRef = getMuonRef(event, new_mu);
     if( pair_muRef.first ) {
-      embedShowerInfo(event, new_mu, pair_muRef.second, dtGeom, cscGeom);
+      embedShowerInfo(event, new_mu, pair_muRef.second, dtGeom, cscGeom, verboseShower);
     }
     else {
       std::cout << "Reco muon ref not found..." << "  Event ID = " << event.id() << endl;
