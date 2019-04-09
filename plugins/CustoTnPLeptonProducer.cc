@@ -655,9 +655,9 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
     if( vec_DTdigis[i] < 0 || vec_CSCdigis[i] < 0 || vec_DTsegs[i] < 0  || vec_CSCsegs[i] < 0 ) {
       edm::LogError("CustoTnPLeptonProducer::embedShowerInfo") << "Shower variables are not properly counted!!!"
                                                                << "\n\t vec_DTdigis[i]:  " << vec_DTdigis[i]
-                                                               << "\n\t vec_CSCdigis[i]: " << vec_DTdigis[i]
-                                                               << "\n\t vec_DTsegs[i]:   " << vec_DTdigis[i]
-                                                               << "\n\t vec_CSCsegs[i]:  " << vec_DTdigis[i];
+                                                               << "\n\t vec_CSCdigis[i]: " << vec_CSCdigis[i]
+                                                               << "\n\t vec_DTsegs[i]:   " << vec_DTsegs[i]
+                                                               << "\n\t vec_CSCsegs[i]:  " << vec_CSCsegs[i];
       break;
     }
     else {
