@@ -8,12 +8,15 @@
   <use name="DataFormats/Common"/>
   <use name="DataFormats/EgammaCandidates"/>
   <use name="CustoTnP/Analyzer"/>
-  <use name="Geometry/DTGeometry"/>
-  <use name="DataFormats/DetId"/>
   <use name="DataFormats/MuonDetId"/>
+  <use name="DataFormats/DTRecHit"/>
+  <use name="DataFormats/CSCRecHit"/>
+  <use name="Geometry/CSCGeometry"/>
+  <use name="Geometry/DTGeometry"/>
+  <use name="Geometry/Records"/>
+  <use name="DataFormats/DetId"/>
   <use name="DataFormats/MuonReco"/>
   <use name="DataFormats/TrackReco"/>
-  <use name="DataFormats/CSCRecHit"/>
 </library>
 
 <library file="CustoTnPCombiner.cc" name="CustoTnPCombiner">
@@ -33,22 +36,6 @@
   <use name="TrackingTools/Records"/>
   <use name="TrackingTools/TransientTrack"/>
 </library>
-
-<!-- <library file="CustoTnPPairSelector_AOD.cc" name="CustoTnPPairSelector_AOD">
-  <use name="CommonTools/Utils"/>
-  <use name="DataFormats/PatCandidates"/>
-  <use name="RecoVertex/KalmanVertexFit"/>
-  <use name="RecoVertex/KinematicFit"/>
-  <use name="CustoTnP/Analyzer"/>
-  <use name="TrackingTools/Records"/>
-  <use name="TrackingTools/TransientTrack"/>
-  <use name="Geometry/DTGeometry"/>
-  <use name="DataFormats/DetId"/>
-  <use name="DataFormats/MuonDetId"/>
-  <use name="DataFormats/MuonReco"/>
-  <use name="DataFormats/TrackReco"/>
-  <use name="DataFormats/CSCRecHit"/>
-</library> -->
 
 <library file="HistosForTnP.cc" name="CustoTnPHistosForTnP">
   <use name="CommonTools/Utils"/>
