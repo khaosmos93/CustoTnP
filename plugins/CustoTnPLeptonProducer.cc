@@ -548,6 +548,8 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
 
       //--- subtract best matched segment from given muon
       for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
+        if(!matseg->hasPhi())  continue;
+        if(!(fabs(matseg->x-ch.x)<dXcut))  continue;
         if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) && matseg->isMask(reco::MuonSegmentMatch::BelongsToTrackByDR) ) {
           removed[ch.station()-1]++;
           if(verbose)  std::cout << "\t\t   arb segment:" << "(" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
@@ -619,6 +621,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
 
       //--- subtract best matched segment from given muon
       for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
+        if(!(fabs(matseg->x-ch.x)<dXcut))  continue;
         if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) && matseg->isMask(reco::MuonSegmentMatch::BelongsToTrackByDR) ) {
           removed[ch.station()-1]++;
           if(verbose)  std::cout << "\t\t   arb segment: " << "(" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
@@ -695,6 +698,9 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& ev
   // To use one of the refit tracks, we have to have a global muon.
       
   if (!mu.isGlobalMuon())
+    return std::make_pair((pat::Muon*)(0), -1);
+
+  if (mu.pt() < 10.)
     return std::make_pair((pat::Muon*)(0), -1);
 
   // Copy the input muon, and switch its p4/charge/vtx out for that of
