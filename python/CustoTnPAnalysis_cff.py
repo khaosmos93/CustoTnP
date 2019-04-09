@@ -38,9 +38,13 @@ leptons = cms.EDProducer('CustoTnPLeptonProducer',
                               l1 = cms.InputTag("gmtStage2Digis", "Muon", "RECO"),
                               isAOD = cms.bool(False),
                               reco_muon_src = cms.InputTag(''),            # only for AOD
-                              muonshower_src = cms.InputTag('', '', ''),   # only for AOD
+                              # muonshower_src = cms.InputTag('', '', ''),   # only for AOD
                               dtseg_src = cms.InputTag(''),    # only for AOD
                               cscseg_src = cms.InputTag(''),    # only for AOD
+                              hasRAW = cms.bool(False),
+                              dtdigis_src = cms.InputTag(''),    # only for AOD
+                              cscwiredigis_src = cms.InputTag(''),    # only for AOD
+                              cscStripdigis_src = cms.InputTag(''),    # only for AOD
 )
 
 leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
@@ -58,8 +62,12 @@ leptonsAOD = cms.EDProducer('CustoTnPLeptonProducer',
                               l1 = cms.InputTag("gmtStage2Digis", "Muon", "RECO"),
                               isAOD = cms.bool(True),
                               reco_muon_src = cms.InputTag('muons'),
-                              muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
+                              # muonshower_src = cms.InputTag('muons', 'muonShowerInformation', 'RECO'),
                               dtseg_src = cms.InputTag('dt4DSegments'),
                               cscseg_src = cms.InputTag('cscSegments'),
+                              hasRAW = cms.bool(False),
+                              dtdigis_src = cms.InputTag(''),
+                              cscwiredigis_src = cms.InputTag(''),
+                              cscStripdigis_src = cms.InputTag(''),
 )
 
