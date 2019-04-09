@@ -346,7 +346,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTdigis(const edm::Event& event, r
 
   float dXcut = 25.;
 
-  if(verbose)  std::cout << "countDTdigis: dXcut=" << dXcut << std::endl;
+  if(verbose)  std::cout << "\n   countDTdigis: dXcut=" << dXcut << std::endl;
 
   edm::Handle<DTDigiCollection> dtDigis;
   if( event.getByLabel(dtdigis_src,dtDigis) ) {
@@ -369,8 +369,6 @@ std::vector<int> CustoTnPLeptonProducer::countDTdigis(const edm::Event& event, r
             DTid.wheel()   == (*dtLayerIdIt).first.wheel() &&
             DTid.sector()  == (*dtLayerIdIt).first.sector() ) {
 
-          if(verbose)  std::cout << "\t\t --> found in digi collection" << std::endl;
-
           DTDigiCollection::const_iterator digiIt = (*dtLayerIdIt).second.first;
           for(;digiIt!=(*dtLayerIdIt).second.second; ++digiIt) {
             const auto topo = dtGeom->layer((*dtLayerIdIt).first)->specificTopology();
@@ -379,6 +377,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTdigis(const edm::Event& event, r
 
             if( (dX < dXcut) && ((*dtLayerIdIt).first.superLayer() == 1 || (*dtLayerIdIt).first.superLayer() == 3) ) {
               ndigisPerCh++;
+              if(verbose)  std::cout << "\t\t --> digi found: xWire=" << xWire << " SL=" << (*dtLayerIdIt).first.superLayer() << std::endl;
             }
 
           }
@@ -387,7 +386,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTdigis(const edm::Event& event, r
 
       if( stations[st_tmp-1] < ndigisPerCh ) {
         stations[st_tmp-1] = ndigisPerCh;
-        if(verbose)  std::cout << "\t\t updated # digis in station " << st_tmp << ": " << ndigisPerCh << std::endl;
+        if(verbose)  std::cout << "\t\t   updated # digis in station " << st_tmp << ": " << ndigisPerCh << std::endl;
       }
     }
 
@@ -404,7 +403,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
 
   float dXcut = 25.;
 
-  if(verbose)  std::cout << "countCSCdigis: dXcut=" << dXcut << std::endl;
+  if(verbose)  std::cout << "\n   countCSCdigis: dXcut=" << dXcut << std::endl;
 
   edm::Handle<CSCWireDigiCollection>  cscWireDigis;
   edm::Handle<CSCStripDigiCollection> cscStripDigis;
@@ -432,8 +431,6 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
             CSCid.ring()    == (*cscStripLayerIdIt).first.ring() &&
             CSCid.chamber() == (*cscStripLayerIdIt).first.chamber() ) {
 
-          if(verbose)  std::cout << "\t\t --> found in digi collection" << std::endl;
-
           Bool_t isME11 = ( CSCid.station() == 1 && (CSCid.ring() == 1 || CSCid.ring() == 4) );
 
           CSCStripDigiCollection::const_iterator digiIt = (*cscStripLayerIdIt).second.first;
@@ -459,6 +456,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
             Float_t dX = std::abs(ch.x - xStrip);
 
             if( dX < dXcut ) {
+              if(verbose)  std::cout << "\t\t --> digi found: xStrip=" << xWire << std::endl;
               if(isME11) {
                 if(me11DigiPerSec.find(CSCid.chamber()) == me11DigiPerSec.end())
                   me11DigiPerSec[CSCid.chamber()] = 0;
@@ -499,7 +497,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
 
   float dXcut = 25.;
 
-  if(verbose)  std::cout << "countDTsegs: dXcut=" << dXcut << std::endl;
+  if(verbose)  std::cout << "\n   countDTsegs: dXcut=" << dXcut << std::endl;
 
   edm::Handle<DTRecSegment4DCollection> dtSegments;
   if( event.getByLabel(dtseg_src, dtSegments) ) {
@@ -568,7 +566,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
 
   float dXcut = 25.;
 
-  if(verbose)  std::cout << "countCSCsegs: dXcut=" << dXcut << std::endl;
+  if(verbose)  std::cout << "\n   countCSCsegs: dXcut=" << dXcut << std::endl;
 
   edm::Handle<CSCSegmentCollection> cscSegments;
   if( event.getByLabel(cscseg_src, cscSegments) ) {
@@ -640,6 +638,8 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
   // edm::Handle<edm::ValueMap<reco::MuonShower> > muonShowerInformationValueMap;
   // event.getByLabel(muonshower_src, muonShowerInformationValueMap);
   // reco::MuonShower muonShowerInformation = (*muonShowerInformationValueMap)[MuRef];
+
+  if(verbose)  std::cout << "\n ** New muon " << new_mu->pt() << ", " << new_mu->eta() << ", " << new_mu->phi() << " **" << std::endl;
 
   std::vector<int> vec_DTdigis  = countDTdigis(  event, MuRef, dtGeom,  verbose);
   std::vector<int> vec_CSCdigis = countCSCdigis( event, MuRef, cscGeom, verbose);
