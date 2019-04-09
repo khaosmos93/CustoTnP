@@ -646,10 +646,8 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
   std::vector<int> vec_DTsegs   = countDTsegs(   event, MuRef,          verbose);
   std::vector<int> vec_CSCsegs  = countCSCsegs(  event, MuRef, cscGeom, verbose);
 
-  bool isValid = true;
   for(int i=0; i<4; ++i) {
     if( vec_DTdigis[i] < 0 || vec_CSCdigis[i] < 0 || vec_DTsegs[i] < 0  || vec_CSCsegs[i] < 0 ) {
-      isValid = false;
       edm::LogError("CustoTnPLeptonProducer::embedShowerInfo") << "Shower variables are not properly counted!!!"
                                                                << "\n\t vec_DTdigis[i]:  " << vec_DTdigis[i]
                                                                << "\n\t vec_CSCdigis[i]: " << vec_DTdigis[i]
@@ -657,13 +655,17 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
                                                                << "\n\t vec_CSCsegs[i]:  " << vec_DTdigis[i];
       break;
     }
-  }
+    else {
+      std::string var_digis_DT  = "nDigisDT"+std::to_string( int(i+1) );
+      std::string var_digis_CSC = "nDigisCSC"+std::to_string( int(i+1) );
+      std::string var_segs_DT   = "nSegsDT"+std::to_string( int(i+1) );
+      std::string var_segs_CSC  = "nSegsCSC"+std::to_string( int(i+1) );
 
-  if(isValid) {
-    new_mu->addUserData<std::vector<int>>("nDigisDT", vec_DTdigis);
-    new_mu->addUserData<std::vector<int>>("nDigisCSC", vec_CSCdigis);
-    new_mu->addUserData<std::vector<int>>("nSegsDT", vec_DTsegs);
-    new_mu->addUserData<std::vector<int>>("nSegsCSC", vec_CSCsegs);
+      new_mu->addUserInt(var_digis_DT,  vec_DTdigis[i]);
+      new_mu->addUserInt(var_digis_CSC, vec_CSCdigis[i]);
+      new_mu->addUserInt(var_segs_DT,   vec_DTsegs[i]);
+      new_mu->addUserInt(var_segs_CSC,  vec_CSCsegs[i]);
+    }
   }
 }
 
