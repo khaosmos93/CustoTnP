@@ -38,6 +38,13 @@
 #include "DataFormats/CSCRecHit/interface/CSCSegmentCollection.h"
 // #include "DataFormats/MuonReco/interface/MuonShower.h"
 
+#include "DataFormats/DTDigi/interface/DTDigi.h"
+#include "DataFormats/DTDigi/interface/DTDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCWireDigi.h"
+#include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCStripDigi.h"
+#include "DataFormats/CSCDigi/interface/CSCStripDigiCollection.h"
+
 
 
 class CustoTnPLeptonProducer : public edm::EDProducer {
