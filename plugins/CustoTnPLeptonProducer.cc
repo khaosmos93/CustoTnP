@@ -633,7 +633,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
 
 }
 
-void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon* new_mu, reco::MuonRef MuRef, 
+void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon* new_mu, reco::MuonRef MuRef,
                                              const edm::ESHandle<DTGeometry> & dtGeom,
                                              const edm::ESHandle<CSCGeometry> & cscGeom,
                                              bool verbose = false) {
@@ -667,7 +667,7 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
   }
 }
 
-std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand
+std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand,
                                                             const edm::ESHandle<DTGeometry> & dtGeom,
                                                             const edm::ESHandle<CSCGeometry> & cscGeom )
 {
