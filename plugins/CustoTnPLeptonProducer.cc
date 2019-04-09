@@ -375,9 +375,11 @@ std::vector<int> CustoTnPLeptonProducer::countDTdigis(const edm::Event& event, r
             float xWire = topo.wirePosition((*digiIt).wire());
             float dX = std::abs(ch.x - xWire);
 
+            if(verbose)  std::cout << "\t\t new digi found: xWire=" << xWire << " SL=" << (*dtLayerIdIt).first.superLayer() << std::endl;
+
             if( (dX < dXcut) && ((*dtLayerIdIt).first.superLayer() == 1 || (*dtLayerIdIt).first.superLayer() == 3) ) {
               ndigisPerCh++;
-              if(verbose)  std::cout << "\t\t --> digi found: xWire=" << xWire << " SL=" << (*dtLayerIdIt).first.superLayer() << std::endl;
+              if(verbose)  std::cout << "\t\t\t --> pass " << ndigisPerCh << std::endl;
             }
 
           }
@@ -452,18 +454,22 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
 
             const CSCLayer* layer = cscGeom->layer((*cscStripLayerIdIt).first);
             const CSCLayerGeometry* layerGeom = layer->geometry();
-            Float_t xStrip = layerGeom->xOfStrip(digiIt->getStrip(), ch.y); 
+            Float_t xStrip = layerGeom->xOfStrip(digiIt->getStrip(), ch.y);
             Float_t dX = std::abs(ch.x - xStrip);
 
+            if(verbose)  std::cout << "\t\t new digi found: xStrip=" << xStrip << std::endl;
+
             if( dX < dXcut ) {
-              if(verbose)  std::cout << "\t\t --> digi found: xStrip=" << xStrip << std::endl;
               if(isME11) {
                 if(me11DigiPerSec.find(CSCid.chamber()) == me11DigiPerSec.end())
                   me11DigiPerSec[CSCid.chamber()] = 0;
                 me11DigiPerSec[CSCid.chamber()]++;
+                if(verbose)  std::cout << "\t\t\t --> pass(ME11 chamber " << CSCid.chamber() << ": " << me11DigiPerSec[CSCid.chamber()] << std::endl;
               }
-              else
+              else {
                 ndigisPerCh++;
+                if(verbose)  std::cout << "\t\t\t --> pass " << ndigisPerCh << std::endl;
+              }
             }
 
           }
