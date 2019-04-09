@@ -432,7 +432,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
 
           if(verbose)  std::cout << "\t\t --> found in digi collection" << std::endl;
 
-          Bool_t isME11 = ( ch.station() == 1 && (ch.ring() == 1 || ch.ring() == 4) );
+          Bool_t isME11 = ( CSCid.station() == 1 && (CSCid.ring() == 1 || CSCid.ring() == 4) );
 
           CSCStripDigiCollection::const_iterator digiIt = (*cscStripLayerIdIt).second.first;
           for (;digiIt!=(*cscStripLayerIdIt).second.second; ++digiIt) {
@@ -458,9 +458,9 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
 
             if( dX < dXcut ) {
               if(isME11) {
-                if(me11DigiPerSec.find(ch.chamber()) == me11DigiPerSec.end())
-                  me11DigiPerSec[ch.chamber()] = 0;
-                me11DigiPerSec[ch.chamber()]++;
+                if(me11DigiPerSec.find(CSCid.chamber()) == me11DigiPerSec.end())
+                  me11DigiPerSec[CSCid.chamber()] = 0;
+                me11DigiPerSec[CSCid.chamber()]++;
               }
               else
                 ndigisPerCh++;
@@ -481,7 +481,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
       int nDigi = me11DigiAndSec.second;
       if(stations[0] < nDigi) {
         stations[0] = nDigi;
-        if(verbose)  std::cout << "\t\t updated # digis in station " << st_tmp << ": " << ndigisPerCh << std::endl;
+        if(verbose)  std::cout << "\t\t updated # digis in station 0: " << nDigi << std::endl;
       }
     }
 
@@ -741,7 +741,7 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
   if(isAOD && hasRAW) {
     std::pair<bool, reco::MuonRef> pair_muRef = getMuonRef(event, new_mu);
     if( pair_muRef.first ) {
-      embedShowerInfo(event, new_mu, pair_muRef.second);
+      embedShowerInfo(event, new_mu, pair_muRef.second, dtGeom, cscGeom, true);
     }
     else {
       std::cout << "Reco muon ref not found..." << "  Event ID = " << event.id() << endl;
