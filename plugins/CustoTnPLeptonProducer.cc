@@ -753,7 +753,7 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& ev
   if(isAOD && hasRAW) {
     std::pair<bool, reco::MuonRef> pair_muRef = getMuonRef(event, new_mu);
     if( pair_muRef.first ) {
-      embedShowerInfo(event, new_mu, pair_muRef.second, dtGeom, cscGeom, true);
+      embedShowerInfo(event, new_mu, pair_muRef.second, dtGeom, cscGeom);
     }
     else {
       std::cout << "Reco muon ref not found..." << "  Event ID = " << event.id() << endl;
