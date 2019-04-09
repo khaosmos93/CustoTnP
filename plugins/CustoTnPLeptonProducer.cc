@@ -62,9 +62,11 @@ private:
   //~
   void embedExpectedMatchedStations(pat::Muon*, float);
 
-  std::pair<pat::Muon*,     int> doLepton(const edm::Event&, const pat::Muon&,     const reco::CandidateBaseRef&);
+  std::pair<pat::Muon*, int> doLepton(const edm::Event&, const pat::Muon&, const reco::CandidateBaseRef&,
+                                          const edm::ESHandle<DTGeometry>&, const edm::ESHandle<CSCGeometry>&);
 
-  template <typename T> edm::OrphanHandle<std::vector<T> > doLeptons(edm::Event&, const edm::InputTag&, const edm::InputTag&, const std::string&);
+  template <typename T> edm::OrphanHandle<std::vector<T> > doLeptons( edm::Event&, const edm::InputTag&, const edm::InputTag&, const std::string&,
+                                                                      const edm::ESHandle<DTGeometry>&, const edm::ESHandle<CSCGeometry>&);
 
   edm::InputTag muon_src;
   edm::InputTag muon_view_src;
@@ -588,7 +590,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
         LocalPoint posLocalSeg = seg->localPosition();
         int nHitsX = seg->nRecHits();
 
-        const auto chamb = cscGeom->chamber(*chambIt);
+        const auto chamb = cscGeom->chamber(ch.id);
         float phi = chamb->toGlobal(seg->localPosition()).phi();
 
         if( fabs(posLocalSeg.x()-ch.x)<dXcut && nHitsX > 0) {
@@ -665,7 +667,10 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
   }
 }
 
-std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand) {
+std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& event, const pat::Muon& mu, const reco::CandidateBaseRef& cand
+                                                            const edm::ESHandle<DTGeometry> & dtGeom,
+                                                            const edm::ESHandle<CSCGeometry> & cscGeom )
+{
   // Failure is indicated by a null pointer as the first member of the
   // pair.
 
@@ -756,7 +761,11 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton(const edm::Event& eve
 }
 
 template <typename T>
-edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer::doLeptons(edm::Event& event, const edm::InputTag& src, const edm::InputTag& view_src, const std::string& instance_label) {
+edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer::doLeptons( edm::Event& event, const edm::InputTag& src, const edm::InputTag& view_src,
+                                                                      const std::string& instance_label,
+                                                                      const edm::ESHandle<DTGeometry> & dtGeom,
+                                                                      const edm::ESHandle<CSCGeometry> & cscGeom )
+{
   typedef std::vector<T> TCollection;
   edm::Handle<TCollection> leptons; 
   event.getByLabel(src, leptons); 
@@ -777,7 +786,7 @@ edm::OrphanHandle<std::vector<T> > CustoTnPLeptonProducer::doLeptons(edm::Event&
   std::unique_ptr<TCollection> new_leptons(new TCollection);  // 94X
 
   for (size_t i = 0; i < leptons->size(); ++i) {
-    std::pair<T*,int> res = doLepton(event, leptons->at(i), lepton_view->refAt(i));
+    std::pair<T*,int> res = doLepton(event, leptons->at(i), lepton_view->refAt(i), dtGeom, cscGeom);
     if (res.first == 0)
       continue;
     res.first->addUserInt("cutFor", res.second);
@@ -864,7 +873,7 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
   // collection of muons, which will have branch name
   // e.g. leptons:muons.
   muon_track_for_momentum = muon_track_for_momentum_primary;
-  edm::OrphanHandle<pat::MuonCollection> muons = doLeptons<pat::Muon>(event, muon_src, muon_view_src, "muons");
+  edm::OrphanHandle<pat::MuonCollection> muons = doLeptons<pat::Muon>(event, muon_src, muon_view_src, "muons", dtGeom, cscGeom);
 
   // Now make secondary collections of muons using the momentum
   // assignments specified. They will come out as e.g. leptons:tpfms,
@@ -879,7 +888,7 @@ void CustoTnPLeptonProducer::produce(edm::Event& event, const edm::EventSetup& s
     }
 
     muon_track_for_momentum = muon_tracks_for_momentum[i];
-    doLeptons<pat::Muon>(event, muon_src, muon_view_src, muon_track_for_momentum);
+    doLeptons<pat::Muon>(event, muon_src, muon_view_src, muon_track_for_momentum, dtGeom, cscGeom);
   }
 
 }
