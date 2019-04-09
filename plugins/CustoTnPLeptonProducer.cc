@@ -363,9 +363,9 @@ std::vector<int> CustoTnPLeptonProducer::countDTdigis(const edm::Event& event, r
 
       for(; dtLayerIdIt!=dtLayerIdEnd; ++dtLayerIdIt) {
 
-        if( ch.station() == (*dtLayerIdIt).first.station() &&
-            ch.wheel()   == (*dtLayerIdIt).first.wheel() &&
-            ch.sector()  == (*dtLayerIdIt).first.sector() ) {
+        if( DTid.station() == (*dtLayerIdIt).first.station() &&
+            DTid.wheel()   == (*dtLayerIdIt).first.wheel() &&
+            DTid.sector()  == (*dtLayerIdIt).first.sector() ) {
 
           if(verbose)  std::cout << "\t\t --> found in digi collection" << std::endl;
 
@@ -421,14 +421,14 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
       int st_tmp = ch.station();
       int ndigisPerCh = 0;
 
-      if(verbose)  std::cout << "\t Matched chamber: " << DTid << " (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
+      if(verbose)  std::cout << "\t Matched chamber: " << CSCid << " (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
 
       for(; cscStripLayerIdIt!=cscStripLayerIdEnd; ++cscStripLayerIdIt) {
 
-        if( ch.endcap()  == (*cscStripLayerIdIt).first.station() &&
-            ch.station() == (*cscStripLayerIdIt).first.zendcap() &&
-            ch.ring()    == (*cscStripLayerIdIt).first.ring() &&
-            ch.chamber() == (*cscStripLayerIdIt).first.chamber() ) {
+        if( CSCid.endcap()  == (*cscStripLayerIdIt).first.zendcap() &&
+            CSCid.station() == (*cscStripLayerIdIt).first.station() &&
+            CSCid.ring()    == (*cscStripLayerIdIt).first.ring() &&
+            CSCid.chamber() == (*cscStripLayerIdIt).first.chamber() ) {
 
           if(verbose)  std::cout << "\t\t --> found in digi collection" << std::endl;
 
@@ -542,7 +542,7 @@ std::vector<int> CustoTnPLeptonProducer::countDTsegs(const edm::Event& event, re
       for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
         if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) && matseg->isMask(reco::MuonSegmentMatch::BelongsToTrackByDR) ) {
           removed[ch.station()-1]++;
-          if(verbose)  std::cout << "\t\t arb segment found:" << matseg->localPosition() << std::endl;
+          if(verbose)  std::cout << "\t\t arb segment found:" << "(" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
         }
       }
 
@@ -578,7 +578,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
       if( ch.detector() != MuonSubdetId::CSC )  continue;
       CSCDetId CSCid( ch.id.rawId() );
 
-      if(verbose)  std::cout << "\t Matched chamber: " << DTid << " (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
+      if(verbose)  std::cout << "\t Matched chamber: " << CSCid << " (" << ch.x << ", " << ch.y << ", 0)" << std::endl;
 
       std::vector< std::pair<float,int> > nsegs_phi_temp = {};
 
@@ -613,7 +613,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCsegs(const edm::Event& event, r
       for(std::vector<reco::MuonSegmentMatch>::const_iterator matseg = ch.segmentMatches.begin(); matseg != ch.segmentMatches.end(); matseg++) {
         if( matseg->isMask(reco::MuonSegmentMatch::BestInChamberByDR) && matseg->isMask(reco::MuonSegmentMatch::BelongsToTrackByDR) ) {
           removed[ch.station()-1]++;
-          if(verbose)  std::cout << "\t\t arb segment found:" << matseg->localPosition() << std::endl;
+          if(verbose)  std::cout << "\t\t arb segment found: " << "(" << matseg->x << ", " << matseg->y << ", 0)" << std::endl;
         }
       }
 
