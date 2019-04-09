@@ -430,7 +430,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
       CSCStripDigiCollection::DigiRangeIterator cscStripLayerIdEnd = cscStripDigis->end();
       for(; cscStripLayerIdIt!=cscStripLayerIdEnd; ++cscStripLayerIdIt) {
 
-        if( CSCid.endcap()  == (*cscStripLayerIdIt).first.zendcap() &&
+        if( CSCid.zendcap() == (*cscStripLayerIdIt).first.zendcap() &&
             CSCid.station() == (*cscStripLayerIdIt).first.station() &&
             CSCid.ring()    == (*cscStripLayerIdIt).first.ring() &&
             CSCid.chamber() == (*cscStripLayerIdIt).first.chamber() ) {
