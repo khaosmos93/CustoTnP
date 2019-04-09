@@ -456,7 +456,7 @@ std::vector<int> CustoTnPLeptonProducer::countCSCdigis(const edm::Event& event, 
             Float_t dX = std::abs(ch.x - xStrip);
 
             if( dX < dXcut ) {
-              if(verbose)  std::cout << "\t\t --> digi found: xStrip=" << xWire << std::endl;
+              if(verbose)  std::cout << "\t\t --> digi found: xStrip=" << xStrip << std::endl;
               if(isME11) {
                 if(me11DigiPerSec.find(CSCid.chamber()) == me11DigiPerSec.end())
                   me11DigiPerSec[CSCid.chamber()] = 0;
