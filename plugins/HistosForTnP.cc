@@ -74,6 +74,8 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
 
   double minMass;
   double maxMass;
+  double min_nVtx;
+  double max_nVtx;
   double probe_pt_min;
   double passing_probe_dpt_over_pt_max;
   double passing_probe_dz_max;
@@ -399,6 +401,9 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
     minMass(cfg.getParameter<double>("minMass")),
     maxMass(cfg.getParameter<double>("maxMass")),
 
+    min_nVtx(cfg.getParameter<double>("min_nVtx")),
+    max_nVtx(cfg.getParameter<double>("max_nVtx")),
+
     probe_pt_min(cfg.getParameter<double>("probe_pt_min")),
     passing_probe_dpt_over_pt_max(cfg.getParameter<double>("passing_probe_dpt_over_pt_max")),
     passing_probe_dz_max(cfg.getParameter<double>("passing_probe_dz_max")),
@@ -467,42 +472,42 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaShower   = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 18, -1.5, 16.5);
   ProbePhiShowerB  = make_probe_histos_2D("PhiShowerB",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
   ProbePhiShowerE  = make_probe_histos_2D("PhiShowerE",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
-  ProbePtShowerB   = make_probe_histos_2D("PtShowerB",    100, 0, 10000, 18, -1.5, 16.5);
-  ProbePtShowerE   = make_probe_histos_2D("PtShowerE",    100, 0, 10000, 18, -1.5, 16.5);
-  ProbePShowerB    = make_probe_histos_2D("PShowerB",     100, 0, 10000, 18, -1.5, 16.5);
-  ProbePShowerE    = make_probe_histos_2D("PShowerE",     100, 0, 10000, 18, -1.5, 16.5);
+  ProbePtShowerB   = make_probe_histos_2D("PtShowerB",    100, 0, 5000, 18, -1.5, 16.5);
+  ProbePtShowerE   = make_probe_histos_2D("PtShowerE",    100, 0, 5000, 18, -1.5, 16.5);
+  ProbePShowerB    = make_probe_histos_2D("PShowerB",     100, 0, 5000, 18, -1.5, 16.5);
+  ProbePShowerE    = make_probe_histos_2D("PShowerE",     100, 0, 5000, 18, -1.5, 16.5);
 
   ProbeEtaHitsSt1  = make_probe_histos_2D("EtaHitsSt1",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt1B = make_probe_histos_2D("PhiHitsSt1B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt1E = make_probe_histos_2D("PhiHitsSt1E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt1B  = make_probe_histos_2D("PtHitsSt1B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt1E  = make_probe_histos_2D("PtHitsSt1E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt1B   = make_probe_histos_2D("PHitsSt1B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt1E   = make_probe_histos_2D("PHitsSt1E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt1B  = make_probe_histos_2D("PtHitsSt1B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt1E  = make_probe_histos_2D("PtHitsSt1E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt1B   = make_probe_histos_2D("PHitsSt1B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt1E   = make_probe_histos_2D("PHitsSt1E",     100, 0, 5000, 200, 0, 200);
 
   ProbeEtaHitsSt2  = make_probe_histos_2D("EtaHitsSt2",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt2B = make_probe_histos_2D("PhiHitsSt2B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt2E = make_probe_histos_2D("PhiHitsSt2E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt2B  = make_probe_histos_2D("PtHitsSt2B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt2E  = make_probe_histos_2D("PtHitsSt2E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt2B   = make_probe_histos_2D("PHitsSt2B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt2E   = make_probe_histos_2D("PHitsSt2E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt2B  = make_probe_histos_2D("PtHitsSt2B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt2E  = make_probe_histos_2D("PtHitsSt2E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt2B   = make_probe_histos_2D("PHitsSt2B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt2E   = make_probe_histos_2D("PHitsSt2E",     100, 0, 5000, 200, 0, 200);
 
   ProbeEtaHitsSt3  = make_probe_histos_2D("EtaHitsSt3",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt3B = make_probe_histos_2D("PhiHitsSt3B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt3E = make_probe_histos_2D("PhiHitsSt3E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt3B  = make_probe_histos_2D("PtHitsSt3B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt3E  = make_probe_histos_2D("PtHitsSt3E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt3B   = make_probe_histos_2D("PHitsSt3B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt3E   = make_probe_histos_2D("PHitsSt3E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt3B  = make_probe_histos_2D("PtHitsSt3B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt3E  = make_probe_histos_2D("PtHitsSt3E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt3B   = make_probe_histos_2D("PHitsSt3B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt3E   = make_probe_histos_2D("PHitsSt3E",     100, 0, 5000, 200, 0, 200);
 
   ProbeEtaHitsSt4  = make_probe_histos_2D("EtaHitsSt4",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt4B = make_probe_histos_2D("PhiHitsSt4B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt4E = make_probe_histos_2D("PhiHitsSt4E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt4B  = make_probe_histos_2D("PtHitsSt4B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt4E  = make_probe_histos_2D("PtHitsSt4E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt4B   = make_probe_histos_2D("PHitsSt4B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt4E   = make_probe_histos_2D("PHitsSt4E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt4B  = make_probe_histos_2D("PtHitsSt4B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt4E  = make_probe_histos_2D("PtHitsSt4E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt4B   = make_probe_histos_2D("PHitsSt4B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt4E   = make_probe_histos_2D("PHitsSt4E",     100, 0, 5000, 200, 0, 200);
   }
 
   // TnP pair
@@ -990,6 +995,9 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
 
   if (use_bs_and_pv)
     getBSandPV(event);
+
+  if( !(min_nVtx <= nVtx && max_nVtx >= nVtx ) )
+    return;
 
   edm::Handle<pat::CompositeCandidateCollection> dileptons;
   event.getByLabel(dilepton_src, dileptons);
