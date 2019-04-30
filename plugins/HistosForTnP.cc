@@ -65,7 +65,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   const reco::Vertex*   vertex;
   int                   nVtx;
 
-  int shower_tag;    // 1: Hits, 2: Segments
+  int shower_tag;    // 1: Digis, 2: Segments
   std::vector<int>  threshold_b;
   std::vector<int>  threshold_e;
 
@@ -74,6 +74,8 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
 
   double minMass;
   double maxMass;
+  double min_nVtx;
+  double max_nVtx;
   double probe_pt_min;
   double passing_probe_dpt_over_pt_max;
   double passing_probe_dz_max;
@@ -399,6 +401,9 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
     minMass(cfg.getParameter<double>("minMass")),
     maxMass(cfg.getParameter<double>("maxMass")),
 
+    min_nVtx(cfg.getParameter<double>("min_nVtx")),
+    max_nVtx(cfg.getParameter<double>("max_nVtx")),
+
     probe_pt_min(cfg.getParameter<double>("probe_pt_min")),
     passing_probe_dpt_over_pt_max(cfg.getParameter<double>("passing_probe_dpt_over_pt_max")),
     passing_probe_dz_max(cfg.getParameter<double>("passing_probe_dz_max")),
@@ -463,45 +468,46 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 10000, 0, 10000);
   ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",     eta_bins_for_2D, 1000, 0, 2);
   if(isAOD) {
+
   ProbeEtaShower   = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 18, -1.5, 16.5);
   ProbePhiShowerB  = make_probe_histos_2D("PhiShowerB",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
   ProbePhiShowerE  = make_probe_histos_2D("PhiShowerE",   41, -TMath::Pi(), TMath::Pi(), 18, -1.5, 16.5);
-  ProbePtShowerB   = make_probe_histos_2D("PtShowerB",    100, 0, 10000, 18, -1.5, 16.5);
-  ProbePtShowerE   = make_probe_histos_2D("PtShowerE",    100, 0, 10000, 18, -1.5, 16.5);
-  ProbePShowerB    = make_probe_histos_2D("PShowerB",     100, 0, 10000, 18, -1.5, 16.5);
-  ProbePShowerE    = make_probe_histos_2D("PShowerE",     100, 0, 10000, 18, -1.5, 16.5);
+  ProbePtShowerB   = make_probe_histos_2D("PtShowerB",    100, 0, 5000, 18, -1.5, 16.5);
+  ProbePtShowerE   = make_probe_histos_2D("PtShowerE",    100, 0, 5000, 18, -1.5, 16.5);
+  ProbePShowerB    = make_probe_histos_2D("PShowerB",     100, 0, 5000, 18, -1.5, 16.5);
+  ProbePShowerE    = make_probe_histos_2D("PShowerE",     100, 0, 5000, 18, -1.5, 16.5);
 
   ProbeEtaHitsSt1  = make_probe_histos_2D("EtaHitsSt1",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt1B = make_probe_histos_2D("PhiHitsSt1B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt1E = make_probe_histos_2D("PhiHitsSt1E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt1B  = make_probe_histos_2D("PtHitsSt1B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt1E  = make_probe_histos_2D("PtHitsSt1E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt1B   = make_probe_histos_2D("PHitsSt1B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt1E   = make_probe_histos_2D("PHitsSt1E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt1B  = make_probe_histos_2D("PtHitsSt1B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt1E  = make_probe_histos_2D("PtHitsSt1E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt1B   = make_probe_histos_2D("PHitsSt1B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt1E   = make_probe_histos_2D("PHitsSt1E",     100, 0, 5000, 200, 0, 200);
 
   ProbeEtaHitsSt2  = make_probe_histos_2D("EtaHitsSt2",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt2B = make_probe_histos_2D("PhiHitsSt2B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt2E = make_probe_histos_2D("PhiHitsSt2E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt2B  = make_probe_histos_2D("PtHitsSt2B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt2E  = make_probe_histos_2D("PtHitsSt2E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt2B   = make_probe_histos_2D("PHitsSt2B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt2E   = make_probe_histos_2D("PHitsSt2E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt2B  = make_probe_histos_2D("PtHitsSt2B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt2E  = make_probe_histos_2D("PtHitsSt2E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt2B   = make_probe_histos_2D("PHitsSt2B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt2E   = make_probe_histos_2D("PHitsSt2E",     100, 0, 5000, 200, 0, 200);
 
   ProbeEtaHitsSt3  = make_probe_histos_2D("EtaHitsSt3",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt3B = make_probe_histos_2D("PhiHitsSt3B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt3E = make_probe_histos_2D("PhiHitsSt3E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt3B  = make_probe_histos_2D("PtHitsSt3B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt3E  = make_probe_histos_2D("PtHitsSt3E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt3B   = make_probe_histos_2D("PHitsSt3B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt3E   = make_probe_histos_2D("PHitsSt3E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt3B  = make_probe_histos_2D("PtHitsSt3B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt3E  = make_probe_histos_2D("PtHitsSt3E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt3B   = make_probe_histos_2D("PHitsSt3B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt3E   = make_probe_histos_2D("PHitsSt3E",     100, 0, 5000, 200, 0, 200);
 
   ProbeEtaHitsSt4  = make_probe_histos_2D("EtaHitsSt4",    eta_bins_for_2D, 200, 0, 200);
   ProbePhiHitsSt4B = make_probe_histos_2D("PhiHitsSt4B",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
   ProbePhiHitsSt4E = make_probe_histos_2D("PhiHitsSt4E",   41, -TMath::Pi(), TMath::Pi(), 200, 0, 200);
-  ProbePtHitsSt4B  = make_probe_histos_2D("PtHitsSt4B",    100, 0, 10000, 200, 0, 200);
-  ProbePtHitsSt4E  = make_probe_histos_2D("PtHitsSt4E",    100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt4B   = make_probe_histos_2D("PHitsSt4B",     100, 0, 10000, 200, 0, 200);
-  ProbePHitsSt4E   = make_probe_histos_2D("PHitsSt4E",     100, 0, 10000, 200, 0, 200);
+  ProbePtHitsSt4B  = make_probe_histos_2D("PtHitsSt4B",    100, 0, 5000, 200, 0, 200);
+  ProbePtHitsSt4E  = make_probe_histos_2D("PtHitsSt4E",    100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt4B   = make_probe_histos_2D("PHitsSt4B",     100, 0, 5000, 200, 0, 200);
+  ProbePHitsSt4E   = make_probe_histos_2D("PHitsSt4E",     100, 0, 5000, 200, 0, 200);
   }
 
   // TnP pair
@@ -648,11 +654,11 @@ std::vector<int> CustoTnPHistosForTnP::calcNShowers(
 
   const pat::Muon* muPat = toConcretePtr<pat::Muon>(mu);
   int st1, st2, st3, st4;
-  if(shower_tag == 1) {  // Hits
-    st1 = (etaCat==1) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
-    st2 = (etaCat==1) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
-    st3 = (etaCat==1) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
-    st4 = (etaCat==1) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+  if(shower_tag == 1) {  // Digis
+    st1 = (etaCat==1) ? muPat->userInt("nDigisDT1") : muPat->userInt("nDigisCSC1");
+    st2 = (etaCat==1) ? muPat->userInt("nDigisDT2") : muPat->userInt("nDigisCSC2");
+    st3 = (etaCat==1) ? muPat->userInt("nDigisDT3") : muPat->userInt("nDigisCSC3");
+    st4 = (etaCat==1) ? muPat->userInt("nDigisDT4") : muPat->userInt("nDigisCSC4");
   }
   else if( shower_tag == 2) {  // Segments
     st1 = (etaCat==1) ? muPat->userInt("nSegsDT1") : muPat->userInt("nSegsCSC1");
@@ -683,10 +689,10 @@ std::vector<int> CustoTnPHistosForTnP::calcNShowers(
     threshold_st4 = threshold_e[3];
   }
 
-  bool is_st1 = (st1 > threshold_st1);
-  bool is_st2 = (st2 > threshold_st2);
-  bool is_st3 = (st3 > threshold_st3);
-  bool is_st4 = (st4 > threshold_st4);
+  bool is_st1 = (st1 >= threshold_st1);
+  bool is_st2 = (st2 >= threshold_st2);
+  bool is_st3 = (st3 >= threshold_st3);
+  bool is_st4 = (st4 >= threshold_st4);
 
   std::vector<int> out_vec = {};
 
@@ -765,11 +771,11 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
           const pat::Muon* muPat = toConcretePtr<pat::Muon>(ProbeMu);
 
           int nSt1, nSt2, nSt3, nSt4;
-          if(shower_tag == 1) {  // Hits
-            nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits1")/2 : muPat->userInt("nHits1");
-            nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits2")/2 : muPat->userInt("nHits2");
-            nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits3")/2 : muPat->userInt("nHits3");
-            nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nHits4")/2 : muPat->userInt("nHits4");
+          if(shower_tag == 1) {  // Digis
+            nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT1") : muPat->userInt("nDigisCSC1");
+            nSt2 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT2") : muPat->userInt("nDigisCSC2");
+            nSt3 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT3") : muPat->userInt("nDigisCSC3");
+            nSt4 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nDigisDT4") : muPat->userInt("nDigisCSC4");
           }
           else if( shower_tag == 2) {  // Segments
             nSt1 = (fabs(ProbeMu->eta())<0.9) ? muPat->userInt("nSegsDT1") : muPat->userInt("nSegsCSC1");
@@ -990,6 +996,9 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
   if (use_bs_and_pv)
     getBSandPV(event);
 
+  if( !(min_nVtx <= nVtx && max_nVtx >= nVtx ) )
+    return;
+
   edm::Handle<pat::CompositeCandidateCollection> dileptons;
   event.getByLabel(dilepton_src, dileptons);
 
@@ -1169,16 +1178,16 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
               Probe_Eta = ProbeMu->eta();
               Probe_Phi = ProbeMu->phi();
 
-              if( isAOD && probe_nshowers > -1 ) {
-                if(fabs(ProbeMu->eta())<0.9) {
-                  Probe_nHits = { mu1->userInt("nHits1")/2, mu1->userInt("nHits2")/2, mu1->userInt("nHits3")/2, mu1->userInt("nHits4")/2 };
-                  Probe_nSegs = { mu1->userInt("nSegsDT1"), mu1->userInt("nSegsDT2"), mu1->userInt("nSegsDT3"), mu1->userInt("nSegsDT4") };
-                }
-                else if(fabs(ProbeMu->eta())>=1.2) {
-                  Probe_nHits = { mu1->userInt("nHits1"), mu1->userInt("nHits2"), mu1->userInt("nHits3"), mu1->userInt("nHits4") };
-                  Probe_nSegs = { mu1->userInt("nSegsCSC1"), mu1->userInt("nSegsCSC2"), mu1->userInt("nSegsCSC3"), mu1->userInt("nSegsCSC4") };
-                }
-              }
+              // if( isAOD && probe_nshowers > -1 ) {
+              //   if(fabs(ProbeMu->eta())<0.9) {
+              //     Probe_nHits = { mu1->userInt("nHits1"), mu1->userInt("nHits2"), mu1->userInt("nHits3"), mu1->userInt("nHits4") };
+              //     Probe_nSegs = { mu1->userInt("nSegsDT1"), mu1->userInt("nSegsDT2"), mu1->userInt("nSegsDT3"), mu1->userInt("nSegsDT4") };
+              //   }
+              //   else if(fabs(ProbeMu->eta())>=1.2) {
+              //     Probe_nHits = { mu1->userInt("nHits1"), mu1->userInt("nHits2"), mu1->userInt("nHits3"), mu1->userInt("nHits4") };
+              //     Probe_nSegs = { mu1->userInt("nSegsCSC1"), mu1->userInt("nSegsCSC2"), mu1->userInt("nSegsCSC3"), mu1->userInt("nSegsCSC4") };
+              //   }
+              // }
 
               comparison_tree->Fill();
               isAleadyFilled = true;
@@ -1332,16 +1341,16 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
               Probe_Eta = ProbeMu->eta();
               Probe_Phi = ProbeMu->phi();
 
-              if( isAOD && probe_nshowers > -1 ) {
-                if(fabs(ProbeMu->eta())<0.9) {
-                  Probe_nHits = { mu0->userInt("nHits1")/2, mu0->userInt("nHits2")/2, mu0->userInt("nHits3")/2, mu0->userInt("nHits4")/2 };
-                  Probe_nSegs = { mu0->userInt("nSegsDT1"), mu0->userInt("nSegsDT2"), mu0->userInt("nSegsDT3"), mu0->userInt("nSegsDT4") };
-                }
-                else if(fabs(ProbeMu->eta())>=1.2) {
-                  Probe_nHits = { mu0->userInt("nHits1"), mu0->userInt("nHits2"), mu0->userInt("nHits3"), mu0->userInt("nHits4") };
-                  Probe_nSegs = { mu0->userInt("nSegsCSC1"), mu0->userInt("nSegsCSC2"), mu0->userInt("nSegsCSC3"), mu0->userInt("nSegsCSC4") };
-                }
-              }
+              // if( isAOD && probe_nshowers > -1 ) {
+              //   if(fabs(ProbeMu->eta())<0.9) {
+              //     Probe_nHits = { mu0->userInt("nHits1"), mu0->userInt("nHits2"), mu0->userInt("nHits3"), mu0->userInt("nHits4") };
+              //     Probe_nSegs = { mu0->userInt("nSegsDT1"), mu0->userInt("nSegsDT2"), mu0->userInt("nSegsDT3"), mu0->userInt("nSegsDT4") };
+              //   }
+              //   else if(fabs(ProbeMu->eta())>=1.2) {
+              //     Probe_nHits = { mu0->userInt("nHits1"), mu0->userInt("nHits2"), mu0->userInt("nHits3"), mu0->userInt("nHits4") };
+              //     Probe_nSegs = { mu0->userInt("nSegsCSC1"), mu0->userInt("nSegsCSC2"), mu0->userInt("nSegsCSC3"), mu0->userInt("nSegsCSC4") };
+              //   }
+              // }
 
               comparison_tree->Fill();
             }
