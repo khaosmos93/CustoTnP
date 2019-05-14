@@ -652,13 +652,13 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
 
   if(verbose)  std::cout << "\n ** New muon " << new_mu->pt() << ", " << new_mu->eta() << ", " << new_mu->phi() << " **" << std::endl;
 
-  std::vector<int> vec_DTdigis  = countDTdigis(  event, MuRef, dtGeom,  verbose);
-  std::vector<int> vec_CSCdigis = countCSCdigis( event, MuRef, cscGeom, verbose);
+  std::vector<int> vec_DTdigis  = hasRAW ? countDTdigis(  event, MuRef, dtGeom,  verbose) : {-999, -999, -999, -999};
+  std::vector<int> vec_CSCdigis = hasRAW ? countCSCdigis( event, MuRef, cscGeom, verbose) : {-999, -999, -999, -999};
   std::vector<int> vec_DTsegs   = countDTsegs(   event, MuRef,          verbose);
   std::vector<int> vec_CSCsegs  = countCSCsegs(  event, MuRef, cscGeom, verbose);
 
   for(int i=0; i<4; ++i) {
-    if( vec_DTdigis[i] < 0 || vec_CSCdigis[i] < 0 || vec_DTsegs[i] < 0  || vec_CSCsegs[i] < 0 ) {
+    if( (hasRAW && (vec_DTdigis[i] < 0 || vec_CSCdigis[i] < 0)) || (vec_DTsegs[i] < 0  || vec_CSCsegs[i] < 0) ) {
       edm::LogError("CustoTnPLeptonProducer::embedShowerInfo") << "Shower variables are not properly counted!!!"
                                                                << "\n\t vec_DTdigis[i]:  " << vec_DTdigis[i]
                                                                << "\n\t vec_CSCdigis[i]: " << vec_CSCdigis[i]
@@ -672,8 +672,8 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
       std::string var_segs_DT   = "nSegsDT"+std::to_string( int(i+1) );
       std::string var_segs_CSC  = "nSegsCSC"+std::to_string( int(i+1) );
 
-      new_mu->addUserInt(var_digis_DT,  vec_DTdigis[i]);
-      new_mu->addUserInt(var_digis_CSC, vec_CSCdigis[i]);
+      if(hasRAW)  new_mu->addUserInt(var_digis_DT,  vec_DTdigis[i]);
+      if(hasRAW)  new_mu->addUserInt(var_digis_CSC, vec_CSCdigis[i]);
       new_mu->addUserInt(var_segs_DT,   vec_DTsegs[i]);
       new_mu->addUserInt(var_segs_CSC,  vec_CSCsegs[i]);
 
@@ -767,7 +767,7 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& ev
   embedExpectedMatchedStations(new_mu, 10.);
 
   //@
-  if(isAOD && hasRAW) {
+  if(isAOD) {
     std::pair<bool, reco::MuonRef> pair_muRef = getMuonRef(event, new_mu);
     if( pair_muRef.first ) {
       embedShowerInfo(event, new_mu, pair_muRef.second, dtGeom, cscGeom, verboseShower);
