@@ -652,8 +652,9 @@ void CustoTnPLeptonProducer::embedShowerInfo(const edm::Event& event, pat::Muon*
 
   if(verbose)  std::cout << "\n ** New muon " << new_mu->pt() << ", " << new_mu->eta() << ", " << new_mu->phi() << " **" << std::endl;
 
-  std::vector<int> vec_DTdigis  = hasRAW ? countDTdigis(  event, MuRef, dtGeom,  verbose) : {-999, -999, -999, -999};
-  std::vector<int> vec_CSCdigis = hasRAW ? countCSCdigis( event, MuRef, cscGeom, verbose) : {-999, -999, -999, -999};
+  std::vector<int> vec_dummy = {-999, -999, -999, -999};
+  std::vector<int> vec_DTdigis  = hasRAW ? countDTdigis(  event, MuRef, dtGeom,  verbose) : vec_dummy;
+  std::vector<int> vec_CSCdigis = hasRAW ? countCSCdigis( event, MuRef, cscGeom, verbose) : vec_dummy;
   std::vector<int> vec_DTsegs   = countDTsegs(   event, MuRef,          verbose);
   std::vector<int> vec_CSCsegs  = countCSCsegs(  event, MuRef, cscGeom, verbose);
 
