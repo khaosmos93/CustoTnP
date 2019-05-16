@@ -14,22 +14,46 @@ def make_string_cut_for_trigger_matching( list_path_names, list_filters_pt ):
 
 
 trigger_path_names = [
+  'IsoMu24',
+  'Mu27',
   'Mu50',
   'OldMu100',
   'TkMu100'
 ]
 trigger_filters = [
+  'hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07',
+  'hltL3fL1sMu22Or25L1f0L2f10QL3Filtered27Q',
   'hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q',
   'hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q',
   'hltL3fL1sMu25f0TkFiltered100Q'
 ]
 trigger_filters_pt = [
+  24,
+  27,
   50,
   100,
   100
 ]
 
-trigger_match_2018 = '('+make_string_cut_for_trigger_matching( trigger_path_names, trigger_filters_pt )+')'
+
+
+trigger_path_names_2018 = [
+  'Mu50',
+  'OldMu100',
+  'TkMu100'
+]
+trigger_filters_2018 = [
+  'hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q',
+  'hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q',
+  'hltL3fL1sMu25f0TkFiltered100Q'
+]
+trigger_filters_pt_2018 = [
+  50,
+  100,
+  100
+]
+
+trigger_match_2018 = '('+make_string_cut_for_trigger_matching( trigger_path_names_2018, trigger_filters_pt_2018 )+')'
 
 
 trigger_path_names_2016 = [
