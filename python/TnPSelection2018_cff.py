@@ -58,7 +58,10 @@ Probe_dpt_over_pt_max = 1e9
 Probe_dz_max = 1e9
 Probe_pt_cut = 53.0
 
-TnP_deltaR_min = 0.4
+TnP_pTratio_max = 1e9
+TnP_deltaR_min = -1.
+# TnP_pTratio_max = 0.3
+# TnP_deltaR_min = 0.4
 
 #--- For efficiency vs nShowers
 Probe_veto_other_dphi_min = 0.6
@@ -92,13 +95,14 @@ phi_bins = [-PI, PI]
 #               15*width, 16*width, 17*width, 18*width, 19*width,
 #               20*width
 # ]
-# vtx_bins  = [0, 1e6]
-vtx_bins  = [ 0.5, 2.5, 4.5, 6.5, 8.5, 10.5, 12.5, 14.5, 16.5, 18.5, 20.5,
-              22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5, 36.5, 38.5, 40.5,
-              42.5, 44.5, 46.5, 48.5, 50.5, 52.5, 54.5, 56.5, 58.5, 60.5,
-              62.5, 64.5, 66.5, 68.5, 70.5, 72.5, 74.5, 76.5, 78.5, 80.5,
-              82.5, 84.5, 86.5, 88.5, 90.5, 92.5, 94.5, 96.5, 98.5, 100.5
-]
+vtx_bins  = [0, 1e6]
+# vtx_bins  = [ 
+#   0.5, 2.5, 4.5, 6.5, 8.5, 10.5, 12.5, 14.5, 16.5, 18.5, 20.5,
+#   22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5, 36.5, 38.5, 40.5,
+#   42.5, 44.5, 46.5, 48.5, 50.5, 52.5, 54.5, 56.5, 58.5, 60.5,
+#   62.5, 64.5, 66.5, 68.5, 70.5, 72.5, 74.5, 76.5, 78.5, 80.5,
+#   82.5, 84.5, 86.5, 88.5, 90.5, 92.5, 94.5, 96.5, 98.5, 100.5
+# ]
 shower_bins = [ -0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5 ]
 
 allDimuons = cms.EDProducer('CustoTnPCombiner',
@@ -122,8 +126,8 @@ dimuons = cms.EDProducer('CustoTnPPairSelector',
 
     back_to_back_cos_angle_min = cms.double(-0.9998), # this corresponds to the angle (pi - 0.02) rad = 178.9 deg
     vertex_chi2_max = cms.double(20),
-    pt_ratio_max = cms.double(3.0),
-    dil_deltaR_min = cms.double(TnP_deltaR_min),  #0.4
+    pt_ratio_max = cms.double(TnP_pTratio_max),
+    dil_deltaR_min = cms.double(TnP_deltaR_min),
 
     veto_others_dphi_min = cms.double(Probe_veto_other_dphi_min),  #0.6
 
