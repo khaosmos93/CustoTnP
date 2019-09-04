@@ -778,6 +778,11 @@ std::pair<pat::Muon*,int> CustoTnPLeptonProducer::doLepton( const edm::Event& ev
     }
   }
 
+  int isHP = new_mu->innerTrack()->quality(reco::TrackBase::highPurity);
+  int isCO = new_mu->innerTrack()->quality(reco::TrackBase::confirmed);
+  new_mu->addUserInt("isHighPurity", isHP);
+  new_mu->addUserInt("isConfirmed", isCO);
+
   // Evaluate cuts here with string object selector, and any code that
   // cannot be done in the string object selector (none so far).
   int cutFor = muon_selector(*new_mu) ? 0 : 1;
