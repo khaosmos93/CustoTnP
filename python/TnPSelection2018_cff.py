@@ -60,7 +60,7 @@ Probe_pt_cut = 53.0
 
 # TnP_pTratio_max = 1e9
 # TnP_deltaR_min = -1.
-TnP_pTratio_max = 0.3
+TnP_pTratio_max = 3.
 TnP_deltaR_min = 0.4
 
 #--- For efficiency vs nShowers
