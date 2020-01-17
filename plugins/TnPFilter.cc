@@ -43,9 +43,9 @@ void CopyVectorToArray( std::vector<double>& vec, double*& arr ) {
 class TnPFilter : public edm::EDFilter {
  public:
   explicit TnPFilter(const edm::ParameterSet&);
+  bool filter(const edm::Event&, const edm::EventSetup&);
 
  private:
-  virtual bool filter(const edm::Event&, const edm::EventSetup&);
   void getBSandPV(const edm::Event&);
 
   std::vector<int> calcNShowers(const reco::CandidateBaseRef&, bool);
