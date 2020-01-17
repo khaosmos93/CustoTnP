@@ -63,7 +63,6 @@ class TnPFilter : public edm::EDFilter {
   std::vector<int>  threshold_e;
 
   StringCutObjectSelector<pat::Muon> passing_probe_selector;
-  StringCutObjectSelector<pat::Muon> comparison_probe_selector;
 
   double minMass;
   double maxMass;
@@ -72,23 +71,8 @@ class TnPFilter : public edm::EDFilter {
   double probe_pt_min;
   double passing_probe_dpt_over_pt_max;
   double passing_probe_dz_max;
-  double comparison_probe_dpt_over_pt_max;
-  double comparison_probe_dz_max;
-
-  bool   _usePrescaleWeight;
-  int    _prescaleWeight;
-  double _eventWeight;
-  bool   _useMadgraphWeight;
-  double _madgraphWeight;
-
-  edm::InputTag pileup_src;
-  double _pileupWeight;
-  std::vector<double> vec_PileUpWeight;
-
-  double _totalWeight;
 
   bool isAOD;
-  bool useBinHistos2D;
   const bool ShutUp;
 };
 
@@ -106,7 +90,6 @@ TnPFilter::TnPFilter(const edm::ParameterSet& cfg)
     threshold_e(cfg.getParameter<std::vector<int>>("threshold_e")),
 
     passing_probe_selector(cfg.getParameter<std::string>("passing_probe_cut")),
-    comparison_probe_selector(cfg.getParameter<std::string>("comparison_probe_cut")),
 
     minMass(cfg.getParameter<double>("minMass")),
     maxMass(cfg.getParameter<double>("maxMass")),
@@ -117,36 +100,14 @@ TnPFilter::TnPFilter(const edm::ParameterSet& cfg)
     probe_pt_min(cfg.getParameter<double>("probe_pt_min")),
     passing_probe_dpt_over_pt_max(cfg.getParameter<double>("passing_probe_dpt_over_pt_max")),
     passing_probe_dz_max(cfg.getParameter<double>("passing_probe_dz_max")),
-    comparison_probe_dpt_over_pt_max(cfg.getParameter<double>("comparison_probe_dpt_over_pt_max")),
-    comparison_probe_dz_max(cfg.getParameter<double>("comparison_probe_dz_max")),
-
-    _usePrescaleWeight(cfg.getUntrackedParameter<bool>("usePrescaleWeight",false)),
-    _prescaleWeight(1),
-    _useMadgraphWeight(cfg.getParameter<bool>("useMadgraphWeight")),
-    _madgraphWeight(1.),
-
-    pileup_src(cfg.getParameter<edm::InputTag>("pileup_src")),
-    _pileupWeight(1.),
-    vec_PileUpWeight(cfg.getParameter<std::vector<double>>("vec_PileUpWeight")),
-
-    _totalWeight(1.),
 
     isAOD(cfg.getParameter<bool>("isAOD")),
-    useBinHistos2D(cfg.getParameter<bool>("useBinHistos2D")),
 
-    ShutUp(cfg.getParameter<bool>("ShutUp")),
-
-    vec_PtBins(cfg.getParameter<std::vector<double>>("vec_PtBins")),
-    vec_AbsPBins(cfg.getParameter<std::vector<double>>("vec_AbsPBins")),
-    vec_EtaBins(cfg.getParameter<std::vector<double>>("vec_EtaBins")),
-    vec_PhiBins(cfg.getParameter<std::vector<double>>("vec_PhiBins")),
-    vec_VtxBins(cfg.getParameter<std::vector<double>>("vec_VtxBins")),
-    vec_ShowerBins(cfg.getParameter<std::vector<double>>("vec_ShowerBins"))
+    ShutUp(cfg.getParameter<bool>("ShutUp"))
 {
   consumes<pat::CompositeCandidateCollection>(dilepton_src);
   consumes<reco::BeamSpot>(beamspot_src);
   consumes<reco::VertexCollection>(vertex_src);
-  consumes<std::vector<PileupSummaryInfo> >(pileup_src);
   mayConsume<GenEventInfoProduct>(edm::InputTag("generator"));
 }
 
