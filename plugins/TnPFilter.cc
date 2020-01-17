@@ -43,10 +43,10 @@ void CopyVectorToArray( std::vector<double>& vec, double*& arr ) {
 class TnPFilter : public edm::EDFilter {
  public:
   explicit TnPFilter(const edm::ParameterSet&);
-  bool filter(const edm::Event&, const edm::EventSetup&);
 
  private:
-  void getBSandPV(const edm::Event&);
+  virtual bool filter(edm::Event&, const edm::EventSetup&);
+  void getBSandPV(edm::Event&);
 
   std::vector<int> calcNShowers(const reco::CandidateBaseRef&, bool);
 
@@ -111,7 +111,7 @@ TnPFilter::TnPFilter(const edm::ParameterSet& cfg)
   mayConsume<GenEventInfoProduct>(edm::InputTag("generator"));
 }
 
-void TnPFilter::getBSandPV(const edm::Event& event) {
+void TnPFilter::getBSandPV(edm::Event& event) {
   // We store these as bare pointers. Should find better way, but
   // don't want to pass them around everywhere...
   edm::Handle<reco::BeamSpot> hbs;
@@ -227,7 +227,7 @@ std::vector<int> TnPFilter::calcNShowers(
   return out_vec;
 }
 
-bool TnPFilter::filter(const edm::Event& event, const edm::EventSetup& setup) {
+bool TnPFilter::filter(edm::Event& event, const edm::EventSetup& setup) {
 
   bool pass_tnp = false;
 
