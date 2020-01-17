@@ -253,8 +253,8 @@ bool TnPFilter::filter(const edm::Event& event, const edm::EventSetup& setup) {
       continue;
     }
 
-    double dil_mass = dil->mass();
-    double dil_vertex_mass = dil->userFloat("vertexM");
+    // double dil_mass = dil->mass();
+    // double dil_vertex_mass = dil->userFloat("vertexM");
     float lep0_dpt_over_pt = dil->userFloat("lep0_dpt_over_pt");
     float lep1_dpt_over_pt = dil->userFloat("lep1_dpt_over_pt");
 
@@ -268,7 +268,7 @@ bool TnPFilter::filter(const edm::Event& event, const edm::EventSetup& setup) {
 
         //---- Tag0 and Probe1
         if( dil->userInt("isTag0Probe1") ) {
-          const reco::CandidateBaseRef& TagMu = lep0;
+          // const reco::CandidateBaseRef& TagMu = lep0;
           const reco::CandidateBaseRef& ProbeMu = lep1;
 
           int probe_nshowers = -999;
@@ -300,7 +300,7 @@ bool TnPFilter::filter(const edm::Event& event, const edm::EventSetup& setup) {
 
         //---- Tag1 and Probe0
         if( dil->userInt("isTag1Probe0") ) {
-          const reco::CandidateBaseRef& TagMu = lep1;
+          // const reco::CandidateBaseRef& TagMu = lep1;
           const reco::CandidateBaseRef& ProbeMu = lep0;
 
           int probe_nshowers = -999;
