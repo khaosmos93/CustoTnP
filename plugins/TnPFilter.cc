@@ -235,14 +235,14 @@ bool TnPFilter::filter(const edm::Event& event, const edm::EventSetup& setup) {
     getBSandPV(event);
 
   if( !(min_nVtx <= nVtx && max_nVtx >= nVtx ) )
-    return;
+    return false;
 
   edm::Handle<pat::CompositeCandidateCollection> dileptons;
   event.getByLabel(dilepton_src, dileptons);
 
   if( !dileptons.isValid() ) {
     std::cout << "TnPFilter::filter : !dileptons.isValid() ---> return" << std::endl;
-    return;
+    return false;
   }
 
   pat::CompositeCandidateCollection::const_iterator dil = dileptons->begin(), dile = dileptons->end();
