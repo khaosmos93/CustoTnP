@@ -184,7 +184,7 @@ HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
 )
 
 
-FilterForTnP = cms.EDAnalyzer('TnPFilter',
+FilterForTnP = cms.EDFilter('TnPFilter',
     dilepton_src = cms.InputTag('dimuons'),
     beamspot_src = cms.InputTag('offlineBeamSpot'),
     vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
