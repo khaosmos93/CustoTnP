@@ -46,6 +46,15 @@
   <use name="CustoTnP/Analyzer"/>
 </library>
 
+<library file="TnPFilter.cc" name="TnPFilter">
+  <use name="CommonTools/Utils"/>
+  <use name="ostream"/>
+  <use name="rootgraphics"/>
+  <use name="CommonTools/UtilAlgos"/>
+  <use name="DataFormats/PatCandidates"/>
+  <use name="CustoTnP/Analyzer"/>
+</library>
+
 <!-- <library file="HistosForTnP_AOD.cc" name="CustoTnPHistosForTnP_AOD">
   <use name="CommonTools/Utils"/>
   <use name="ostream"/>
