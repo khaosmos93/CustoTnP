@@ -1,10 +1,10 @@
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TProfile.h"
-#include "TTree.h"
-#include "TMath.h"
-#include "TRandom3.h"
-#include "TString.h"
+// #include "TH1F.h"
+// #include "TH2F.h"
+// #include "TProfile.h"
+// #include "TTree.h"
+// #include "TMath.h"
+// #include "TRandom3.h"
+// #include "TString.h"
 
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -271,20 +271,19 @@ bool TnPFilter::filter(const edm::Event& event, const edm::EventSetup& setup) {
           // const reco::CandidateBaseRef& TagMu = lep0;
           const reco::CandidateBaseRef& ProbeMu = lep1;
 
-          int probe_nshowers = -999;
-          if(isAOD) {
-            std::vector<int> vec_showers = calcNShowers(ProbeMu);
+          // int probe_nshowers = -999;
+          // if(isAOD) {
+          //   std::vector<int> vec_showers = calcNShowers(ProbeMu);
 
-            if(vec_showers.size()==16) {
-              for(int is=0; is<(int)vec_showers.size(); ++is) {
-                if(vec_showers[is]) {
-                  probe_nshowers = is;
-                  break;
-                }
-              }
-            }
-
-          }
+          //   if(vec_showers.size()==16) {
+          //     for(int is=0; is<(int)vec_showers.size(); ++is) {
+          //       if(vec_showers[is]) {
+          //         probe_nshowers = is;
+          //         break;
+          //       }
+          //     }
+          //   }
+          // }
 
           if(!ShutUp)  std::cout << "TnPFilter::filter : Tag0 and Probe1" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
@@ -303,20 +302,19 @@ bool TnPFilter::filter(const edm::Event& event, const edm::EventSetup& setup) {
           // const reco::CandidateBaseRef& TagMu = lep1;
           const reco::CandidateBaseRef& ProbeMu = lep0;
 
-          int probe_nshowers = -999;
-          if(isAOD) {
-            std::vector<int> vec_showers = calcNShowers(ProbeMu);
+          // int probe_nshowers = -999;
+          // if(isAOD) {
+          //   std::vector<int> vec_showers = calcNShowers(ProbeMu);
 
-            if(vec_showers.size()==16) {
-              for(int is=0; is<(int)vec_showers.size(); ++is) {
-                if(vec_showers[is]) {
-                  probe_nshowers = is;
-                  break;
-                }
-              }
-            }
-
-          }
+          //   if(vec_showers.size()==16) {
+          //     for(int is=0; is<(int)vec_showers.size(); ++is) {
+          //       if(vec_showers[is]) {
+          //         probe_nshowers = is;
+          //         break;
+          //       }
+          //     }
+          //   }
+          // }
 
           if(!ShutUp)  std::cout << "TnPFilter::filter : Tag1 and Probe0" << std::endl;
           if(!ShutUp)  std::cout << "                                              pT=" << ProbeMu->pt() << std::endl;
