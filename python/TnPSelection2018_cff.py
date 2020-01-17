@@ -184,6 +184,32 @@ HistosForTnP = cms.EDAnalyzer('CustoTnPHistosForTnP',
 )
 
 
+FilterForTnP = cms.EDAnalyzer('TnPFilter',
+    dilepton_src = cms.InputTag('dimuons'),
+    beamspot_src = cms.InputTag('offlineBeamSpot'),
+    vertex_src = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    use_bs_and_pv = cms.bool(True),
+
+    shower_tag            = cms.int32(1),   # 1: Digis, 2: Segs
+    threshold_b          = cms.vint32(),
+    threshold_e          = cms.vint32(),
+
+    probe_pt_min = cms.double(Probe_pt_cut),
+
+    passing_probe_cut = cms.string(Passing_probe_cut),
+    passing_probe_dpt_over_pt_max = cms.double(Passing_probe_dpt_over_pt_max),
+    passing_probe_dz_max = cms.double(Passing_probe_dz_max),
+
+    minMass = cms.double(0),
+    maxMass = cms.double(10000),
+
+    min_nVtx = cms.double(-1),
+    max_nVtx = cms.double(1e6),
+
+    isAOD = cms.bool(False),
+    ShutUp = cms.bool(True)  #True
+)
+
 
 
 #--- tags for AOD
