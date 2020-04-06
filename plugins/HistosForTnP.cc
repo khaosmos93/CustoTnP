@@ -64,6 +64,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   const reco::BeamSpot* beamspot;
   const reco::Vertex*   vertex;
   int                   nVtx;
+  int                   truePU;
 
   int shower_tag;    // 1: Digis, 2: Segments
   std::vector<int>  threshold_b;
@@ -102,6 +103,7 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   // -- Histograms -- //
   TH1F* NBeamSpot;
   TH1F* NVertices;
+  TH1F* TruePU;
   TH1F* NDileptons;
   TH1F* WeightMadGraph;
 
@@ -193,6 +195,11 @@ class CustoTnPHistosForTnP : public edm::EDAnalyzer {
   ProbeHistos2D ProbeEtaPhi;
   ProbeHistos2D ProbeEtaPt;
   ProbeHistos2D ProbeEtaDptPt;
+
+  ProbeHistos2D ProbePtNvtx;
+  ProbeHistos2D ProbeEtaNvtx;
+  ProbeHistos2D ProbePtTruePU;
+  ProbeHistos2D ProbeEtaTruePU;
 
   ProbeHistos2D ProbeEtaShower;
   ProbeHistos2D ProbePhiShowerB;
@@ -390,6 +397,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
     beamspot(0),
     vertex(0),
     nVtx(0),
+    truePU(-1),
 
     shower_tag(cfg.getParameter<int>("shower_tag")),
     threshold_b(cfg.getParameter<std::vector<int>>("threshold_b")),
@@ -445,6 +453,7 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
 
   NBeamSpot = fs->make<TH1F>("NBeamSpot", "# beamspots/event",  2, 0,  2);
   NVertices = fs->make<TH1F>("NVertices", "# vertices/event",  200, 0, 200);
+  TruePU    = fs->make<TH1F>("TruePU", "",  200, 0, 200);
 
   // Dilepton multiplicity.
   NDileptons = fs->make<TH1F>("NDileptons", "# dileptons/event", 10, 0, 10);
@@ -467,6 +476,12 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbeEtaPhi    = make_probe_histos_2D("EtaPhi",       eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
   ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 10000, 0, 10000);
   ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",     eta_bins_for_2D, 1000, 0, 2);
+
+  ProbePtNvtx    = make_probe_histos_2D("PtNvtx",     10000, 0, 10000, 200, 0, 200);
+  ProbeEtaNvtx   = make_probe_histos_2D("EtaNvtx",    eta_bins_for_2D, 200, 0, 200);
+  ProbePtTruePU  = make_probe_histos_2D("PtTruePU",   10000, 0, 10000, 200, 0, 200);
+  ProbeEtaTruePU = make_probe_histos_2D("EtaTruePU",  eta_bins_for_2D, 200, 0, 200);
+
   if(isAOD) {
 
   ProbeEtaShower   = make_probe_histos_2D("EtaShower",    eta_bins_for_2D, 18, -1.5, 16.5);
@@ -758,6 +773,9 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
       ProbePt[i]->Fill( ProbeMu->pt(), _totalWeight );
       PairNoPtMass[i]->Fill( dil.mass(), _totalWeight );
 
+      ProbePtNvtx[i]->Fill(   ProbeMu->pt(), nVtx,   _totalWeight );
+      ProbePtTruePU[i]->Fill( ProbeMu->pt(), truePU, _totalWeight );
+
       if(ProbeMu->pt() > probe_pt_min) {
 
         ProbeEta[i]->Fill( ProbeMu->eta(), _totalWeight );
@@ -766,6 +784,10 @@ void CustoTnPHistosForTnP::fillTnPControlHistos(const pat::CompositeCandidate& d
         ProbeEtaPhi[i]->Fill( ProbeMu->eta(), ProbeMu->phi(), _totalWeight );
         ProbeEtaPt[i]->Fill( ProbeMu->eta(), ProbeMu->pt(), _totalWeight );
         ProbeEtaDptPt[i]->Fill( ProbeMu->eta(), probe_dpt_over_pt, _totalWeight );
+
+        ProbeEtaNvtx[i]->Fill(   ProbeMu->eta(), nVtx,   _totalWeight );
+        ProbeEtaTruePU[i]->Fill( ProbeMu->eta(), truePU, _totalWeight );
+
         if(isAOD && probe_nshowers>-1) {
 
           const pat::Muon* muPat = toConcretePtr<pat::Muon>(ProbeMu);
@@ -960,9 +982,8 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
   }
 
   //---- Get PileUp Weights
-  int thePU = -1;
   _pileupWeight = 1.;
-  if( !event.isRealData() ){
+  if( !event.isRealData() ) {
 
     edm::Handle<std::vector< PileupSummaryInfo > > pileup;
     if ( event.getByLabel(pileup_src, pileup)){
@@ -970,14 +991,14 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
       for(PVI = pileup->begin(); PVI != pileup->end(); ++PVI)
       {
         if(PVI->getBunchCrossing()==0){
-          thePU = PVI->getTrueNumInteractions();
+          truePU = PVI->getTrueNumInteractions();
           continue;
         }
       }
 
       int nPileUpBin = (int)vec_PileUpWeight.size();
       for(int iPU=0; iPU<nPileUpBin; ++iPU) {
-        if(thePU == iPU) {
+        if(truePU == iPU) {
           _pileupWeight = vec_PileUpWeight[iPU];
         }
       }
@@ -985,7 +1006,9 @@ void CustoTnPHistosForTnP::analyze(const edm::Event& event, const edm::EventSetu
     else
       edm::LogError("") << "PU collection not found !!!";
 
-    if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : PU = " << thePU << "  PU weight = " << _pileupWeight << std::endl;
+    if(!ShutUp)  std::cout << "CustoTnPHistosForTnP::analyze : PU = " << truePU << "  PU weight = " << _pileupWeight << std::endl;
+
+    TruePU->Fill(truePU, _totalWeight );
   }
 
   _totalWeight = 1.;
