@@ -474,12 +474,12 @@ CustoTnPHistosForTnP::CustoTnPHistosForTnP(const edm::ParameterSet& cfg)
   ProbePhi       = make_probe_histos("Phi",             41, -TMath::Pi(), TMath::Pi());
   ProbeNVertices = make_probe_histos("NVertices",       200, 0, 200);
   ProbeEtaPhi    = make_probe_histos_2D("EtaPhi",       eta_bins_for_2D, 41, -TMath::Pi(), TMath::Pi());
-  ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 10000, 0, 10000);
+  ProbeEtaPt     = make_probe_histos_2D("EtaPt",        eta_bins_for_2D, 5000, 0, 5000);
   ProbeEtaDptPt  = make_probe_histos_2D("EtaDptPt",     eta_bins_for_2D, 1000, 0, 2);
 
-  ProbePtNvtx    = make_probe_histos_2D("PtNvtx",     10000, 0, 10000, 200, 0, 200);
+  ProbePtNvtx    = make_probe_histos_2D("PtNvtx",     5000, 0, 5000,   200, 0, 200);
   ProbeEtaNvtx   = make_probe_histos_2D("EtaNvtx",    eta_bins_for_2D, 200, 0, 200);
-  ProbePtTruePU  = make_probe_histos_2D("PtTruePU",   10000, 0, 10000, 200, 0, 200);
+  ProbePtTruePU  = make_probe_histos_2D("PtTruePU",   5000, 0, 5000,   200, 0, 200);
   ProbeEtaTruePU = make_probe_histos_2D("EtaTruePU",  eta_bins_for_2D, 200, 0, 200);
 
   if(isAOD) {
